@@ -1,4 +1,4 @@
--- metatablecatgames 2024 - Part of Catwork, all rights reserved
+-- metatablecatgames 2024 - Licensed under the MIT License
 
 type Map<K, V> = {[K]: V}
 

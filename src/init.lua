@@ -1,4 +1,4 @@
--- metatablecatgames 2024 - Part of Catwork, all rights reserved
+-- metatablecatgames 2024 - Licensed under the MIT License
 
 local HttpService = game:GetService("HttpService")
 local Action = require(script.Action)
@@ -24,7 +24,9 @@ type NativeService = ServiceMinimal<NativeFragment> --TODO: NativeServiceParams
 -- you may now rest easily knowing the type hell is gone
 
 local native: NativeService
-local Catwork = {}
+local Catwork = {
+	__VERSION = "0.4.0"
+}
 local fragmentNameStore: {[string]: {[string]: Types.Fragment<unknown>}} = {}
 
 Catwork.Fragments = {} :: {[string]: Fragment<unknown>}

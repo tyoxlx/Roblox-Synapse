@@ -2,6 +2,10 @@
 	"name": "Catwork",
 
 	"tree": {
-		"$path": "src"
+		"$path": "src",
+
+		"LICENSE": {
+			"$path": "LICENSE.txt"
+		}
 	}
 }
