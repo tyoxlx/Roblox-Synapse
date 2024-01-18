@@ -45,7 +45,7 @@ export type TemplateService<Fragment, Template, FParams, TParams> = {
 	Fragment: (TemplateService<Fragment, Template, FParams, TParams>, FParams) -> Fragment,
 	Template: (TemplateService<Fragment, Template, FParams, TParams>, TParams) -> Template,
 
-CreateFragmentFromTemplate: (TemplateService<Fragment, Template, FParams, TParams>, Template|string, {[string]: any}) -> Fragment,
+	CreateFragmentFromTemplate: (TemplateService<Fragment, Template, FParams, TParams>, Template|string, {[string]: any}) -> Fragment,
 	GetFragmentsOfName: (TemplateService<Fragment, Template, FParams, TParams>, name: string) -> {[string]: Fragment},
 
 	FragmentAdded: (TemplateService<Fragment, Template, FParams, TParams>, Fragment) -> (),
