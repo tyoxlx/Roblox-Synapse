@@ -18,7 +18,7 @@ export type TemplateService<A, B, C, D> = Types.TemplateService<A, B, C, D>
 export type TemplateServiceMinimal<A, B> = TemplateService<A, B, {[string]: unknown}, {[string]: unknown}>
 export type TemplateServiceBlank = TemplateServiceMinimal<Fragment<unknown>, Template<unknown, unknown>>
 
-type ServiceUnion<A> = ServiceMinimal<A> | TemplateServiceMinimal<A, Template<unknown, unknown>>
+type ServiceUnion<A, B> = ServiceMinimal<A> | TemplateServiceMinimal<A, B>
 
 --[=[
 	@class Catwork
@@ -50,7 +50,7 @@ Catwork.Fragments = Common.Fragments :: {[string]: Fragment<unknown>}
 
 	Common container for all Services objects (includes TemplateServices)
 ]=]--
-Catwork.Services = Common.Services :: {[string]: ServiceUnion<unknown>}
+Catwork.Services = Common.Services :: {[string]: ServiceUnion<unknown, unknown>}
 
 --[=[
 	@prop Plugin Plugin
@@ -78,7 +78,7 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
 	any,
 	params: {[string]: any},
-	service: ServiceUnion<A>,
+	service: ServiceUnion<A, unknown>,
 	mutator: ({[string]: any}) -> ()?
 ) -> A
 
