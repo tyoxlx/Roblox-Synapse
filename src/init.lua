@@ -76,6 +76,7 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 	Catwork.Fragment to create fragments outside of services.
 ]=]--
 Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
+	any,
 	params: {[string]: any},
 	service: ServiceUnion<A>,
 	mutator: ({[string]: any}) -> ()?
