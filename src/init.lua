@@ -8,14 +8,14 @@ local Native = require(script.Native)
 export type Fragment<A> = Types.Fragment<A>
 
 export type Service<A, B> = Types.ClassicService<A, B>
-export type ServiceMinimal<A> = Service<A, {[string]: unknown}>
+export type ServiceMinimal<A> = Service<A, unknown>
 export type ServiceBlank = ServiceMinimal<Fragment<unknown>>
 
 export type Template<A, F> = Types.Template<A, F>
 export type TemplateMinimal<A> = Types.Template<A, {[string]: any}>
 
 export type TemplateService<A, B, C, D> = Types.TemplateService<A, B, C, D>
-export type TemplateServiceMinimal<A, B> = TemplateService<A, B, {[string]: unknown}, {[string]: unknown}>
+export type TemplateServiceMinimal<A, B> = TemplateService<A, B, unknown, unknown>
 export type TemplateServiceBlank = TemplateServiceMinimal<Fragment<unknown>, Template<unknown, unknown>>
 
 type ServiceUnion<A, B> = ServiceMinimal<A> | TemplateServiceMinimal<A, B>
