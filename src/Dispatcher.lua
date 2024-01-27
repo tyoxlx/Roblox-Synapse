@@ -78,7 +78,7 @@ function Dispatcher.spawnFragment(f, asyncHandler)
 	state.Spawned = true
 	if asyncHandler then state.Dispatchers = {asyncHandler} end
 	
-	spawnFragment(f, state, asyncHandler)
+	return spawnFragment(f, state, asyncHandler)
 end
 
 function Dispatcher.slotAwait(f)
