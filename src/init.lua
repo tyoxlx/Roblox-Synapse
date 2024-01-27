@@ -1,8 +1,10 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
 
+local DEBUG_DONT_ASSIGN_OBJECT_MT = false
+
 local HttpService = game:GetService("HttpService")
-local Action = require(script.Action)
 local Types = require(script.Types)
+local Dispatcher = require(script.Dispatcher)
 
 -- type hell, :D
 export type Service<A, B> = Types.ClassicService<A, B>
@@ -20,6 +22,8 @@ export type TemplateMinimal<A> = Types.Template<A, {[string]: any}>
 
 type NativeFragment = Types.Fragment<{}>
 type NativeService = ServiceMinimal<NativeFragment> --TODO: NativeServiceParams
+
+
 
 -- you may now rest easily knowing the type hell is gone
 
@@ -60,21 +64,7 @@ local function flushNameStore<A>(
 	end
 end
 
-local RunFragmentAction = Action("cw.RunFragment", function(fragment, service, spawnSignal)
-	spawnSignal(service, fragment)
-end)
 
-local function spawnFragment(self: Fragment<any>, asyncHandler)
-	local service = self.Service
-	local spawnSignal = service.Spawning
-
-	if asyncHandler then
-		RunFragmentAction:handleAsync(asyncHandler, self, service, spawnSignal)
-		return nil
-	else
-		return RunFragmentAction:await(self, service, spawnSignal)
-	end
-end
 
 local function Fragment(
 	params: {[string]: any},
@@ -85,8 +75,11 @@ local function Fragment(
 	params.ID = HttpService:GenerateGUID(false)
 	params.Name = params.Name or `CatworkFragment`
 	params.Service = service
-	params.Spawn = spawnFragment
-	
+
+	params.Spawn = Dispatcher.spawnFragment
+	params.Await = Dispatcher.slotAwait
+	params.HandleAsync = Dispatcher.slotHandleAsync
+
 	function params:Destroy()
 		local service = self.Service
 		if service.Fragments[self.ID] then
@@ -104,11 +97,13 @@ local function Fragment(
 		end
 	end
 	
-	setmetatable(params, {
-		__tostring = function(self)
-			return `CatworkFragment({self.Name}::{self.ID})`
-		end
-	})
+	if not DEBUG_DONT_ASSIGN_OBJECT_MT then
+		setmetatable(params, {
+			__tostring = function(self)
+				return `CatworkFragment({self.Name}::{self.ID})`
+			end
+		})
+	end
 	
 	if mutator then mutator(params) end
 	return params
@@ -128,11 +123,14 @@ local function Template<A, B>(
 		error(`template {params.Name} already exists for service {service.Name}.`)
 	end
 
-	setmetatable(params, {
-		__tostring = function(self)
-			return `ServiceTemplate({self.Name})`
-		end,
-	})
+	if not DEBUG_DONT_ASSIGN_OBJECT_MT then
+		setmetatable(params, {
+			__tostring = function(self)
+				return `ServiceTemplate({self.Name})`
+			end,
+		})
+	end
+
 	service.Templates[params.Name] = params
 	
 	if service.TemplateAdded then
@@ -215,6 +213,14 @@ local function commonServiceCtor(params, enableTemplates)
 		end
 	end
 
+	if not DEBUG_DONT_ASSIGN_OBJECT_MT then
+		setmetatable(params, {
+			__tostring = function(self)
+				return `CatworkService({self.Name})`
+			end,
+		})
+	end
+
 	table.freeze(raw)
 	Catwork.Services[raw.Name] = raw
 	return raw
@@ -240,7 +246,11 @@ function Catwork:GetFragmentsOfName(name: string): {[string]: Fragment<any>}
 end
 
 native = Catwork.Service {
-	Name = "catwork"
+	Name = "catwork",
+
+	FragmentAdded = function(self, f)
+		f:Spawn()
+	end
 }
 
 return Catwork

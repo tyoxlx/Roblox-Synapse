@@ -12,6 +12,10 @@ export type Fragment<T> = {
 	
 	Destroying: (Fragment<T>) -> (),
 	Init: (Fragment<T>) -> (),
+
+	-- some parallel execution stuff
+	Await: (Fragment<T>) -> (boolean, string?),
+	HandleAsync: (Fragment<T>, asyncHandler: (boolean, string) -> ()?) -> ()
 } & T
 
 export type Template<T, F> = {
