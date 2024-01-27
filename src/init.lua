@@ -1,256 +1,144 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
-
-local DEBUG_DONT_ASSIGN_OBJECT_MT = false
-
-local HttpService = game:GetService("HttpService")
+local Common = require(script.Common)
 local Types = require(script.Types)
-local Dispatcher = require(script.Dispatcher)
+local Service = require(script.Service)
+local Native = require(script.Native)
 
 -- type hell, :D
+export type Fragment<A> = Types.Fragment<A>
+
 export type Service<A, B> = Types.ClassicService<A, B>
 export type ServiceMinimal<A> = Service<A, {[string]: unknown}>
-export type ServiceBlank = ServiceMinimal<Fragment<any>>
-
-export type TemplateService<A, B, C, D> = Types.TemplateService<A, B, C, D>
-export type TemplateServiceMinimal<A, B> = TemplateService<A, B, {[string]: unknown}, {[string]: unknown}>
-export type TemplateServiceBlank = TemplateServiceMinimal<Fragment<any>, Template<any, any>>
-
-export type Fragment<A> = Types.Fragment<A>
+export type ServiceBlank = ServiceMinimal<Fragment<unknown>>
 
 export type Template<A, F> = Types.Template<A, F>
 export type TemplateMinimal<A> = Types.Template<A, {[string]: any}>
 
-type NativeFragment = Types.Fragment<{}>
-type NativeService = ServiceMinimal<NativeFragment> --TODO: NativeServiceParams
+export type TemplateService<A, B, C, D> = Types.TemplateService<A, B, C, D>
+export type TemplateServiceMinimal<A, B> = TemplateService<A, B, {[string]: unknown}, {[string]: unknown}>
+export type TemplateServiceBlank = TemplateServiceMinimal<Fragment<unknown>, Template<unknown, unknown>>
 
+type ServiceUnion<A> = ServiceMinimal<A> | TemplateServiceMinimal<A, Template<unknown, unknown>>
 
+--[=[
+	@class Catwork
 
--- you may now rest easily knowing the type hell is gone
-
-local native: NativeService
+	Catwork is the base library that all other code derives from
+]=]--
 local Catwork = {
-	__VERSION = "0.4.0"
+	--[=[
+		@prop Version string
+		@within Catwork
+
+		A semantic versioning string stating the current version of Catwork
+	]=]--
+	__VERSION = "0.4.1"
 }
-local fragmentNameStore: {[string]: {[string]: Types.Fragment<unknown>}} = {}
 
-Catwork.Fragments = {} :: {[string]: Fragment<unknown>}
-Catwork.Services = {} :: {[string]: ServiceMinimal<unknown>}
+--[=[
+	@prop Fragments {[string]: Fragment}
+	@within Catwork
 
-local function pushToNameStore<A>(
-	nameStoreTable: {[string]: {[string]: A}},
-	nameStoreKey: string,
-	k: string, v: A
-)
-	local t = nameStoreTable[nameStoreKey]
-	if not t then
-		t = {}
-		nameStoreTable[nameStoreKey] = t
-	end
-	
-	t[k] = v
-end
+	Common container for all Fragment objects, stored using the Fragment's unique
+	ID. Use Catwork:GetFragmentsOfName to get all fragments of a certain name.
+]=]--
+Catwork.Fragments = Common.Fragments :: {[string]: Fragment<unknown>}
 
-local function flushNameStore<A>(
-	nameStoreTable: {[string]: {[string]: A}},
-	nameStoreKey: string,
-	k: string
-)
-	local t = nameStoreTable[nameStoreKey]
-	if not t then return end
-	
-	t[k] = nil
-	if not next(t) then
-		nameStoreTable[nameStoreKey] = nil
-	end
-end
+--[=[
+	@prop Services {[string]: Service}
+	@within Catwork
 
+	Common container for all Services objects (includes TemplateServices)
+]=]--
+Catwork.Services = Common.Services :: {[string]: ServiceUnion<unknown>}
 
+--[=[
+	@prop Plugin Plugin
+	@within Catwork
 
-local function Fragment(
+	A Plugin identifier for when using Catwork as a plugin.
+]=]--
+Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
+
+--[=[
+	@method CreateFragmentForService
+	@within Catwork
+	@param params {[string]: any} -- Parameters passed to the Fragment constructor
+	@param service Service -- Service used to construct the fragment against
+	@param mutator ({[string]: any}) -> ()? -- Optional mutator function to modify the fragment after construction
+	@return Fragment -- The constructed fragment
+
+	Creates a new Fragment object for the given service.
+
+	:::note Intended for use inside Service.Fragment
+	This function is intended to act as a helper function when creating Fragments
+	inside services, use the Service.Fragment constructor directly, or
+	Catwork.Fragment to create fragments outside of services.
+]=]--
+Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
 	params: {[string]: any},
-	service: Types.Service,
-	mutator
-)
-	
-	params.ID = HttpService:GenerateGUID(false)
-	params.Name = params.Name or `CatworkFragment`
-	params.Service = service
+	service: ServiceUnion<A>,
+	mutator: ({[string]: any}) -> ()?
+) -> A
 
-	params.Spawn = Dispatcher.spawnFragment
-	params.Await = Dispatcher.slotAwait
-	params.HandleAsync = Dispatcher.slotHandleAsync
+--[=[
+	@function Fragment
+	@within Catwork
+	@param params {[string]: any} -- Parameters passed to the Fragment constructor
+	@return Fragment
 
-	function params:Destroy()
-		local service = self.Service
-		if service.Fragments[self.ID] then
-			Catwork.Fragments[self.ID] = nil
-			service.Fragments[self.ID] = nil
-			
-			flushNameStore(fragmentNameStore, self.Name, self.ID)
-			flushNameStore(service.FragmentNameStore, self.Name, self.ID)
-			
-			local destroying = self.Destroying
-			local fragRemoved = service.FragmentRemoved
+	Creates a Fragment from the native Catwork service. This does **not** create
+	service specific fragments, use `Service.Fragment` for that.
+]=]--
+Catwork.Fragment = Native :: (
+	params: {[string]: any}	
+) -> Native.NativeFragment
 
-			if destroying then task.spawn(destroying, self) end
-			if fragRemoved then task.spawn(fragRemoved, service, self) end
-		end
-	end
-	
-	if not DEBUG_DONT_ASSIGN_OBJECT_MT then
-		setmetatable(params, {
-			__tostring = function(self)
-				return `CatworkFragment({self.Name}::{self.ID})`
-			end
-		})
-	end
-	
-	if mutator then mutator(params) end
-	return params
-end
+--[=[
+	@function Service
+	@within Catwork
+	@param params {[string]: any} -- Parameters passed to the Service constructor
+	@return ClassicService
 
-local function Template<A, B>(
-	params: {[string]: any},
-	service: TemplateServiceMinimal<A, B>
-): TemplateMinimal<B>
-	-- just clones the template params and pushes it to the service if its nil
+	Creates a classic non-template enabled service.
 
-	if not service.EnableTemplates then
-		error(`service {service.Name} does not implement templates.`)
-	end
+	:::caution Service names must be unique
+	Service names must be unique, if a service with the same name already exists
+	an error will be thrown.
+]=]--
 
-	if service.Templates[params.Name] then
-		error(`template {params.Name} already exists for service {service.Name}.`)
-	end
-
-	if not DEBUG_DONT_ASSIGN_OBJECT_MT then
-		setmetatable(params, {
-			__tostring = function(self)
-				return `ServiceTemplate({self.Name})`
-			end,
-		})
-	end
-
-	service.Templates[params.Name] = params
-	
-	if service.TemplateAdded then
-		service:TemplateAdded(params)
-	end
-	
-	return params
-end
-
-function Catwork:CreateFragmentForService(
-	params: {[string]: any},
-	service: Types.Service,
-	mutator
-)
-	
-	local f = Fragment(params, service, mutator)
-	
-	service.Fragments[f.ID] = f
-	Catwork.Fragments[f.ID] = f
-	
-	pushToNameStore(fragmentNameStore, f.Name, f.ID, f)
-	pushToNameStore(service.FragmentNameStore, f.Name, f.ID, f)
-
-	local fragAdded = service.FragmentAdded
-	if fragAdded then task.spawn(fragAdded, service, f) end
-	
-	return f
-end
-
-function Catwork.Fragment<A...>(
-	params: {[string]: any}
-): NativeFragment
-	
-	return native:Fragment(params)
-end
-
-local function commonServiceCtor(params, enableTemplates)
-	local raw = table.clone(params)	
-	raw.Fragments = {}
-	raw.Templates = {}
-	raw.FragmentNameStore = {} -- (mostly) internal table for finding local fragments
-	-- by name
-	raw.EnableTemplates = enableTemplates
-
-	function raw:GetFragmentsOfName(name: string)
-		local nameStore = self.FragmentNameStore[name]
-		return if nameStore then table.clone(nameStore) else {}		
-	end
-
-	function raw:Template(params)
-		return Template(params, self)
-	end
-
-	function raw:CreateFragmentFromTemplate(template, initParams)
-		if type(template) == "string" then
-			template = self.Templates[template]
-		end
-
-		local params = initParams or {}
-		template:CreateFragment(params)
-		return self:Fragment(params)
-	end
-
-	if not raw.Spawning then
-		function raw:Spawning(fragment)
-			local i = fragment.Init
-
-			if not i then
-				warn("Fragment does not implement Init")
-				return i
-			end
-
-			return i(fragment)
-		end
-	end
-	
-	if not raw.Fragment then
-		function raw:Fragment(params)
-			return Catwork:CreateFragmentForService(params, self)
-		end
-	end
-
-	if not DEBUG_DONT_ASSIGN_OBJECT_MT then
-		setmetatable(params, {
-			__tostring = function(self)
-				return `CatworkService({self.Name})`
-			end,
-		})
-	end
-
-	table.freeze(raw)
-	Catwork.Services[raw.Name] = raw
-	return raw
-end
-
-function Catwork.Service<A, B>(
+Catwork.Service = Service.classicService :: <A, B>(
 	params: Types.CServiceCreatorParams<A, B>
-): Service<A, B>
+) -> Service<A, B>
+
+--[=[
+	@function TemplateService
+	@within Catwork
+	@param params {[string]: any} -- Parameters passed to the Service constructor
+	@return Service
 	
-	return commonServiceCtor(params, false)
-end
+	Creates a template enabled service.
 
-function Catwork.TemplateService<A, B, C, D>(
+	:::caution Service names must be unique
+	Service names must be unique, if a service with the same name already exists
+	an error will be thrown.
+]=]--
+Catwork.TemplateService = Service.templateService :: <A, B, C, D>(
 	params: Types.TServiceCreatorParams<A, B, C, D>
-): TemplateService<A, B, C, D>
+) -> TemplateService<A, B, C, D>
 
-	return commonServiceCtor(params, true)
-end
+--[=[
+	@method GetFragmentsOfName
+	@within Catwork
+	@param name string -- A non-unique identifier to match against
+	@return {[string]: Fragment}
 
-function Catwork:GetFragmentsOfName(name: string): {[string]: Fragment<any>}
-	local nameStore = fragmentNameStore[name]
+	Returns all matches of Fragments with the given name.
+]=]--
+function Catwork:GetFragmentsOfName(name: string): {[string]: Fragment<unknown>}
+	local nameStore = Common.FragmentNameStore[name]
 	return if nameStore then table.clone(nameStore) else {}
 end
 
-native = Catwork.Service {
-	Name = "catwork",
-
-	FragmentAdded = function(self, f)
-		f:Spawn()
-	end
-}
-
+table.freeze(Catwork)
 return Catwork
