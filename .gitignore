@@ -1,2 +1,5 @@
 build.rbxm
 sourcemap.json
+
+# moonwave build files
+build/**
