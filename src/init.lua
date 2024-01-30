@@ -32,7 +32,7 @@ local Catwork = {
 
 		A semantic versioning string stating the current version of Catwork
 	]=]--
-	__VERSION = "0.4.1"
+	__VERSION = script.VERSION.Value
 }
 
 --[=[
