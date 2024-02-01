@@ -1,0 +1,10 @@
+[docusaurus]
+tagline = "The cat framework for Roblox!"
+
+[home]
+enabled = true
+includeReadme = false
+
+[[home.features]]
+title = "cat"
+description = "Here is an emoji of a cat because I dont know what else to put here 🐈"
