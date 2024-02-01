@@ -1,6 +1,10 @@
-# Catwork
-
+<div align="center">
+<img>put an image here when we have one</img>
+<h1>Catwork</h1>
 The Cat framework for Roblox! 🐈
+<br>
+<a href="https://metatablecatgames.github.io/catwork">Documentation</a>
+</div>
 
 # Installation
 
