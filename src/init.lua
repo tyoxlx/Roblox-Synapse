@@ -65,7 +65,7 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 	@within Catwork
 	@param params {[string]: any} -- Parameters passed to the Fragment constructor
 	@param service Service -- Service used to construct the fragment against
-	@param mutator ({[string]: any}) -> ()? -- Optional mutator function to modify the fragment after construction
+	@param mutator (Fragment) -> ()? -- OBSOLETE. Use Service.FragmentAdded instead.
 	@return Fragment -- The constructed fragment
 
 	Creates a new Fragment object for the given service.
@@ -74,12 +74,18 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 	This function is intended to act as a helper function when creating Fragments
 	inside services, use the Service.Fragment constructor directly, or
 	Catwork.Fragment to create fragments outside of services.
+	:::
+
+	:::danger Do not use `mutator`. Use FragmentAdded instead
+	This is an obsolete parameter, and does the same thing as FragmentAdded, do not
+	pass it, otherwise you will run two callbacks instead of one.
+	:::
 ]=]--
 Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
 	any,
 	params: {[string]: any},
 	service: ServiceUnion<A, unknown>,
-	mutator: ({[string]: any}) -> ()?
+	mutator: (A) -> ()?
 ) -> A
 
 --[=[

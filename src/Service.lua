@@ -191,7 +191,12 @@ local function commonServiceCtor(params, enableTemplates)
 end
 
 function Service:CreateFragmentForService(params, service, mutator)
-	local f = Fragment(params, service, mutator)
+	local f = Fragment(params, service)
+
+	if mutator then
+		warn("The mutator parameter is obsolete, use Service.FragmentAdded instead")
+		mutator(f)
+	end
 
 	service.Fragments[f.ID] = f
 	Common.Fragments[f.ID] = f

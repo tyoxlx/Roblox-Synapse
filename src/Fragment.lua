@@ -13,7 +13,7 @@ local Common = require(script.Parent.Common)
 	creation, this is done for support with Templates that may modify the shape
 	of a Fragment at runtime or creation.
 ]=]--
-return function(params: {[string]: any}, service, mutator)
+return function(params: {[string]: any}, service)
 	--[=[
 		@prop ID string
 		@within Fragment
@@ -128,6 +128,5 @@ return function(params: {[string]: any}, service, mutator)
 		logic.
 	]=]--
 
-	if mutator then mutator(params) end
 	return params
 end
