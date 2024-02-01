@@ -82,7 +82,7 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 	:::
 ]=]--
 Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
-	any,
+	Catwork,
 	params: {[string]: any},
 	service: ServiceUnion<A, unknown>,
 	mutator: (A) -> ()?
@@ -148,4 +148,5 @@ function Catwork:GetFragmentsOfName(name: string): {[string]: Fragment<unknown>}
 end
 
 table.freeze(Catwork)
+type Catwork = typeof(Catwork)
 return Catwork
