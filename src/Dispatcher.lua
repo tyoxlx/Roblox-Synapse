@@ -1,21 +1,11 @@
 -- better to handle this in its own module than try to weave it into Catwork
 -- handles dispatching of Fragments
 
-local Types = require(script.Parent.Types)
-
-type FragmentDispatchState = {
-	Spawned: boolean,
-	Loaded: boolean,
-	ErrMsg: string?, -- raised up the stack if any threads want to dispatch against it
-
-	HeldThreads: {thread},
-	Dispatchers: {(boolean, errMsg: string) -> ()}
-}
 
 local Dispatcher = {}
-local fragmentDispatchState: {[Types.Fragment<unknown>]: FragmentDispatchState} = {}
+local fragmentDispatchState = {}
 
-local function getFragmentState(f): FragmentDispatchState?
+local function getFragmentState(f)
 	local state = fragmentDispatchState[f]
 	if not state then
 		state = {
@@ -34,10 +24,10 @@ local function getFragmentState(f): FragmentDispatchState?
 end
 
 local function runFragmentAction(
-	f: Types.Fragment<unknown>,
+	f,
 	spawnSignal,
-	service: Types.Service,
-	state: FragmentDispatchState
+	service,
+	state
 )
 	local ok, err = pcall(spawnSignal, service, f)
 
@@ -55,7 +45,7 @@ local function runFragmentAction(
 	return ok, err
 end
 
-local function spawnFragment(self: Types.Fragment<any>, state: FragmentDispatchState, asyncHandler)
+local function spawnFragment(self, state, asyncHandler)
 	local service = self.Service
 	local spawnSignal = service.Spawning
 
