@@ -78,8 +78,7 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
 	any,
 	params: A,
-	service: Types.ServiceUnion,
-	mutator: (A) -> A?
+	service: Types.ServiceUnion
 ) -> Types.Fragment<A>
 
 --[=[

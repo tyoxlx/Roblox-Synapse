@@ -5,8 +5,8 @@ sidebar_position: 1
 # Migrating from Tabby to Catwork
 
 :::tip Help migrate Tabby's baselib into a Catwork service!
-We're working on a more complete migration service called `tabby-cwservice`.
-You can contribute to this by clicking here!
+We're working on a more complete migration service called
+[`cw-tabby`](https://github.com/metatablecatgames/cw-tabby).
 :::
 
 Catwork is a successor from Tabby but has some notable API differences, this
