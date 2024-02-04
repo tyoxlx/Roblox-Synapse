@@ -2,6 +2,17 @@
 local Common = require(script.Common)
 local Service = require(script.Service)
 local Native = require(script.Native)
+local Types = require(script.Types)
+
+export type Fragment<Parameters> = Types.Fragment<Parameters>
+export type Template = Types.Template
+export type Service = Types.Service
+export type TemplateService = Types.TemplateService
+
+type ServiceCtorParams = {
+	Name: string,
+	[string]: any
+}
 
 --[=[
 	@class Catwork
@@ -25,7 +36,7 @@ local Catwork = {
 	Common container for all Fragment objects, stored using the Fragment's unique
 	ID. Use Catwork:GetFragmentsOfName to get all fragments of a certain name.
 ]=]--
-Catwork.Fragments = Common.Fragments
+Catwork.Fragments = Common.Fragments :: {[string]: Types.BlankFragment}
 
 --[=[
 	@prop Services {[string]: Service}
@@ -33,7 +44,7 @@ Catwork.Fragments = Common.Fragments
 
 	Common container for all Services objects (includes TemplateServices)
 ]=]--
-Catwork.Services = Common.Services
+Catwork.Services = Common.Services :: {[string]: Types.ServiceUnion}
 
 --[=[
 	@prop Plugin Plugin
@@ -64,7 +75,12 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 	pass it, otherwise you will run two callbacks instead of one.
 	:::
 ]=]--
-Catwork.CreateFragmentForService = Service.CreateFragmentForService
+Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
+	any,
+	params: A,
+	service: Types.ServiceUnion,
+	mutator: (A) -> A?
+) -> Types.Fragment<A>
 
 --[=[
 	@function Fragment
@@ -75,7 +91,7 @@ Catwork.CreateFragmentForService = Service.CreateFragmentForService
 	Creates a Fragment from the native Catwork service. This does **not** create
 	service specific fragments, use `Service.Fragment` for that.
 ]=]--
-Catwork.Fragment = Native
+Catwork.Fragment = Native :: <A>(params: A) -> Types.Fragment<A>
 
 --[=[
 	@function Service
@@ -90,7 +106,7 @@ Catwork.Fragment = Native
 	an error will be thrown.
 ]=]--
 
-Catwork.Service = Service.classicService
+Catwork.Service = Service.classicService :: (params: ServiceCtorParams) -> Types.Service
 
 --[=[
 	@function TemplateService
@@ -104,7 +120,7 @@ Catwork.Service = Service.classicService
 	Service names must be unique, if a service with the same name already exists
 	an error will be thrown.
 ]=]--
-Catwork.TemplateService = Service.templateService
+Catwork.TemplateService = Service.templateService :: (params: ServiceCtorParams) -> Types.Service
 
 --[=[
 	@method GetFragmentsOfName
@@ -114,7 +130,7 @@ Catwork.TemplateService = Service.templateService
 
 	Returns all matches of Fragments with the given name.
 ]=]--
-function Catwork:GetFragmentsOfName(name: string)
+function Catwork:GetFragmentsOfName(name: string): {[string]: Types.BlankFragment}
 	local nameStore = Common.FragmentNameStore[name]
 	return if nameStore then table.clone(nameStore) else {}
 end

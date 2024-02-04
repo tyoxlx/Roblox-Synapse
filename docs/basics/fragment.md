@@ -53,7 +53,7 @@ local Catwork = reqauire(ReplicatedFirst.Catwork)
 
 local Clock = Catwork.Fragment {
 	Name = "Clock",
-	ClockCounter = 0
+	ClockCounter = 0,
 
 	Init = function(self)
 		while true do
