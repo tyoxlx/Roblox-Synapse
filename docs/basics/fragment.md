@@ -50,21 +50,19 @@ folder, and add this code:
 ```lua
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local Catwork = reqauire(ReplicatedFirst.Catwork)
-local clockCounter = 0
 
 local Clock = Catwork.Fragment {
 	Name = "Clock",
+	ClockCounter = 0
 
 	Init = function(self)
 		while true do
 			task.wait(1)
-			clockCounter += 1
-			print(clockCounter)
+			self.ClockCounter += 1
+			print(self.ClockCounter)
 		end
 	end
 }
-
-local API = {} -- polling API, we'll implement this later
 
 return Clock
 ```
@@ -96,18 +94,17 @@ ReplicatedFirst was chosen as the storage location as it means all code can get
 to it straight away, including client code.
 
 ```lua
-local clockCounter = 0
-```
-
-Here, we define a `clockCounter`, this is used later in the script.
-
-```lua
 local Clock = Catwork.Fragment {
 	Name = "Clock",
+	ClockCounter = 0,
 ```
 
 This is where the magic starts, here, we construct a new Fragment using the
 `Catwork.Fragment` constructor, and give it the name `Clock`.
+
+We aslo add the property `ClockCounter`, since Fragments duplicate themselves,
+outside of a few explciitly defined methods, you can map anything you want to a
+Fragment.
 
 :::tip Services expand Fragments greatly
 When you get into Services, you'll see just how powerful Fragments can be,
@@ -119,8 +116,8 @@ glorified `task.spawn`.
 	Init = function(self)
 		while true do
 			task.wait(1)
-			clockCounter += 1
-			print(clockCounter)
+			self.ClockCounter += 1
+			print(self.ClockCounter)
 		end
 	end
 ```
@@ -134,14 +131,11 @@ For now, we simply print the `clockCounter` variable as the polling API is not
 ready yet.
 
 ```lua
-local API = {} -- polling API, we'll implement this later
-
 return Clock
 ```
 
-This final chunk defines a polling API that we'll get back to later in the
-tutorial, for now, we simply return the Fragment which is a convention when you
-have nothing else to return.
+This final chunk defines simply returns the Fragment which is a convention when
+you have nothing else to return.
 
 :::tip You do not need to return fragments
 Catwork *does not* require you to return the Fragment, it registers Fragments
@@ -159,31 +153,21 @@ else in the codebase.
 	Init = function(self)
 		while true do
 			task.wait(1)
-			clockCounter += 1
--			print(clockCounter)
+			self.ClockCounter += 1
+-			print(self.ClockCounter)
 		end
 	end
 ```
 
 Now, lets work on that polling API.
 
-Lets bind the Fragment and add a method to get the current clock counter to the
-API:
+To do this, we can simply add a `GetClockCounter` method directly to the
+Fragment constructor:
 
 ```lua
-local API = {}
-API.Fragment = Clock
-
-function API:GetClockCounter()
-	return ClockCounter
-end
-```
-
-Finally, lets return the API instead of the fragment.
-
-```diff
-- return Clock
-+ return API
+	GetClockCounter = function(self)
+		return self.ClockCounter
+	end
 ```
 
 ### Reading the clock counter
@@ -216,7 +200,7 @@ Catwork.Fragment {
 	Name = "ClockCounterConsumer",
 
 	Init = function(self)
-		Clock.Fragment:Await()
+		Clock:Await()
 		print(Clock:GetClockCounter())
 	end
 }
