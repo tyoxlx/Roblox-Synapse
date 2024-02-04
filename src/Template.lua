@@ -9,6 +9,7 @@ local Common = require(script.Parent.Common)
 ]=]--
 return function(params, service)
 	-- just clones the template params and pushes it to the service if its nil
+	local raw = table.clone(params)
 
 	if not service.EnableTemplates then
 		error(`service {service.Name} does not implement templates.`)
@@ -41,11 +42,11 @@ return function(params, service)
 		Defines the callback that acts as middleware when constructing a Fragment.
 	]=]--
 
-	service.Templates[params.Name] = params
+	service.Templates[params.Name] = raw
 
 	if service.TemplateAdded then
-		service:TemplateAdded(params)
+		service:TemplateAdded(raw)
 	end
 
-	return params
+	return raw
 end

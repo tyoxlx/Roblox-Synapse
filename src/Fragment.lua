@@ -14,13 +14,14 @@ local Common = require(script.Parent.Common)
 	of a Fragment at runtime or creation.
 ]=]--
 return function(params: {[string]: any}, service)
+	local raw = table.clone(params)
 	--[=[
 		@prop ID string
 		@within Fragment
 
 		The globally unique identifier for this specific Fragment.
 	]=]--
-	params.ID = HttpService:GenerateGUID(false)
+	raw.ID = HttpService:GenerateGUID(false)
 
 	--[=[
 		@prop Name string
@@ -29,7 +30,7 @@ return function(params: {[string]: any}, service)
 		A non-unique identifier for the Fragment. Multiple fragments can have the
 		same name.
 	]=]--
-	params.Name = params.Name or `CatworkFragment`
+	raw.Name = params.Name or `CatworkFragment`
 
 	--[=[
 		@prop Service Service
@@ -37,7 +38,7 @@ return function(params: {[string]: any}, service)
 
 		The Service this Fragment was created with.
 	]=]--
-	params.Service = service
+	raw.Service = service
 
 	--[=[
 		@method Spawn
@@ -57,7 +58,7 @@ return function(params: {[string]: any}, service)
 		response from the spawn, use `Fragment:Await` or `Fragment:HandleAsync`
 		instead, as this method is intended primarily for Services.
 	]=]--
-	params.Spawn = Dispatcher.spawnFragment
+	raw.Spawn = Dispatcher.spawnFragment
 
 	--[=[
 		@method Await
@@ -70,7 +71,7 @@ return function(params: {[string]: any}, service)
 		method will not yield if this has already happened, and will return either
 		`true`, or `false` and a cached error message.
 	]=]--
-	params.Await = Dispatcher.slotAwait
+	raw.Await = Dispatcher.slotAwait
 
 	--[=[
 		@method HandleAsync
@@ -80,7 +81,7 @@ return function(params: {[string]: any}, service)
 		Queues a callback asynchronously until the Fragment finishes spawning or
 		errors. The callback will run immediately if this has already happened.
 	]=]--
-	params.HandleAsync = Dispatcher.slotHandleAsync
+	raw.HandleAsync = Dispatcher.slotHandleAsync
 
 	--[=[
 		@method Destroy
@@ -88,7 +89,7 @@ return function(params: {[string]: any}, service)
 
 		Destroys the Fragment and removes it from the Service.
 	]=]--
-	function params:Destroy()
+	function raw:Destroy()
 		local service = self.Service
 		if service.Fragments[self.ID] then
 			Common.Fragments[self.ID] = nil
@@ -106,7 +107,7 @@ return function(params: {[string]: any}, service)
 	end
 
 	if not Common.DONT_ASSIGN_OBJECT_MT then
-		setmetatable(params, {
+		setmetatable(raw, {
 			__tostring = function(self)
 				return `CatworkFragment({self.Name}::{self.ID})`
 			end
@@ -128,5 +129,5 @@ return function(params: {[string]: any}, service)
 		logic.
 	]=]--
 
-	return params
+	return raw
 end

@@ -15,6 +15,10 @@ local Common = require(script.Parent.Common)
 	`Service.EnableTemplates` is set to false.
 ]=]--
 local function commonServiceCtor(params, enableTemplates)
+	if Common.Services[params.Name] then
+		error(`Service {params.Name} is already defined!`)
+	end
+
 	local raw = table.clone(params)	
 
 	--[=[
