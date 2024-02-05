@@ -120,7 +120,7 @@ This callback creates a RemoteEvent, dumps it into ReplicatedStorage, then
 calls `Catwork:CreateFragmentForService`, which constructs the Fragment from
 the parameter table.
 
-:::warning All `Service.Fragment` must call `CreateFragmentForService`
+:::warning All `Service.Fragment` callbacks must call `CreateFragmentForService`
 This method sets up internal bindings for the fragments, and usually, you
 should return it directly.
 :::
@@ -183,6 +183,45 @@ continue to listen to events (oh no!). Lets add this callback to our service:
 
 This function simply destroys the remote and unassigns it from the Fragment. The
 fragment will no longer process remote signals if we destroy it.
+
+### Spawn, Spawning and Init
+
+Catwork's internal dispatcher provides Fragment with a method, `Fragment:Spawn`.
+This method can be used to spawn Fragment-specific code, normally, the 
+Fragment's `Init` function.
+
+You may have noticed, in the Clock fragment example, we didn't have to Spawn
+anything? Catwork's native service spawns fragments upon creation, but if you
+implement a `FragmentAdded` callback, this overloads that behaviour.
+
+Services can also implement a callback, `Spawning`. This is what called when
+`Fragment:Spawn` is called. If you do intended to overload this callback, it
+should eventually call the `Init` callback.
+
+:::tip
+`Service.Spawning` is asynchronously ran, you do not need to use `task.spawn`
+here.
+:::
+
+Here's psuedocode on how Catwork's own service implements Fragment spawning.
+
+:::important Source Location
+This pseudocode is implemented in `src/Service.lua`.
+:::
+
+```
+declare function "Spawning" to Service with argument "Fragment"
+	define "Fragment.Init" to variable "i"
+	if i is undefined then
+		throw a warning "Fragment does implement init"
+		return nothing from fragment
+	
+	call method "Fragment.Init"
+
+declare function "FragmentAdded" to Service with argument "Fragment"
+	call method "Fragment.Spawn"
+
+```
 
 ## Templates
 
