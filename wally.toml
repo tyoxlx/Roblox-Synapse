@@ -6,5 +6,6 @@ license = "MIT"
 authors = ["Tami Crouch"]
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+include = ["src", "default.project.json", "LICENSE"]
 
 [dependencies]
