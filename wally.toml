@@ -1,0 +1,10 @@
+[package]
+name = "metatablecat/catwork"
+description = "A tiny Service/Fragment based framework"
+version = "0.4.2"
+license = "MIT"
+authors = ["Tami Crouch"]
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
