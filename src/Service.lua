@@ -4,6 +4,16 @@ local Fragment = require(script.Parent.Fragment)
 local Common = require(script.Parent.Common)
 local ERROR = require(script.Parent.Error)
 
+local SERVICE_PARAMS = {
+	Name = "string",
+	
+	Spawning = "function?",
+	Fragment = "function?",
+	FragmentAdded = "function?",
+	FragmentRemoved = "function?",
+	TemplateAdded = "function?"
+}
+
 --[=[
 	@class Service
 
@@ -20,7 +30,7 @@ local function commonServiceCtor(params, enableTemplates)
 		ERROR.DUPLICATE_SERVICE(params.Name)
 	end
 
-	local raw = table.clone(params)	
+	local raw = Common.validateTable(params, "Service", SERVICE_PARAMS)	
 	raw[Common.ServiceHeader] = true
 
 	--[=[

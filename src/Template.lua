@@ -1,6 +1,11 @@
 local Common = require(script.Parent.Common)
 local ERROR = require(script.Parent.Error)
 
+local TEMPLATE_PARAMS = {
+	Name = "string",
+	CreateFragment = "function",
+}
+
 --[=[
 	@class Template
 
@@ -10,7 +15,7 @@ local ERROR = require(script.Parent.Error)
 ]=]--
 return function(params, service)
 	-- just clones the template params and pushes it to the service if its nil
-	local raw = table.clone(params)
+	local raw = Common.validateTable(params, "Template", TEMPLATE_PARAMS)
 	raw[Common.TemplateHeader] = true
 
 	if not service.EnableTemplates then

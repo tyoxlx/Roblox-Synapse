@@ -3,6 +3,12 @@ local Dispatcher = require(script.Parent.Dispatcher)
 local Common = require(script.Parent.Common)
 local ERROR = require(script.Parent.Error)
 
+local FRAGMENT_PARAMS = {
+	Name = "string?",
+	Destroying = "function?",
+	Init = "function?"
+}
+
 --[=[
 	@class Fragment
 
@@ -15,7 +21,7 @@ local ERROR = require(script.Parent.Error)
 	of a Fragment at runtime or creation.
 ]=]--
 return function(params: {[string]: any}, service)
-	local raw = table.clone(params)
+	local raw = Common.validateTable(params, "Fragment", FRAGMENT_PARAMS)
 	raw[Common.FragmentHeader] = true
 
 	--[=[

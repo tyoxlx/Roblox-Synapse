@@ -32,15 +32,16 @@ export type Service = {
 	Fragments: {[string]: BlankFragment},
 	FragmentNameStore: {[string]: BlankFragment},
 	GetFragmentsOfName: (Service, name: string) -> {[string]: BlankFragment},
+	
+	Template: (Service, Template) -> Template,
+	Templates: {[string]: Template},
+	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>,
+
 	Spawning: (Service, BlankFragment) -> (),
 	Fragment: <A>(Service, A) -> Fragment<A>,
 	FragmentAdded: (Service, BlankFragment) -> (),
 	FragmentRemoved: (Service, BlankFragment) -> (),
-	
-	Template: (Service, Template) -> Template,
-	Templates: {[string]: Template},
-	TemplateAdded: (Service, Template) -> (),
-	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>
+	TemplateAdded: (Service, Template) -> ()
 }
 
 return nil

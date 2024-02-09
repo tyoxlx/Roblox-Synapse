@@ -1,5 +1,5 @@
 -- Provides error reporting as well as some shape checks for object constructors
-local Common = require(script.Parent.Common)
+local Flags = require(script.Parent.Flags) -- bypass Common because common loads this
 local CatworkRoot = `^{script.Parent:GetFullName()}`
 
 local function findFirstNonCatworkFunc()
@@ -35,7 +35,7 @@ local function e(id, msg, severity)
 		local m = `[Catwork:{id}] {string.format(msg, ...)}`
 		if severity == "E" then
 			error(m, if id == "INTERNAL" then -1 else findFirstNonCatworkFunc())
-		elseif not Common.Flags.SILENCE_WARNINGS then
+		elseif not Flags.SILENCE_WARNINGS then
 			warn(m)
 		end
 	end
@@ -43,9 +43,10 @@ end
 
 local ErrorBuffer = {
 	BAD_SELF_CALL = e("BAD_SELF_CALL", "Bad self call to %q, did you mean to use : instead of .?", "E"),
-	BAD_ARG = e("BAD_ARG", "Bad argument number %s to function %q. Expected %q, got %q", "E"),
-	BAD_OBJECT = e("BAD_OBJECT", "Bad argument number %s to function %s. Type %q could not be converted into object %q.", "E"),
+	BAD_ARG = e("BAD_ARG", "Bad argument number %s to function %q. Expected %s, got %s", "E"),
+	BAD_OBJECT = e("BAD_OBJECT", "Bad argument number %s to function %s. Type %s could not be converted into object %s.", "E"),
 	BAD_TEMPLATE = e("BAD_TEMPLATE", "Template %s does not exist for Service %*.", "E"),
+	BAD_TABLE_SHAPE = e("BAD_TABLE_SHAPE", "Object %* cannot be converted to %s. Type of key %s is invalid. Expected %q, got %q.", "E"),
 	DUPLICATE_SERVICE = e("DUPLICATE_SERVICE", "Service %s is already defined.", "E"),
 
 	SERVICE_NO_TEMPLATES = e("SERVICE_NO_TEMPLATES", "Service %* does not implement templates.", "E"),
