@@ -1,4 +1,5 @@
 local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
 
 --[=[
 	@class Template
@@ -10,16 +11,17 @@ local Common = require(script.Parent.Common)
 return function(params, service)
 	-- just clones the template params and pushes it to the service if its nil
 	local raw = table.clone(params)
+	raw[Common.TemplateHeader] = true
 
 	if not service.EnableTemplates then
-		error(`service {service.Name} does not implement templates.`)
+		ERROR.SERVICE_NO_TEMPLATES(service)
 	end
 
 	if service.Templates[params.Name] then
-		error(`template {params.Name} already exists for service {service.Name}.`)
+		ERROR.SERVICE_DUPLICATE_TEMPLATE(params.Name)
 	end
 
-	if not Common.DONT_ASSIGN_OBJECT_MT then
+	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(params, {
 			__tostring = function(self)
 				return `ServiceTemplate({self.Name})`

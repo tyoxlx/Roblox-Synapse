@@ -30,6 +30,11 @@ function Common.FlushNameStore(nameStoreTable, nameStoreKey, k)
 	end
 end
 
+-- Headers
+Common.ServiceHeader = newproxy(false)
+Common.FragmentHeader = newproxy(false)
+Common.TemplateHeader = newproxy(false)
+
 -- Native Service
 Common.NativeService = {} :: Types.Service
 

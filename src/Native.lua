@@ -3,6 +3,7 @@
 
 local Service = require(script.Parent.Service)
 local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
 
 Service.native {
 	Name = "catwork",
@@ -13,7 +14,7 @@ return function(params)
 	local native = Common.NativeService
 
 	if not native then
-		error("No native service for construction. This is likely an internal error. Please report it")
+		ERROR.INTERNAL("No native service for construction")
 	end
 
 	return native:Fragment(params)

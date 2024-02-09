@@ -2,6 +2,7 @@ local Service = {}
 local Template = require(script.Parent.Template)
 local Fragment = require(script.Parent.Fragment)
 local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
 
 --[=[
 	@class Service
@@ -16,10 +17,11 @@ local Common = require(script.Parent.Common)
 ]=]--
 local function commonServiceCtor(params, enableTemplates)
 	if Common.Services[params.Name] then
-		error(`Service {params.Name} is already defined!`)
+		ERROR.DUPLICATE_SERVICE(params.Name)
 	end
 
 	local raw = table.clone(params)	
+	raw[Common.ServiceHeader] = true
 
 	--[=[
 		@prop Fragments {[string]: Fragment}
@@ -68,6 +70,9 @@ local function commonServiceCtor(params, enableTemplates)
 		Returns all matches of Fragments with the given name within the service.
 	]=]--
 	function raw:GetFragmentsOfName(name: string)
+		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.GetFragmentsOfName") end
+		if type(name) ~= "string" then ERROR.BAD_ARG(2, "Catwork.GetFragmentsOfName", "string", typeof(name)) end
+
 		local nameStore = self.FragmentNameStore[name]
 		return if nameStore then table.clone(nameStore) else {}		
 	end
@@ -86,6 +91,9 @@ local function commonServiceCtor(params, enableTemplates)
 		:::
 	]=]--
 	function raw:Template(params)
+		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.Template") end
+		if type(params) ~= "table" then ERROR.BAD_ARG(2, "Catwork.Template", "table", typeof(params)) end
+
 		return Template(params, self)
 	end
 	
@@ -99,8 +107,18 @@ local function commonServiceCtor(params, enableTemplates)
 		Creates a Fragment from the given template.
 	]=]--
 	function raw:CreateFragmentFromTemplate(template, initParams)
+		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.CreateFragmentFromTemplate") end
+		if initParams and type(initParams) ~= "table" then ERROR.BAD_ARG(3, "Service.CreateFragmentFromTemplate", "table?", typeof(params)) end
+
+		if not template[Common.TemplateHeader] and type(template) ~= "string" then
+			ERROR.BAD_OBJECT(2, "Service.CreateFragmentFromTemplate", typeof(template), "Template")
+		end
+
 		if type(template) == "string" then
-			template = self.Templates[template]
+			local n = template
+			template = self.Templates[n]
+			
+			if not template then ERROR.BAD_TEMPLATE(n, self) end
 		end
 
 		local params = initParams or {}
@@ -121,7 +139,7 @@ local function commonServiceCtor(params, enableTemplates)
 			local i = fragment.Init
 
 			if not i then
-				warn("Fragment does not implement Init")
+				ERROR.NO_INIT_CALLBACK(fragment.Name)
 				return
 			end
 
@@ -144,6 +162,8 @@ local function commonServiceCtor(params, enableTemplates)
 	]=]--
 	if not raw.Fragment then
 		function raw:Fragment(params)
+			if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.Fragment") end
+			if type(params) ~= "table" then ERROR.BAD_ARG(2, "Service.Fragment", "table", typeof(params)) end
 			return Service:CreateFragmentForService(params, self)
 		end
 	end
@@ -212,11 +232,6 @@ end
 function Service.service(params)
 	local useTemplateService = params.TemplateAdded ~= nil
 	return commonServiceCtor(params, useTemplateService)
-end
-
-function Service.templateService(params)
-	warn("Catwork.TemplateService is deprecated. Use Catwork.Service instead.")
-	return commonServiceCtor(params, true)
 end
 
 function Service.native(params)

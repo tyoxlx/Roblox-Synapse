@@ -23,4 +23,14 @@ local Flags = {}
 ]=]--
 Flags.DONT_ASSIGN_OBJECT_MT = false
 
+--[=[
+	@prop SILENCE_WARNINGS boolean
+	@within Flags
+	
+	This flag doesn't serve much purpose outside of testing internally, you can
+	turn it off if you want the error tool to not spam the output with warnings
+	while testing.
+]=]--
+Flags.SILENCE_WARNINGS = false
+
 return Flags
