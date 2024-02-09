@@ -181,7 +181,7 @@ local function commonServiceCtor(params, enableTemplates)
 		service.
 	]=]--
 
-	if not Common.DONT_ASSIGN_OBJECT_MT then
+	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(params, {
 			__tostring = function(self)
 				return `CatworkService({self.Name})`

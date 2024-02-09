@@ -106,7 +106,7 @@ return function(params: {[string]: any}, service)
 		end
 	end
 
-	if not Common.DONT_ASSIGN_OBJECT_MT then
+	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
 				return `CatworkFragment({self.Name}::{self.ID})`

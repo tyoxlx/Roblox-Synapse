@@ -1,7 +1,10 @@
 local Flags = require(script.Parent.Flags)
-local Common = Flags -- a little hacky but you shouldn't be accessing the Flags table directly
+local Types = require(script.Parent.Types)
+
+local Common = {}
 
 -- Storage
+Common.Flags = Flags
 Common.Fragments = {}
 Common.Services = {}
 Common.FragmentNameStore = {}
@@ -26,5 +29,8 @@ function Common.FlushNameStore(nameStoreTable, nameStoreKey, k)
 		nameStoreTable[nameStoreKey] = nil
 	end
 end
+
+-- Native Service
+Common.NativeService = {} :: Types.Service
 
 return Common
