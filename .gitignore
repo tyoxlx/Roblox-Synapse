@@ -3,3 +3,6 @@ sourcemap.json
 
 # moonwave build files
 build/**
+
+# vscode configs
+.vscode/**
