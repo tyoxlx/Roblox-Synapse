@@ -220,7 +220,11 @@ function Service.templateService(params)
 end
 
 function Service.native(params)
-
+	-- defines the native service
+	-- this should use the commonServiceCtor but should NOT push to the root table
+	local s = Service.service(params)
+	Common.NativeService = s
+	return s
 end
 
 return Service

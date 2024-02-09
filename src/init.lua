@@ -114,6 +114,9 @@ Catwork.Service = Service.service :: <A>(params: ServiceCtorParams) -> Service
 ]=]--
 Catwork.TemplateService = Service.templateService :: (params: ServiceCtorParams) -> Service
 
+
+Catwork.NativeService = Service.native :: (params: ServiceCtorParams) -> Service
+
 --[=[
 	@method GetFragmentsOfName
 	@within Catwork
