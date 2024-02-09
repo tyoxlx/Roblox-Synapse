@@ -5,6 +5,7 @@ local ERROR = require(script.Parent.Error)
 local Common = {}
 
 -- Storage
+Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {script.Parent.VERSION.Value}. meow :3`
 Common.Flags = Flags
 Common.Fragments = {}
 Common.Services = {}

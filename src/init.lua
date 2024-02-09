@@ -153,4 +153,6 @@ end
 
 table.freeze(Catwork)
 type Catwork = typeof(Catwork)
+
+print(Common.WelcomeMessage)
 return Catwork
