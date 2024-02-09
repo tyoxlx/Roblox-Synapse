@@ -2,8 +2,6 @@
 -- for the time being, we should let most stuff pass
 -- if you experience problems, please file a Pull request
 
-export type ServiceUnion = Service|TemplateService
-
 export type Fragment<A> = {
 	ID: string,
 	Name: string,
@@ -28,35 +26,22 @@ export type Template = {
 }
 
 export type Service = {
-	EnableTemplates: false,
+	EnableTemplates: boolean,
 	Name: string,
 
 	Fragments: {[string]: BlankFragment},
-	FragmentNameStore: {[string]: {[string]: BlankFragment}},
-
-	Fragment: <A>(Service, A) -> Fragment<A>,
+	FragmentNameStore: {[string]: BlankFragment},
 	GetFragmentsOfName: (Service, name: string) -> {[string]: BlankFragment},
+	
+	Template: (Service, Template) -> Template,
+	Templates: {[string]: Template},
+	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>,
 
+	Spawning: (Service, BlankFragment) -> (),
+	Fragment: <A>(Service, A) -> Fragment<A>,
 	FragmentAdded: (Service, BlankFragment) -> (),
 	FragmentRemoved: (Service, BlankFragment) -> (),
-	Spawning: (Service, BlankFragment) -> (),
-}
-
-export type TemplateService = {
-	EnableTemplates: true,
-
-	Fragments: {[string]: BlankFragment},
-	FragmentNameStore: {[string]: BlankFragment},
-	GetFragmentsOfName: (TemplateService, name: string) -> {[string]: BlankFragment},
-	Spawning: (TemplateService, BlankFragment) -> (),
-	Fragment: <A>(TemplateService, A) -> Fragment<A>,
-	FragmentAdded: (TemplateService, BlankFragment) -> (),
-	FragmentRemoved: (TemplateService, BlankFragment) -> (),
-	
-	Template: (TemplateService, Template) -> Template,
-	Templates: {[string]: Template},
-	TemplateAdded: (TemplateService, Template) -> (),
-	CreateFragmentFromTemplate: <A>(TemplateService, A) -> Fragment<A>
+	TemplateAdded: (Service, Template) -> ()
 }
 
 return nil

@@ -1,6 +1,13 @@
 local HttpService = game:GetService("HttpService")
 local Dispatcher = require(script.Parent.Dispatcher)
 local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
+
+local FRAGMENT_PARAMS = {
+	Name = "string?",
+	Destroying = "function?",
+	Init = "function?"
+}
 
 --[=[
 	@class Fragment
@@ -14,7 +21,9 @@ local Common = require(script.Parent.Common)
 	of a Fragment at runtime or creation.
 ]=]--
 return function(params: {[string]: any}, service)
-	local raw = table.clone(params)
+	local raw = Common.validateTable(params, "Fragment", FRAGMENT_PARAMS)
+	raw[Common.FragmentHeader] = true
+
 	--[=[
 		@prop ID string
 		@within Fragment
@@ -58,7 +67,12 @@ return function(params: {[string]: any}, service)
 		response from the spawn, use `Fragment:Await` or `Fragment:HandleAsync`
 		instead, as this method is intended primarily for Services.
 	]=]--
-	raw.Spawn = Dispatcher.spawnFragment
+	function raw:Spawn(asyncHandler)
+		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Spawn") end
+		if asyncHandler and type(asyncHandler) ~= "function" then ERROR.BAD_ARG(2, "Fragment.Spawn", "function?", typeof(asyncHandler)) end
+		
+		return Dispatcher.spawnFragment(self, asyncHandler)
+	end
 
 	--[=[
 		@method Await
@@ -71,7 +85,10 @@ return function(params: {[string]: any}, service)
 		method will not yield if this has already happened, and will return either
 		`true`, or `false` and a cached error message.
 	]=]--
-	raw.Await = Dispatcher.slotAwait
+	function raw:Await()
+		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Await") end
+		return Dispatcher.slotAwait(self)
+	end
 
 	--[=[
 		@method HandleAsync
@@ -81,7 +98,12 @@ return function(params: {[string]: any}, service)
 		Queues a callback asynchronously until the Fragment finishes spawning or
 		errors. The callback will run immediately if this has already happened.
 	]=]--
-	raw.HandleAsync = Dispatcher.slotHandleAsync
+	function raw:HandleAsync(asyncHandler)
+		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.HandleAsync") end
+		if asyncHandler and type(asyncHandler) ~= "function" then ERROR.BAD_ARG(2, "Fragment.HandleAsync", "function?", typeof(asyncHandler)) end	
+
+		Dispatcher.slotHandleAsync(self, asyncHandler)
+	end
 
 	--[=[
 		@method Destroy
@@ -90,6 +112,8 @@ return function(params: {[string]: any}, service)
 		Destroys the Fragment and removes it from the Service.
 	]=]--
 	function raw:Destroy()
+		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Destroy") end
+
 		local service = self.Service
 		if service.Fragments[self.ID] then
 			Common.Fragments[self.ID] = nil
@@ -106,7 +130,7 @@ return function(params: {[string]: any}, service)
 		end
 	end
 
-	if not Common.DONT_ASSIGN_OBJECT_MT then
+	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
 				return `CatworkFragment({self.Name}::{self.ID})`

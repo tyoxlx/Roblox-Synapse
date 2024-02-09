@@ -1,7 +1,12 @@
 local Flags = require(script.Parent.Flags)
-local Common = Flags -- a little hacky but you shouldn't be accessing the Flags table directly
+local Types = require(script.Parent.Types)
+local ERROR = require(script.Parent.Error)
+
+local Common = {}
 
 -- Storage
+Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {script.Parent.VERSION.Value}. meow :3`
+Common.Flags = Flags
 Common.Fragments = {}
 Common.Services = {}
 Common.FragmentNameStore = {}
@@ -26,5 +31,31 @@ function Common.FlushNameStore(nameStoreTable, nameStoreKey, k)
 		nameStoreTable[nameStoreKey] = nil
 	end
 end
+
+local OPT_PAT = "(.-)%?$"
+function Common.validateTable(tab, oName, rules: {[string]: string})
+	for key, typof in rules do
+		local optional = string.match(typof, OPT_PAT)
+		typof = if optional then optional else typof 
+
+		local value = tab[key]
+		if not value and optional then continue end
+
+		local typeis = typeof(value)
+		if typeis ~= typof then
+			ERROR.BAD_TABLE_SHAPE(tab, oName, key, typof, typeis)
+		end
+	end
+
+	return table.clone(tab)
+end
+
+-- Headers
+Common.ServiceHeader = newproxy(false)
+Common.FragmentHeader = newproxy(false)
+Common.TemplateHeader = newproxy(false)
+
+-- Native Service
+Common.NativeService = {} :: Types.Service
 
 return Common
