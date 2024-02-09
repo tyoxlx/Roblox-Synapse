@@ -209,12 +209,18 @@ function Service:CreateFragmentForService(params, service)
 	return f
 end
 
-function Service.classicService(params)
-	return commonServiceCtor(params, false)
+function Service.service(params)
+	local useTemplateService = params.TemplateAdded ~= nil
+	return commonServiceCtor(params, useTemplateService)
 end
 
 function Service.templateService(params)
+	warn("Catwork.TemplateService is deprecated. Use Catwork.Service instead.")
 	return commonServiceCtor(params, true)
+end
+
+function Service.native(params)
+
 end
 
 return Service

@@ -7,7 +7,6 @@ local Types = require(script.Types)
 export type Fragment<Parameters> = Types.Fragment<Parameters>
 export type Template = Types.Template
 export type Service = Types.Service
-export type TemplateService = Types.TemplateService
 
 type ServiceCtorParams = {
 	Name: string,
@@ -44,7 +43,7 @@ Catwork.Fragments = Common.Fragments :: {[string]: Types.BlankFragment}
 
 	Common container for all Services objects (includes TemplateServices)
 ]=]--
-Catwork.Services = Common.Services :: {[string]: Types.ServiceUnion}
+Catwork.Services = Common.Services :: {[string]: Service}
 
 --[=[
 	@prop Plugin Plugin
@@ -72,7 +71,7 @@ Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
 Catwork.CreateFragmentForService = Service.CreateFragmentForService :: <A>(
 	any,
 	params: A,
-	service: Types.ServiceUnion
+	service: Service
 ) -> Types.Fragment<A>
 
 --[=[
@@ -99,7 +98,7 @@ Catwork.Fragment = Native :: <A>(params: A) -> Types.Fragment<A>
 	an error will be thrown.
 ]=]--
 
-Catwork.Service = Service.classicService :: (params: ServiceCtorParams) -> Types.Service
+Catwork.Service = Service.service :: <A>(params: ServiceCtorParams) -> Service
 
 --[=[
 	@function TemplateService
@@ -113,7 +112,7 @@ Catwork.Service = Service.classicService :: (params: ServiceCtorParams) -> Types
 	Service names must be unique, if a service with the same name already exists
 	an error will be thrown.
 ]=]--
-Catwork.TemplateService = Service.templateService :: (params: ServiceCtorParams) -> Types.Service
+Catwork.TemplateService = Service.templateService :: (params: ServiceCtorParams) -> Service
 
 --[=[
 	@method GetFragmentsOfName
