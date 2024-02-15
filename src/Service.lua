@@ -212,7 +212,7 @@ local function commonServiceCtor(params, enableTemplates)
 	]=]--
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
-		setmetatable(params, {
+		setmetatable(raw, {
 			__tostring = function(self)
 				return `CatworkService({self.Name})`
 			end,
@@ -221,6 +221,8 @@ local function commonServiceCtor(params, enableTemplates)
 	
 	table.freeze(raw)
 	Common.Services[raw.Name] = raw
+	Common._eServiceAdded:Fire(raw)
+	
 	return raw
 end
 
@@ -232,6 +234,8 @@ function Service:CreateFragmentForService(params, service)
 
 	Common.PushToNameStore(Common.FragmentNameStore, f.Name, f.ID, f)
 	Common.PushToNameStore(service.FragmentNameStore, f.Name, f.ID, f)
+	
+	Common._eFragmentAdded:Fire(f)
 
 	local fragAdded = service.FragmentAdded
 	if fragAdded then task.spawn(fragAdded, service, f) end

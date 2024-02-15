@@ -121,12 +121,15 @@ return function(params: {[string]: any}, service)
 
 			Common.FlushNameStore(Common.FragmentNameStore, self.Name, self.ID)
 			Common.FlushNameStore(service.FragmentNameStore, self.Name, self.ID)
+			Dispatcher.cleanFragmentState(self)
 
 			local destroying = self.Destroying
 			local fragRemoved = service.FragmentRemoved
 
 			if destroying then task.spawn(destroying, self) end
 			if fragRemoved then task.spawn(fragRemoved, service, self) end
+			
+			Common._eFragmentRemoved:Fire(self)
 		end
 	end
 

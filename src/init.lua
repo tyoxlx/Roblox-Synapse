@@ -26,7 +26,11 @@ local Catwork = {
 
 		A semantic versioning string stating the current version of Catwork
 	]=]--
-	__VERSION = script.VERSION.Value
+	__VERSION = script.VERSION.Value,
+	
+	FragmentAdded = Common._eFragmentAdded.Signal,
+	FragmentRemoved = Common._eFragmentRemoved.Signal,
+	ServiceAdded = Common._eServiceAdded.Signal
 }
 
 --[=[

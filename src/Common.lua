@@ -1,5 +1,6 @@
 local Flags = require(script.Parent.Flags)
 local Types = require(script.Parent.Types)
+local Event = require(script.Parent.Event)
 local ERROR = require(script.Parent.Error)
 
 local Common = {}
@@ -10,6 +11,11 @@ Common.Flags = Flags
 Common.Fragments = {}
 Common.Services = {}
 Common.FragmentNameStore = {}
+
+-- Events
+Common._eFragmentAdded = Event() :: Event.Event<Types.BlankFragment>
+Common._eFragmentRemoved = Event() :: Event.Event<Types.BlankFragment>
+Common._eServiceAdded = Event() :: Event.Event<Types.Service>
 
 -- Misc functions
 function Common.PushToNameStore(nameStoreTable, nameStoreKey, k, v)
