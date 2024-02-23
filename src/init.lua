@@ -11,6 +11,14 @@ export type Service = Types.Service
 
 type ServiceCtorParams = {
 	Name: string,
+	EnableTemplates: boolean?,
+	
+	Spawning: (Service, Types.BlankFragment) -> ()?,
+	Fragment: <A>(Service, A) -> Fragment<A>?,
+	FragmentAdded: (Service, Types.BlankFragment) -> ()?,
+	FragmentRemoved: (Service, Types.BlankFragment) -> ()?,
+	TemplateAdded: (Service, Template) -> ()?,
+	
 	[string]: any
 }
 
