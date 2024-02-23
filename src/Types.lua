@@ -23,7 +23,7 @@ export type BlankFragment = Fragment<{[string]: any}>
 export type Template = {
 	Name: string,
 	CreateFragment: <A>(Template, A) -> Fragment<A>,
-	[string]: unknown
+	[string]: any
 }
 
 export type Service = {
