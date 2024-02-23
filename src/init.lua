@@ -14,7 +14,7 @@ type ServiceCtorParams = {
 	EnableTemplates: boolean?,
 	
 	Spawning: (Service, Types.BlankFragment) -> ()?,
-	Fragment: <A>(Service, A) -> Fragment<A>?,
+	Fragment: (<A>(Service, A) -> Fragment<A>)?,
 	FragmentAdded: (Service, Types.BlankFragment) -> ()?,
 	FragmentRemoved: (Service, Types.BlankFragment) -> ()?,
 	TemplateAdded: (Service, Template) -> ()?,
