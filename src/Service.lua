@@ -244,7 +244,7 @@ function Service:CreateFragmentForService(params, service)
 end
 
 function Service.service(params)
-	local useTemplateService = params.EnableTemplates
+	local useTemplateService = params.TemplateAdded ~= nil
 	return commonServiceCtor(params, useTemplateService)
 end
 
