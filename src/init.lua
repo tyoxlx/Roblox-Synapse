@@ -117,29 +117,6 @@ function Catwork.Service(params: ServiceCtorParams): Service
 end
 
 --[=[
-	@function TemplateService
-	@within Catwork
-	@param params {[string]: any} -- Parameters passed to the Service constructor
-	@return Service
-	
-	Creates a template enabled service.
-
-	:::caution Service names must be unique
-	Service names must be unique, if a service with the same name already exists
-	an error will be thrown.
-]=]--
-function Catwork.TemplateService(params: ServiceCtorParams): Service
-	ERROR.DEPRECATED("Catwork.TemplateService", "Catwork.Service")
-	if type(params) ~= "table" then ERROR.BAD_ARG(1, "Catwork.TemplateService", "table", typeof(params)) end
-	return Catwork.Service(params)
-end
-
-function Catwork.NativeService(params: ServiceCtorParams): Service 
-	if type(params) ~= "table" then ERROR.BAD_ARG(1, "Catwork.NativeService", "table", typeof(params)) end
-	return Service.native(params)
-end
-
---[=[
 	@method GetFragmentsOfName
 	@within Catwork
 	@param name string -- A non-unique identifier to match against

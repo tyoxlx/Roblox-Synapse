@@ -244,16 +244,8 @@ function Service:CreateFragmentForService(params, service)
 end
 
 function Service.service(params)
-	local useTemplateService = params.TemplateAdded ~= nil
+	local useTemplateService = params.EnableTemplates
 	return commonServiceCtor(params, useTemplateService)
-end
-
-function Service.native(params)
-	-- defines the native service
-	-- this should use the commonServiceCtor but should NOT push to the root table
-	local s = Service.service(params)
-	Common.NativeService = s
-	return s
 end
 
 return Service
