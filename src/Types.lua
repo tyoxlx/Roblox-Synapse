@@ -6,6 +6,7 @@ export type Fragment<A> = {
 	ID: string,
 	Name: string,
 	Service: any,
+	Template: any,
 
 	Destroy: (Fragment<A>) -> (),
 	Spawn: (Fragment<A>, asyncHandler: (boolean, string?) -> ()?) -> (boolean, string?),

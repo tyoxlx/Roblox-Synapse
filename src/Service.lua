@@ -133,6 +133,8 @@ local function commonServiceCtor(params, enableTemplates)
 
 		local params = initParams or {}
 		template:CreateFragment(params)
+		params.Template = template
+		
 		return self:Fragment(params)
 	end
 
