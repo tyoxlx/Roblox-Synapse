@@ -24,6 +24,7 @@ export type BlankFragment = Fragment<{[string]: any}>
 export type Template = {
 	Name: string,
 	CreateFragment: <A>(Template, A) -> Fragment<A>,
+	Service: Service,
 	[string]: any
 }
 

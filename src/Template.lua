@@ -25,6 +25,8 @@ return function(params, service)
 	if service.Templates[params.Name] then
 		ERROR.SERVICE_DUPLICATE_TEMPLATE(params.Name)
 	end
+	
+	raw.Service = service
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
