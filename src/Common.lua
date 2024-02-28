@@ -16,7 +16,7 @@ Common.FragmentNameStore = {}
 Common._eFragmentAdded = Event() :: Event.Event<Types.BlankFragment>
 Common._eFragmentRemoved = Event() :: Event.Event<Types.BlankFragment>
 Common._eServiceAdded = Event() :: Event.Event<Types.Service>
-Common._eTemplateAdded = Event() :: Event.Event<Types.Template, Types.Service>
+Common._eTemplateAdded = Event() :: Event.Event<Types.Template>
 
 -- Misc functions
 function Common.PushToNameStore(nameStoreTable, nameStoreKey, k, v)

@@ -58,6 +58,6 @@ return function(params, service)
 		service:TemplateAdded(raw)
 	end
 
-	Common._eTemplateAdded:Fire(raw, service)
+	Common._eTemplateAdded:Fire(raw)
 	return raw
 end
