@@ -132,6 +132,7 @@ local function commonServiceCtor(params, enableTemplates)
 		end
 
 		local params = initParams or {}
+		params.Name = params.Name or template.Name
 		template:CreateFragment(params)
 		params.Template = template
 		
