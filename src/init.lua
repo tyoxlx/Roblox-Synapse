@@ -37,7 +37,8 @@ local Catwork = {
 	
 	FragmentAdded = Common._eFragmentAdded.Signal,
 	FragmentRemoved = Common._eFragmentRemoved.Signal,
-	ServiceAdded = Common._eServiceAdded.Signal
+	ServiceAdded = Common._eServiceAdded.Signal,
+	TemplateAdded = Common._eTemplateAdded.Signal
 }
 
 --[=[

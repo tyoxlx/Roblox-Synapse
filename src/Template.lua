@@ -55,5 +55,6 @@ return function(params, service)
 		service:TemplateAdded(raw)
 	end
 
+	Common._eTemplateAdded:Fire(raw, service)
 	return raw
 end
