@@ -27,7 +27,7 @@ return function(params, service)
 	end
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
-		setmetatable(params, {
+		setmetatable(raw, {
 			__tostring = function(self)
 				return `ServiceTemplate({self.Name})`
 			end,
@@ -49,6 +49,7 @@ return function(params, service)
 		Defines the callback that acts as middleware when constructing a Fragment.
 	]=]--
 
+	table.freeze(raw)
 	service.Templates[params.Name] = raw
 
 	if service.TemplateAdded then
