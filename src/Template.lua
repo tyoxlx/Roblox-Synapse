@@ -6,13 +6,6 @@ local TEMPLATE_PARAMS = {
 	CreateFragment = "function",
 }
 
---[=[
-	@class Template
-
-	A Template acts as a factory for Fragments from a given service. Templates act
-	as middleware that can modify the incoming parameters when the service intends
-	to create a Fragment.
-]=]--
 return function(params, service)
 	-- just clones the template params and pushes it to the service if its nil
 	local raw = Common.validateTable(params, "Template", TEMPLATE_PARAMS)
@@ -35,21 +28,6 @@ return function(params, service)
 			end,
 		})
 	end
-
-	--[=[
-		@prop Name string
-		@within Template
-		
-		A unique identifier for the Template
-	]=]--
-
-	--[=[
-		@method CreateFragment
-		@within Template
-		@param params {[string]: any} -- Incoming properties for Fragment creation
-		
-		Defines the callback that acts as middleware when constructing a Fragment.
-	]=]--
 
 	table.freeze(raw)
 	service.Templates[params.Name] = raw

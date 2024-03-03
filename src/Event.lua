@@ -16,11 +16,6 @@ local function Signal<A...>(): Signal<A...>
 	Signal.ConnectedFunctions = {}
 	Signal.WaitingThreads = {}
 
-	--[[
-		Connects to the event and receieves signals asynchronously when it fires
-
-		Returns a function for disconnecting the event
-	]]
 	function Signal.Connect(self: Signal<A...>, func: (A...) -> ()): () -> ()
 		self.ConnectedFunctions[func] = true
 
@@ -29,9 +24,6 @@ local function Signal<A...>(): Signal<A...>
 		end
 	end
 
-	--[[
-		Yiels the running thread until the event fires
-	]]
 	function Signal.Wait(self: Signal<A...>): A...
 		local co = coroutine.running()
 		table.insert(self.WaitingThreads, co)
@@ -41,34 +33,10 @@ local function Signal<A...>(): Signal<A...>
 	return Signal
 end
 
---[[
-	Creates an `RBXScriptSignal` like object
-
-	### Code Example
-	```lua
-	local PartTouchedEvent: Event<Part> = Event()
-	return PartTouchedEvent.Signal
-	```
-]]
 return function<A...>(): Event<A...>
 	local Event = {}
-
-	--[[
-		Base object for connections
-	]]--
 	Event.Signal = Signal() :: Signal<A...>
 
-	--[[
-		Fires the event
-
-		### Code Example
-		```lua
-		local MeowSignal: Event<string> = Event()
-
-		MeowSignal.Signal:Connect(print)
-		MeowSignal:Fire("cat") --> "cat"
-		```
-	]]
 	function Event.Fire(self: Event<A...>, ...: A...)
 		local sig = self.Signal
 		-- first, handoff callbacks
