@@ -1,5 +1,5 @@
 -- Provides error reporting as well as some shape checks for object constructors
-local Flags = require(script.Parent.Flags) -- bypass Common because common loads this
+
 local CatworkRoot = `^{script.Parent:GetFullName()}`
 
 local function findFirstNonCatworkFunc()
@@ -35,7 +35,7 @@ local function e(id, msg, severity)
 		local m = `[Catwork:{id}] {string.format(msg, ...)}`
 		if severity == "E" then
 			error(m, if id == "INTERNAL" then -1 else findFirstNonCatworkFunc())
-		elseif not Flags.SILENCE_WARNINGS then
+		else
 			warn(m)
 		end
 	end

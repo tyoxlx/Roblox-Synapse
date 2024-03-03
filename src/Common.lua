@@ -1,13 +1,16 @@
-local Flags = require(script.Parent.Flags)
 local Types = require(script.Parent.Types)
 local Event = require(script.Parent.Event)
 local ERROR = require(script.Parent.Error)
 
 local Common = {}
 
+-- Flags
+Common.Flags = {
+	DONT_ASSIGN_OBJECT_MT = false
+}
+
 -- Storage
 Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {script.Parent.VERSION.Value}. meow :3`
-Common.Flags = Flags
 Common.Fragments = {}
 Common.Services = {}
 Common.FragmentNameStore = {}
