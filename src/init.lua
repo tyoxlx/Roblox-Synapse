@@ -66,5 +66,8 @@ end
 table.freeze(Catwork)
 type Catwork = typeof(Catwork)
 
-print(Common.WelcomeMessage)
+if not Catwork.Plugin then
+	print(Common.WelcomeMessage)
+end
+
 return Catwork
