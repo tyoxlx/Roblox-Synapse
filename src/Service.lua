@@ -25,6 +25,7 @@ local function commonServiceCtor(params, enableTemplates)
 	raw.Fragments = {}
 	raw.Templates = {}
 	raw.FragmentNameStore = {} -- (mostly) internal table for finding local fragments
+	raw.EnableTemplates = enableTemplates or false
 
 	function raw:GetFragmentsOfName(name: string)
 		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.GetFragmentsOfName") end
@@ -94,7 +95,7 @@ local function commonServiceCtor(params, enableTemplates)
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				return `CatworkService({self.Name})`
+				return `CatworkService({self.Name} Templates: {self.EnableTemplates})`
 			end,
 		})
 	end
