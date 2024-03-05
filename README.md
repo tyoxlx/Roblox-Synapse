@@ -6,11 +6,6 @@ The Cat framework for Roblox! 🐈
 <a href="https://metatablecatgames.github.io/catwork">Documentation</a>
 </div>
 
-# Installation
-
-Catwork can be installed simply by downloading the RBXM in the Releases folder, and then dragged into Studio.
-If you use Rojo or similar toolchain, you can simply clone the code into your local project.
-
 > [!NOTE]
 > Catwork works best in `ReplicatedFirst`, especially since you can then utilise `ReplicatedFirst` loading behaviour.
 > Server code can access code in ReplicatedFirst.
@@ -36,7 +31,7 @@ Catwork.Fragment {
 }
 ```
 
-This only scratches the true function of what Catwork can do, `Service` and `TemplateService` considerably increases the power of
+This only scratches the true function of what Catwork can do, `Service` considerably increases the power of
 Catwork! See the documentation for more information.
 
 # License
