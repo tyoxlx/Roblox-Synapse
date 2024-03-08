@@ -88,7 +88,9 @@ local function commonServiceCtor(params, enableTemplates)
 
 	if not raw.FragmentAdded then
 		function raw:FragmentAdded(fragment)
-			fragment:Spawn()
+			fragment:Spawn(function(ok, err)
+				if not ok then warn(err) end
+			end)
 		end
 	end
 
