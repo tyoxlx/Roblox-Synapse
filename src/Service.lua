@@ -68,12 +68,7 @@ local function commonServiceCtor(params, enableTemplates)
 	if not raw.Spawning then
 		function raw:Spawning(fragment)
 			local i = fragment.Init
-
-			if not i then
-				ERROR.NO_INIT_CALLBACK(fragment.Name)
-				return
-			end
-
+			if not i then return end
 			i(fragment)
 		end
 	end

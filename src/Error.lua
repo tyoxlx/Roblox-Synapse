@@ -56,7 +56,6 @@ local ErrorBuffer = {
 	SERVICE_DUPLICATE_TEMPLATE = e("SERVICE_DUPLICATE_TEMPLATE", "Template %s already exists", "E"),
 
 	DEPRECATED = e("DEPRECATED", "Function %q is deprecated. Use %q instead.", "W"),
-	NO_INIT_CALLBACK = e("NO_INIT_CALLBACK", "Fragment %* does not implement Init. If this is intentional, dont use a Fragment.", "W"),
 	INTERNAL = e("INTERNAL", "Error: %*. This is likely a known internal error, please report it!", "E")
 }
 
