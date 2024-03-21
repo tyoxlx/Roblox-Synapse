@@ -60,7 +60,7 @@ local function spawnFragment(self, state, asyncHandler)
 end
 
 function Dispatcher.spawnFragment(f, asyncHandler)
-	if not Common.Fragments[f.ID] then
+	if not Common.Fragments[f.FullID] then
 		-- the fragment does not exist, most likely because it was destroyed
 		ERROR:DISPATCHER_DESTROYED_FRAGMENT(f)
 	end

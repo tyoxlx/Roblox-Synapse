@@ -1,12 +1,16 @@
 local Types = require(script.Parent.Types)
 local Event = require(script.Parent.Event)
 local ERROR = require(script.Parent.Error)
+local HttpService = game:GetService("HttpService")
+
+local GUID_PATTERN = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
 
 local Common = {}
 
 -- Flags
 Common.Flags = {
-	DONT_ASSIGN_OBJECT_MT = false
+	DONT_ASSIGN_OBJECT_MT = false,
+	ENABLE_STATIC_FRAGMENTS = true
 }
 
 -- Storage
@@ -58,6 +62,25 @@ function Common.validateTable(tab, oName, rules: {[string]: string})
 	end
 
 	return table.clone(tab)
+end
+
+function Common.assignFragmentID(f: Types.Fragment<any>)
+	local id = f.ID
+
+	if Common.Flags.ENABLE_STATIC_FRAGMENTS and id then
+		if string.match(id, GUID_PATTERN) then
+			ERROR.GUID_IDS_NOT_ALLOWED(id)
+			f.ID = HttpService:GenerateGUID(false)
+		end
+	else
+		f.ID = HttpService:GenerateGUID(false)
+	end
+
+	f.FullID = `{f.Service.Name}_{f.ID}`
+
+	if Common.Fragments[id] then
+		ERROR.DUPLICATE_FRAGMENT(id)
+	end
 end
 
 -- Headers

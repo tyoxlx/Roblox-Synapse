@@ -5,6 +5,7 @@ local ERROR = require(script.Parent.Error)
 
 local FRAGMENT_PARAMS = {
 	Name = "string?",
+	ID = "string?",
 	Destroying = "function?",
 	Init = "function?"
 }
@@ -12,10 +13,10 @@ local FRAGMENT_PARAMS = {
 return function(params: {[string]: any}, service)
 	local raw = Common.validateTable(params, "Fragment", FRAGMENT_PARAMS)
 	raw[Common.FragmentHeader] = true
-
-	raw.ID = HttpService:GenerateGUID(false)
 	raw.Name = params.Name or `CatworkFragment`
 	raw.Service = service
+
+	Common.assignFragmentID(raw)
 
 	function raw:Spawn(asyncHandler)
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Spawn") end
@@ -41,7 +42,7 @@ return function(params: {[string]: any}, service)
 
 		local service = self.Service
 		if service.Fragments[self.ID] then
-			Common.Fragments[self.ID] = nil
+			Common.Fragments[self.FullID] = nil
 			service.Fragments[self.ID] = nil
 
 			Common.FlushNameStore(Common.FragmentNameStore, self.Name, self.ID)
@@ -61,7 +62,7 @@ return function(params: {[string]: any}, service)
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				return `CatworkFragment({self.Name}::{self.ID})`
+				return `CatworkFragment({self.Name}::{self.FullID})`
 			end
 		})
 	end

@@ -47,8 +47,11 @@ local ErrorBuffer = {
 	BAD_OBJECT = e("BAD_OBJECT", "Bad argument number %s to function %s. Type %s could not be converted into object %s.", "E"),
 	BAD_TEMPLATE = e("BAD_TEMPLATE", "Template %s does not exist for Service %*.", "E"),
 	BAD_TABLE_SHAPE = e("BAD_TABLE_SHAPE", "Object %* cannot be converted to %s. Type of key %s is invalid. Expected %q, got %q.", "E"),
+	GUID_IDS_NOT_ALLOWED = e("GUID_IDS_NOT_ALLOWED", "Cannot use Fragment ID %s, a new ID has been generated.", "W"),
+
 	DUPLICATE_SERVICE = e("DUPLICATE_SERVICE", "Service %s is already defined.", "E"),
-	
+	DUPLICATE_FRAGMENT = e("DUPLICATE_FRAGMENT", "Fragment %s is already defined", "E"),
+
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Fragment %* has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_FRAGMENT = e("DISPATCHER_DESTROYED_FRAGMENT", "Fragment %* cannot be spawned because it has been destroyed.", "E"),
 

@@ -107,9 +107,9 @@ end
 function Service:CreateFragmentForService(params, service)
 	local f = Fragment(params, service)
 
+	Common.Fragments[f.FullID] = f
 	service.Fragments[f.ID] = f
-	Common.Fragments[f.ID] = f
-
+	
 	Common.PushToNameStore(Common.FragmentNameStore, f.Name, f.ID, f)
 	Common.PushToNameStore(service.FragmentNameStore, f.Name, f.ID, f)
 	
