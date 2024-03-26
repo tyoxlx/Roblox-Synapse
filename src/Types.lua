@@ -10,7 +10,7 @@ export type Fragment<A> = {
 	FullID: string,
 
 	Destroy: (Fragment<A>) -> (),
-	Spawn: (Fragment<A>, asyncHandler: (boolean, string?) -> ()?) -> (boolean, string?),
+	Spawn: (Fragment<A>, asyncHandler: (string?) -> string) -> (boolean, string?),
 
 	Destroying: (Fragment<A>) -> (),
 	Init: (Fragment<A>) -> (),

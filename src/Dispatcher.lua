@@ -7,6 +7,11 @@ local ERROR = require(script.Parent.Error)
 local Dispatcher = {}
 local fragmentDispatchState = {}
 
+local function safeAsyncHandler(err)
+	warn(debug.traceback(err))
+	return err
+end
+
 local function getFragmentState(f)
 	local state = fragmentDispatchState[f]
 	if not state then
@@ -31,7 +36,7 @@ local function runFragmentAction(
 	service,
 	state
 )
-	local ok, err = pcall(spawnSignal, service, f)
+	local ok, err = xpcall(spawnSignal, state.XPC, service, f)
 
 	state.Loaded = ok
 	state.ErrMsg = err
@@ -73,8 +78,8 @@ function Dispatcher.spawnFragment(f, asyncHandler)
 	end
 
 	state.Spawned = true
-	if asyncHandler then state.Dispatchers = {asyncHandler} end
-	
+	state.XPC = asyncHandler or safeAsyncHandler
+
 	return spawnFragment(f, state, asyncHandler)
 end
 
