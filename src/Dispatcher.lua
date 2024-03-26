@@ -8,7 +8,7 @@ local Dispatcher = {}
 local fragmentDispatchState = {}
 
 local function safeAsyncHandler(err)
-	warn(debug.traceback(err))
+	ERROR.DISPATCHER_SPAWN_ERR(ERROR.traceback(err))
 	return err
 end
 

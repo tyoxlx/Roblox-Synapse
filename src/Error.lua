@@ -41,6 +41,34 @@ local function e(id, msg, severity)
 	end
 end
 
+local errorFuncs = {}
+
+function errorFuncs.traceback(msg)
+	-- same as debug.traceback but strips messages involving Catwork
+	local msgStack = {msg or "No output from Lua", "Traceback:"}
+	local depth = 1
+
+	while true do
+		local s, n, l = debug.info(depth, "snl")
+		depth += 1
+
+		if not s then break end
+		if s == "[C]" then continue end
+		if string.find(s, CatworkRoot) then
+			depth += 1
+			continue
+		end
+
+		if n then
+			table.insert(msgStack, `  {s}:{l} function {n}`)
+		else
+			table.insert(msgStack, `  {s}:{l}`)
+		end
+	end
+
+	return table.concat(msgStack, "\n")
+end
+
 local ErrorBuffer = {
 	BAD_SELF_CALL = e("BAD_SELF_CALL", "Bad self call to %q, did you mean to use : instead of .?", "E"),
 	BAD_ARG = e("BAD_ARG", "Bad argument number %s to function %q. Expected %s, got %s", "E"),
@@ -54,6 +82,7 @@ local ErrorBuffer = {
 
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Fragment %* has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_FRAGMENT = e("DISPATCHER_DESTROYED_FRAGMENT", "Fragment %* cannot be spawned because it has been destroyed.", "E"),
+	DISPATCHER_SPAWN_ERR = e("DISPATCHER_SPAWN_ERR", "A fragment experienced an error while spawning: %s", "W"),
 
 	SERVICE_NO_TEMPLATES = e("SERVICE_NO_TEMPLATES", "Service %* does not implement templates.", "E"),
 	SERVICE_DUPLICATE_TEMPLATE = e("SERVICE_DUPLICATE_TEMPLATE", "Template %s already exists", "E"),
@@ -73,7 +102,7 @@ type ErrorTable = typeof(
 	)
 )
 
-local Error: ErrorTable = setmetatable({}, {
+local Error: ErrorTable = setmetatable(errorFuncs, {
 	__index = function(self, k)
 		return ErrorBuffer[k] or unknown
 	end
