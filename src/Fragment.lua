@@ -18,11 +18,11 @@ return function(params: {[string]: any}, service)
 
 	Common.assignFragmentID(raw)
 
-	function raw:Spawn(asyncHandler)
+	function raw:Spawn(xpcallHandler)
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Spawn") end
-		if asyncHandler and type(asyncHandler) ~= "function" then ERROR.BAD_ARG(2, "Fragment.Spawn", "function?", typeof(asyncHandler)) end
+		if xpcallHandler and type(xpcallHandler) ~= "function" then ERROR.BAD_ARG(2, "Fragment.Spawn", "function?", typeof(xpcallHandler)) end
 		
-		return Dispatcher.spawnFragment(self, asyncHandler)
+		return Dispatcher.spawnFragment(self, xpcallHandler)
 	end
 
 	function raw:Await()
