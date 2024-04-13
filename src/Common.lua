@@ -3,6 +3,7 @@ local Event = require(script.Parent.Event)
 local ERROR = require(script.Parent.Error)
 local HttpService = game:GetService("HttpService")
 
+local VERSION = "0.4.4"
 local GUID_PATTERN = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
 
 local Common = {}
@@ -18,6 +19,7 @@ Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {script.Parent.VERSIO
 Common.Fragments = {}
 Common.Services = {}
 Common.FragmentNameStore = {}
+Common.Version = VERSION
 
 -- Events
 Common._eFragmentAdded = Event() :: Event.Event<Types.BlankFragment>

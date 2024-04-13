@@ -24,7 +24,7 @@ type ServiceCtorParams = {
 }
 
 local Catwork = {
-	__VERSION = script.VERSION.Value,
+	__VERSION = Common.Version,
 }
 
 Catwork.FragmentAdded = Common._eFragmentAdded.Signal
@@ -65,8 +65,10 @@ function Catwork:GetFragmentsOfName(name: string): {[string]: Types.BlankFragmen
 	return if nameStore then table.clone(nameStore) else {}
 end
 
+setmetatable(Catwork, {
+	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
+})
 table.freeze(Catwork)
-type Catwork = typeof(Catwork)
 
 if not Catwork.Plugin then
 	print(Common.WelcomeMessage)

@@ -1,1 +1,0 @@
-This folder contains example code for various Services and TemplateServices
