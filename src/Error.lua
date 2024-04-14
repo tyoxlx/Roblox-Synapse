@@ -83,6 +83,8 @@ local ErrorBuffer = {
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Fragment %* has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_FRAGMENT = e("DISPATCHER_DESTROYED_FRAGMENT", "Fragment %* cannot be spawned because it has been destroyed.", "E"),
 	DISPATCHER_SPAWN_ERR = e("DISPATCHER_SPAWN_ERR", "A fragment experienced an error while spawning: %s", "W"),
+	
+	FRAGMENT_SELF_AWAIT = e("FRAGMENT_SELF_AWAIT", "Fragment %* is awaiting upon itself and will never resolve. Use HandleAsync instead.", "W"),
 
 	SERVICE_NO_TEMPLATES = e("SERVICE_NO_TEMPLATES", "Service %* does not implement templates.", "E"),
 	SERVICE_DUPLICATE_TEMPLATE = e("SERVICE_DUPLICATE_TEMPLATE", "Template %s already exists", "E"),

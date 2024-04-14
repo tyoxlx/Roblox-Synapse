@@ -27,6 +27,7 @@ return function(params: {[string]: any}, service)
 
 	function raw:Await()
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Await") end
+		if Dispatcher.isSelfAsyncCall(self) then ERROR.FRAGMENT_SELF_AWAIT(self) end
 		return Dispatcher.slotAwait(self)
 	end
 

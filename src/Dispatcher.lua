@@ -17,8 +17,11 @@ local function getFragmentState(f)
 	if not state then
 		state = {
 			Spawned = false,
-			Loaded = false,
+			IsOK = false,
 			ErrMsg = nil,
+			Thread = nil,
+			Ready = false,
+			XPC = safeAsyncHandler,
 
 			HeldThreads = {},
 			Dispatchers = {}
@@ -36,9 +39,12 @@ local function runFragmentAction(
 	service,
 	state
 )
+	state.Spawned = true
+	state.Thread = coroutine.running()
 	local ok, err = xpcall(spawnSignal, state.XPC, service, f)
-
-	state.Loaded = ok
+	
+	state.Ready = true
+	state.IsOK = ok
 	state.ErrMsg = err
 
 	for _, v in state.Dispatchers do
@@ -48,20 +54,15 @@ local function runFragmentAction(
 	for _, v in state.HeldThreads do
 		task.spawn(v, ok, err)
 	end
-
+	
 	return ok, err
 end
 
-local function spawnFragment(self, state, asyncHandler)
+local function spawnFragment(self, state)
 	local service = self.Service
 	local spawnSignal = service.Spawning
 
-	if asyncHandler then
-		task.spawn(runFragmentAction, self, spawnSignal, service, state)
-		return nil
-	else
-		return runFragmentAction(self, spawnSignal, service, state)
-	end
+	task.spawn(runFragmentAction, self, spawnSignal, service, state)
 end
 
 function Dispatcher.spawnFragment(f, asyncHandler)
@@ -77,10 +78,11 @@ function Dispatcher.spawnFragment(f, asyncHandler)
 		ERROR:DISPATCHER_ALREADY_SPAWNED(f)
 	end
 
-	state.Spawned = true
-	state.XPC = asyncHandler or safeAsyncHandler
+	if asyncHandler then
+		state.XPC = asyncHandler
+	end
 
-	return spawnFragment(f, state, asyncHandler)
+	return spawnFragment(f, state)
 end
 
 function Dispatcher.cleanFragmentState(f)
@@ -92,7 +94,7 @@ function Dispatcher.slotAwait(f)
 
 	if state.ErrMsg then
 		return false, state.ErrMsg
-	elseif state.Loaded then
+	elseif state.IsOk then
 		return true
 	end
 
@@ -105,11 +107,23 @@ function Dispatcher.slotHandleAsync(f, asyncHandler)
 
 	if state.ErrMsg then
 		asyncHandler(false, state.ErrMsg)
-	elseif state.Loaded then
+	elseif state.IsOk then
 		asyncHandler(true)
 	else
 		table.insert(state.Dispatchers, asyncHandler)
 	end
+end
+
+function Dispatcher.isSelfAsyncCall(f)
+	-- blocks self:Await calls while Init is running
+	local state = getFragmentState(f)
+	local co = coroutine.running()
+	
+	if state.Spawned and co == state.Thread then
+		return not state.Ready
+	end
+	
+	return false
 end
 
 return Dispatcher
