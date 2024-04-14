@@ -15,7 +15,7 @@ Common.Flags = {
 }
 
 -- Storage
-Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {script.Parent.VERSION.Value}. meow :3`
+Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {VERSION}. meow :3`
 Common.Fragments = {}
 Common.Services = {}
 Common.FragmentNameStore = {}
