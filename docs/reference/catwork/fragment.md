@@ -1,5 +1,7 @@
 # Fragment
 
+The basic building block of all running Catwork code.
+
 !!! note
 	Due to the dynamic nature of Fragments, this documentation only describes
 	the built-in logic.
