@@ -27,10 +27,20 @@ theme:
     - navigation.sections
     - navigation.instant
     - navigation.indexes
+    - navigation.footer
     - search.suggest
     - search.highlight
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+
 
   name: material
+
+extra:
+  social:
+    - icon: fontawesome/brands/mastodon 
+      link: https://tech.lgbt/@metatablecat
 
 extra_css:
   - stylesheet/extra.css
@@ -39,10 +49,12 @@ nav:
   - Home: index.md
   - Reference: 
     - reference/index.md
-    - Catwork: reference/catwork.md
-    - Fragment: reference/fragment.md
-    - Service: reference/service.md
-    - Template: reference/service.md
+    - Catwork:
+      - reference/catwork/index.md
+      - Fragment: reference/catwork/fragment.md
+      - Service: reference/catwork/service.md
+      - Template: reference/catwork/template.md
+    - Errors: reference/errors.md
 
 
 markdown_extensions:
@@ -50,13 +62,18 @@ markdown_extensions:
   - attr_list
   - meta
   - md_in_html
-  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.betterem
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.inlinehilite
-  - toc:
-      permalink: true
   - pymdownx.highlight:
       guess_lang: false
