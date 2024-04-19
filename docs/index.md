@@ -4,11 +4,16 @@
     - navigation
 ---
 
+<div align="center" markdown>
 # Catwork
 
 ## The cat framework, written by cats, for cats!
 
 Catwork is a tiny, ergonomic, declarative framework for creating runtime code.
+
+[:fontawesome-solid-cat: Download Catwork](https://github.com/metatablecatgames/catwork/releases/download/v0.4.4/catwork.rbxm){ .md-button .md-button--primary}
+[API Reference](reference/index.md){ .md-button}
+</div>
 
 ---
 
