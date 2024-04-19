@@ -84,7 +84,7 @@ The callback that is invoked when a Fragment is spawned using `Fragment:Spawn`.
 Waits for the `Service.Spawning` callback to finish on the `Fragment`, then
 returns the result of the wrapped `xpcall`.
 
-!!! danger "Dont self-await"
+!!! danger "Don't self-await"
 	Be careful to not call self:Await directly or indirectly while `Init` is
 	performing, this will cause the fragment to never resolve. This is bad!
 
