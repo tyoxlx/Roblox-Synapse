@@ -1,0 +1,62 @@
+site_name: Catwork
+repo_url: https://github.com/metatablecatgames/catwork
+repo_name: metatablecatgames/catwork
+
+theme:
+  icon:
+    repo: fontawesome/brands/github
+
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  font:
+    text: PT Sans
+    code: Comic Mono
+
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.sections
+    - navigation.instant
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+
+  name: material
+
+extra_css:
+  - stylesheet/extra.css
+
+nav:
+  - Home: index.md
+  - Reference: 
+    - reference/index.md
+    - Catwork: reference/catwork.md
+    - Fragment: reference/fragment.md
+    - Service: reference/service.md
+    - Template: reference/service.md
+
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - meta
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.betterem
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.inlinehilite
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      guess_lang: false
