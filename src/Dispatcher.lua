@@ -58,14 +58,24 @@ local function runFragmentAction(
 	return ok, err
 end
 
-local function spawnFragment(self, state)
+local function spawnFragment(self, state, asyncMode)
 	local service = self.Service
 	local spawnSignal = service.Spawning
 
+	if asyncMode then
+		self:HandleAsync(asyncMode)
+	end
+
 	task.spawn(runFragmentAction, self, spawnSignal, service, state)
+
+	if not asyncMode then
+		return self:Await()
+	end
+
+	return nil
 end
 
-function Dispatcher.spawnFragment(f, asyncHandler)
+function Dispatcher.spawnFragment(f, xpcallHandler, asyncHandler)
 	if not Common.Fragments[f.FullID] then
 		-- the fragment does not exist, most likely because it was destroyed
 		ERROR:DISPATCHER_DESTROYED_FRAGMENT(f)
@@ -78,11 +88,11 @@ function Dispatcher.spawnFragment(f, asyncHandler)
 		ERROR:DISPATCHER_ALREADY_SPAWNED(f)
 	end
 
-	if asyncHandler then
-		state.XPC = asyncHandler
+	if xpcallHandler then
+		state.XPC = xpcallHandler
 	end
 
-	return spawnFragment(f, state)
+	return spawnFragment(f, state, asyncHandler)
 end
 
 function Dispatcher.cleanFragmentState(f)

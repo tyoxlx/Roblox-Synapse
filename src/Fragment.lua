@@ -1,4 +1,3 @@
-local HttpService = game:GetService("HttpService")
 local Dispatcher = require(script.Parent.Dispatcher)
 local Common = require(script.Parent.Common)
 local ERROR = require(script.Parent.Error)
@@ -18,11 +17,12 @@ return function(params: {[string]: any}, service)
 
 	Common.assignFragmentID(raw)
 
-	function raw:Spawn(xpcallHandler)
+	function raw:Spawn(xpcallHandler, asyncHandler)
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Spawn") end
 		if xpcallHandler and type(xpcallHandler) ~= "function" then ERROR.BAD_ARG(2, "Fragment.Spawn", "function?", typeof(xpcallHandler)) end
+		if asyncHandler and type(asyncHandler) ~= "function" then ERROR.BAD_ARG(3, "Fragment.Spawn", "function?", typeof(asyncHandler)) end
 		
-		return Dispatcher.spawnFragment(self, xpcallHandler)
+		return Dispatcher.spawnFragment(self, xpcallHandler, asyncHandler)
 	end
 
 	function raw:Await()
