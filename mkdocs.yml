@@ -19,7 +19,7 @@ theme:
         name: Switch to light mode
   font:
     text: PT Sans
-    code: Comic Mono
+    code: PT Mono
 
   features:
     - navigation.tabs
