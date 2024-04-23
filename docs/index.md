@@ -120,9 +120,9 @@ local LoadingScreenManager = Catwork.Fragment {
 <div id="catworkdoc-margin" markdown>
 <div id="catworkdoc-content" markdown>
 
-# Lets go on an adventure together 
+<h1 style="color: #fff">Lets go on an adventure together</h1>
 
-<p style="margin-bottom: 0;">Ready to start with Catwork? Then lets go into the tutorials!</p>
+<p style="margin-bottom: 0; color:#ffffffb3">Ready to start with Catwork? Then lets go into the tutorials!</p>
 </div>
 </div>
 </div>
