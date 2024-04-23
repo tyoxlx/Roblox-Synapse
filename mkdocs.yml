@@ -1,5 +1,6 @@
 site_name: Catwork
 repo_url: https://github.com/metatablecatgames/catwork
+site_url: https://metatablecatgames.github.io/catwork
 repo_name: metatablecatgames/catwork
 
 theme:
@@ -8,18 +9,20 @@ theme:
 
   palette:
     - scheme: default
+      media: "(prefers-color-scheme: light)"
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
 
     # Palette toggle for dark mode
     - scheme: slate
+      media: "(prefers-color-scheme: dark)"
       toggle:
         icon: material/weather-night
         name: Switch to light mode
   font:
-    text: PT Sans
-    code: PT Mono
+    text: Montserrat
+    code: JetBrains Mono 
 
   features:
     - navigation.tabs
@@ -34,7 +37,7 @@ theme:
     - content.code.select
     - content.code.annotate
 
-
+  custom_dir: docs/assets/overrides
   name: material
 
 extra:
@@ -43,7 +46,7 @@ extra:
       link: https://tech.lgbt/@metatablecat
 
 extra_css:
-  - stylesheet/extra.css
+  - assets/stylesheet/extra.css
 
 nav:
   - Home: index.md
@@ -56,6 +59,7 @@ nav:
       - Template: reference/catwork/template.md
     - Errors: reference/errors.md
 
+copyright: metatablecatgames 2024 - MIT License
 
 markdown_extensions:
   - admonition

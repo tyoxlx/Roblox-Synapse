@@ -1,22 +1,33 @@
 ---
+  template: home.html
+  title: Catwork
   hide:
     - toc
     - navigation
 ---
 
-<div align="center" markdown>
-# Catwork
-
-## The cat framework, written by cats, for cats!
-
-Catwork is a tiny, ergonomic, declarative framework for creating runtime code.
+<div id="catworkdoc-home" markdown>
+<p id="catworkdoc-contentgradient" />
+<div id="catworkdoc-lower-bg" markdown>
+<div id="catworkdoc-margin" markdown>
+<div id="catworkdoc-homeInner" markdown>
+<h1 id="catworkdoc-noMarginBig">Catwork</h1>
+<b id="catworkdoc-noMarginBig">The cat framework, written by cats, for cats!</b>
+<p id="catworkdoc-noMargin">Catwork is a tiny, ergonomic, declarative framework for creating runtime code.</p>
+</div>
 
 [:fontawesome-solid-cat: Download Catwork](https://github.com/metatablecatgames/catwork/releases/download/v0.4.4/catwork.rbxm){ .md-button .md-button--primary}
 [API Reference](reference/index.md){ .md-button}
+
+<div align="center" markdown>
+:octicons-arrow-down-16: Learn what Catwork has to offer! :octicons-arrow-down-16:
 </div>
 
----
+</div>
+</div>
+</div>
 
+<div id="catworkdoc-content" markdown>
 ## Weave dependencies with asynchronous design patterns.
 
 Catwork implements all of its code through Fragments! These allow you to manage
@@ -103,8 +114,15 @@ local LoadingScreenManager = Catwork.Fragment {
 }
 ```
 
----
+</div>
 
-# Lets go on an adventure together
+<div id="catworkdoc-secondary-bg" markdown>
+<div id="catworkdoc-margin" markdown>
+<div id="catworkdoc-content" markdown>
 
-Ready to start with Catwork? Then lets go into the tutorials!
+# Lets go on an adventure together 
+
+<p style="margin-bottom: 0;">Ready to start with Catwork? Then lets go into the tutorials!</p>
+</div>
+</div>
+</div>

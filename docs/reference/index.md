@@ -1,3 +1,8 @@
+---
+  hide:
+    - toc
+---
+
 # API Reference
 
 This is a reference for methods within Catwork. These explain the inner workings
