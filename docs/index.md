@@ -11,7 +11,7 @@
 <div id="catworkdoc-lower-bg" markdown>
 <div id="catworkdoc-margin" markdown>
 <div id="catworkdoc-homeInner" markdown>
-<h1 id="catworkdoc-noMarginBig">Catwork</h1>
+<h1 id="catworkdoc-noMarginBig" markdown>Catwork :cat2:</h1>
 <b id="catworkdoc-noMarginBig">The cat framework, written by cats, for cats!</b>
 <p id="catworkdoc-noMargin">Catwork is a tiny, ergonomic, declarative framework for creating runtime code.</p>
 </div>

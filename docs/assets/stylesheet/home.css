@@ -3,7 +3,7 @@
 	margin-left: 0;
 	margin-right: 0;
 	margin-top: 0;
-	--distance-to-top-of-page: 4.8rem;
+	--distance-to-top-of-page: 7.2rem;
 }
 
 [data-md-color-scheme="slate"] {
@@ -17,7 +17,7 @@
 
 @media screen and (max-width: 76.25rem) {
 	.md-content {
-		--distance-to-top-of-page: 2.4rem;
+		--distance-to-top-of-page: 4.8rem;
 	}
 }
 
