@@ -17,7 +17,8 @@
 </div>
 
 [:fontawesome-solid-cat: Download Catwork](https://github.com/metatablecatgames/catwork/releases/download/v0.4.4/catwork.rbxm){ .md-button .md-button--primary}
-[API Reference](reference/index.md){ .md-button}
+
+---
 
 <div align="center" markdown>
 :octicons-arrow-down-16: Learn what Catwork has to offer! :octicons-arrow-down-16:

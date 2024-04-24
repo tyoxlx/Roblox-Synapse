@@ -6,6 +6,14 @@
 	--distance-to-top-of-page: 7.2rem;
 }
 
+
+#catworkdoc-margin {
+	margin-left: 5rem;
+	margin-right: 5rem;
+
+	transition: margin-left 0.3s, margin-right 0.3s;
+}
+
 [data-md-color-scheme="slate"] {
 	--background-img: url("../../assets/images/bg-dark.png");
 }
@@ -18,6 +26,11 @@
 @media screen and (max-width: 76.25rem) {
 	.md-content {
 		--distance-to-top-of-page: 4.8rem;
+	}
+
+	#catworkdoc-margin {
+		margin-left: 1rem;
+		margin-right: 1rem;
 	}
 }
 
@@ -48,11 +61,6 @@
 
 #catworkdoc-lower-bg {
 	background: var(--md-default-bg-color);
-}
-
-#catworkdoc-margin {
-	margin-left: 5rem;
-	margin-right: 5rem;
 }
 
 #catworkdoc-homeInner {
@@ -103,4 +111,8 @@
 
 .md-content__inner::before {
 	height: 0;	
+}
+
+.md-button {
+	box-shadow: 0px 0px 10px var(--md-primary-fg-color);
 }
