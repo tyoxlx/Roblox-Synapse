@@ -51,6 +51,15 @@ extra_css:
 
 nav:
   - Home: index.md
+  - Tutorials:
+      - tutorials/index.md
+      - Getting Started:
+        - Installation: tutorials/getting-started/installation.md
+        - Basic Fragment: tutorials/getting-started/basic-fragment.md
+      - Services:
+        - tutorials/services/index.md
+        - Example Service: tutorials/services/example.md
+        - Template Services: tutorials/services/template-services.md
   - Reference: 
     - reference/index.md
     - Catwork:
