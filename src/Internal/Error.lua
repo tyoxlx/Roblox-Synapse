@@ -1,6 +1,6 @@
 -- Provides error reporting as well as some shape checks for object constructors
 
-local CatworkRoot = `^{script.Parent:GetFullName()}`
+local CatworkRoot = `^{script.Parent.Parent:GetFullName()}`
 
 local function findFirstNonCatworkFunc()
 	-- travels up the trace until a non-Catwork func is found
