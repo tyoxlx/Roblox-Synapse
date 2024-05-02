@@ -1,93 +1,64 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
 local Common = require(script.Common)
-local Service = require(script.Service)
-local Native = require(script.Native)
-local Types = require(script.Types)
-local ERROR = require(script.Error)
+local Service = require(script.Objects.Service)
+local Native = require(script.Internal.Native)
+local Types = require(script.Types.Types)
+local Reflection = require(script.Types.Reflection)
+
+local Catwork
+local function CatworkSelfCallTest(self, fName)
+	return self == Catwork, "BAD_SELF_CALL", fName
+end
 
 export type Fragment<Parameters> = Types.Fragment<Parameters>
 export type Template = Types.Template
 export type Service = Types.Service
 
-type ServiceCtorParams = {
-	Name: string,
-
-	EnableTemplates: boolean?,
-	
-	Spawning: (Service, Types.BlankFragment) -> ()?,
-	CreateFragment: (<A>(Service, A) -> Fragment<A>)?,
-	FragmentAdded: (Service, Types.BlankFragment) -> ()?,
-	FragmentRemoved: (Service, Types.BlankFragment) -> ()?,
-	TemplateAdded: (Service, Template) -> ()?,
-	
-	[string]: any
-}
-
-local Catwork = {
+Catwork = setmetatable({
 	__VERSION = Common.Version,
-}
-
-Catwork.FragmentAdded = Common._eFragmentAdded.Signal
-Catwork.FragmentRemoved = Common._eFragmentRemoved.Signal
-Catwork.ServiceAdded = Common._eServiceAdded.Signal
-Catwork.TemplateAdded = Common._eTemplateAdded.Signal
-Catwork.Plugin = script:FindFirstAncestorOfClass("Plugin")
-
--- Constructors
-
-function Catwork.Fragment<A>(params: A): Types.Fragment<A>
-	if type(params) ~= "table" then ERROR.BAD_ARG(1, "Catwork.Fragment", "table", typeof(params)) end
-	return Native(params)
-end
-
-function Catwork.Service(params: ServiceCtorParams): Service
-	if type(params) ~= "table" then ERROR.BAD_ARG(1, "Catwork.Service", "table", typeof(params)) end
-	return Service(params)
-end
-
--- Object Getters
-
-function Catwork:GetFragmentsOfName(name: string): {[string]: Types.BlankFragment}
-	if self ~= Catwork then ERROR.BAD_SELF_CALL("Catwork.GetFragmentsOfName") end
-	if type(name) ~= "string" then ERROR.BAD_ARG(2, "Catwork.GetFragmentsOfName", "string", typeof(name)) end
-
-	local nameStore = Common.FragmentNameStore[name]
-	return if nameStore then table.clone(nameStore) else {}
-end
-
-function Catwork:GetFragment(id: string): Types.BlankFragment
-	if self ~= Catwork then ERROR.BAD_SELF_CALL("Catwork.GetFragment") end
-	if type(id) ~= "string" then ERROR.BAD_ARG(2, "Catwork.GetFragment", "string", typeof(id)) end
-
-	return Common.Fragments[id]
-end
-
-function Catwork:GetFragments(): {[string]: Types.BlankFragment}
-	if self ~= Catwork then ERROR.BAD_SELF_CALL("Catwork.GetFragments") end
-
-	return table.clone(Common.Fragments)
-end
-
-function Catwork:GetService(name: string): Types.Service
-	if self ~= Catwork then ERROR.BAD_SELF_CALL("Catwork.GetService") end
-	if type(name) ~= "string" then ERROR.BAD_ARG(2, "Catwork.GetService", "string", typeof(name)) end
-
-	return Common.Services[name]
-end
-
-function Catwork:GetServices(): {[string]: Types.Service}
-	if self ~= Catwork then ERROR.BAD_SELF_CALL("Catwork.GetServices") end
-
-	return table.clone(Common.Services)
-end
-
-setmetatable(Catwork, {
+	Plugin = script:FindFirstAncestorOfClass("Plugin"),
+	
+	-- Events
+	FragmentAdded = Common._eFragmentAdded.Signal,
+	FragmentRemoved = Common._eFragmentRemoved.Signal,
+	ServiceAdded = Common._eServiceAdded.Signal,
+	TemplateAdded = Common._eTemplateAdded.Signal,
+	
+	-- Constructors
+	Fragment = Reflection("Fragment", function(params)
+		return Native(params)
+	end, "table") :: <A>(A) -> Fragment<A>,
+	
+	Service = Reflection("Service", function(params)
+		return Service(params)
+	end, "table") :: (Types.ServiceCtorParams) -> Service,
+	
+	-- Methods
+	GetFragment = Reflection("GetFragment", function(self, id)
+		return Common.Fragments[id]
+	end, CatworkSelfCallTest, "string") :: (Catwork, string) -> Types.BlankFragment,
+	
+	GetFragments = Reflection("GetFragments", function(self)
+		return table.clone(Common.Fragments)
+	end, CatworkSelfCallTest) :: (Catwork) -> {[string]: Types.BlankFragment},
+	
+	GetFragmentsOfName = Reflection("GetFragmentsOfName", function(self, name)
+		local nameStore = Common.FragmentNameStore[name]
+		return if nameStore then table.clone(nameStore) else {}
+	end, CatworkSelfCallTest, "string") :: (Catwork, string) -> {[string]: Types.BlankFragment},
+	
+	GetService = Reflection("GetService", function(self, name)
+		return Common.Services[name]
+	end, CatworkSelfCallTest, "string") :: (Catwork, string) -> Types.Service,
+	
+	GetServices = Reflection("GetServices", function(self)
+		return table.clone(Common.Services)
+	end, CatworkSelfCallTest)
+},{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
 })
+
 table.freeze(Catwork)
-
-if not Catwork.Plugin then
-	print(Common.WelcomeMessage)
-end
-
+type Catwork = typeof(Catwork)
+if not Catwork.Plugin then print(Common.WelcomeMessage) end
 return Catwork

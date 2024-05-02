@@ -46,4 +46,18 @@ export type Service = {
 	TemplateAdded: (Service, Template) -> ()
 }
 
+export type ServiceCtorParams = {
+	Name: string,
+
+	EnableTemplates: boolean?,
+
+	Spawning: (Service, BlankFragment) -> ()?,
+	CreateFragment: (<A>(Service, A) -> Fragment<A>)?,
+	FragmentAdded: (Service, BlankFragment) -> ()?,
+	FragmentRemoved: (Service, BlankFragment) -> ()?,
+	TemplateAdded: (Service, Template) -> ()?,
+
+	[string]: any
+}
+
 return nil

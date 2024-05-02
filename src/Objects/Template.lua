@@ -1,5 +1,5 @@
-local Common = require(script.Parent.Common)
-local ERROR = require(script.Parent.Error)
+local Common = require(script.Parent.Parent.Common)
+local ERROR = require(script.Parent.Parent.Internal.Error)
 
 
 return function(service, name, createFragment)

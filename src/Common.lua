@@ -1,6 +1,6 @@
-local Types = require(script.Parent.Types)
-local Event = require(script.Parent.Event)
-local ERROR = require(script.Parent.Error)
+local Types = require(script.Parent.Types.Types)
+local Event = require(script.Parent.Internal.Event)
+local ERROR = require(script.Parent.Internal.Error)
 local HttpService = game:GetService("HttpService")
 
 local VERSION = "0.5.0"
@@ -86,6 +86,7 @@ function Common.assignFragmentID(f: Types.Fragment<any>, service)
 		ERROR.DUPLICATE_FRAGMENT(id)
 	end
 end
+
 
 function Common.private<A,B>(generator: (A) -> B): (A) -> B
 	return function(obj: A): B

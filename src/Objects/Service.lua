@@ -1,7 +1,8 @@
 local Template = require(script.Parent.Template)
 local Fragment = require(script.Parent.Fragment)
-local Common = require(script.Parent.Common)
-local ERROR = require(script.Parent.Error)
+local Common = require(script.Parent.Parent.Common)
+local ERROR = require(script.Parent.Parent.Internal.Error)
+local Reflection = require(script.Parent.Parent.Types.Reflection)
 
 local SERVICE_PARAMS = {
 	Name = "string",
@@ -12,6 +13,17 @@ local SERVICE_PARAMS = {
 	FragmentRemoved = "function?",
 	TemplateAdded = "function?"
 }
+
+local function SERVICE_REFLECTION_TEST(service, fName)
+	return service and service[Common.ServiceHeader], "BAD_SELF_CALL", fName
+end
+
+local function TEMPLATE_REFLECTION_ASSERT(template, fName, idx)
+	-- string|Template
+	local oType = typeof(template)
+	if oType == "string" then return true end
+	return template and template[Common.TemplateHeader], "BAD_OBJECT", idx, fName, oType, "Template"
+end
 
 local ServicePrivate = Common.private(function(a)
 	return {
@@ -41,7 +53,62 @@ local function createFragmentForService(params, service)
 	return f
 end
 
-local function commonServiceCtor(params, enableTemplates)
+-- Reflection
+local ServiceReflection = {
+	GetFragment = Reflection("GetFragment", function(self, id)
+		return ServicePrivate(self).Fragments[id]
+	end, SERVICE_REFLECTION_TEST, "string"),
+
+	GetFragments = Reflection("GetFragments", function(self)
+		return table.clone(ServicePrivate(self).Fragments)
+	end, SERVICE_REFLECTION_TEST),
+
+	GetFragmentsOfName = Reflection("GetFragmentsOfName", function(self, name)
+		local nameStore = ServicePrivate(self).FragmentNameStore[name]
+		return if nameStore then table.clone(nameStore) else {}	
+	end, SERVICE_REFLECTION_TEST, "string"),
+
+	Template = Reflection("Template", function(self, name, createFragment)
+		return Template(self, name, createFragment)
+	end, SERVICE_REFLECTION_TEST, TEMPLATE_REFLECTION_ASSERT, "function"),
+
+	CreateFragmentFromTemplate = Reflection("CreateFragmentFromTemplate", function(self, template, initParams)
+		local private = ServicePrivate(self)
+
+		if not template[Common.TemplateHeader] and type(template) ~= "string" then
+			ERROR.BAD_OBJECT(2, "Service.CreateFragmentFromTemplate", typeof(template), "Template")
+		end
+
+		if not private.EnableTemplates then ERROR.SERVICE_NO_TEMPLATES(self) end
+
+		if type(template) == "string" then
+			local n = template
+			print(private)
+			template = private.Templates[n]
+
+			if not template then ERROR.BAD_TEMPLATE(n, self) end
+		elseif private.Templates[template.Name] ~= template then
+			ERROR.BAD_TEMPLATE(template.Name, self)
+		end
+		
+		local params = initParams or {}
+		params.Name = params.Name or template.Name
+		template:CreateFragment(params)
+		params.Template = template
+
+		return self:Fragment(params)
+	end, SERVICE_REFLECTION_TEST, "any", "table?"), -- TODO: assert template
+
+	Fragment = Reflection("Fragment", function(self, params)
+		if self.CreateFragment then self:CreateFragment(params) end
+		return createFragmentForService(params, self)
+	end, SERVICE_REFLECTION_TEST, "table")
+}
+
+-- Constructor
+return function(params)
+	local enableTemplates = (params.TemplateAdded ~= nil) or params.EnableTemplates
+	
 	if Common.Services[params.Name] then
 		ERROR.DUPLICATE_SERVICE(params.Name)
 	end
@@ -53,70 +120,12 @@ local function commonServiceCtor(params, enableTemplates)
 	private.EnableTemplates = if enableTemplates then enableTemplates else false
 	params.EnableTemplates = nil
 	
-	function raw:GetFragment(id: string)
-		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.GetFragment") end
-		if type(id) ~= "string" then ERROR.BAD_ARG(2, "Catwork.GetFragment", "string", typeof(id)) end
-
-		return ServicePrivate(self).Fragments[id]
-	end
-	
-	function raw:GetFragments()
-		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.GetFragment") end
-		return table.clone(ServicePrivate(self).Fragments)
-	end
-
-	function raw:GetFragmentsOfName(name: string)
-		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.GetFragmentsOfName") end
-		if type(name) ~= "string" then ERROR.BAD_ARG(2, "Catwork.GetFragmentsOfName", "string", typeof(name)) end
-
-		local nameStore = ServicePrivate(self).FragmentNameStore[name]
-		return if nameStore then table.clone(nameStore) else {}		
-	end
-
-	function raw:Template(name, createFragment)
-		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.Template") end
-		if type(name) ~= "string" then ERROR.BAD_ARG(2, "Catwork.Template", "string", typeof(name)) end
-		if type(createFragment) ~= "function" then ERROR.BAD_ARG(3, "Catwork.Template", "function", typeof(createFragment)) end
-
-		return Template(self, name, createFragment)
-	end
-
-	function raw:CreateFragmentFromTemplate(template, initParams)
-		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.CreateFragmentFromTemplate") end
-		if initParams and type(initParams) ~= "table" then ERROR.BAD_ARG(3, "Service.CreateFragmentFromTemplate", "table?", typeof(params)) end
-		local private = ServicePrivate(self)
-
-		if not template[Common.TemplateHeader] and type(template) ~= "string" then
-			ERROR.BAD_OBJECT(2, "Service.CreateFragmentFromTemplate", typeof(template), "Template")
-		end
-		
-		if not private.EnableTemplates then ERROR.SERVICE_NO_TEMPLATES(self) end
-		
-		if type(template) == "string" then
-			local n = template
-			print(private)
-			template = private.Templates[n]
-			
-			if not template then ERROR.BAD_TEMPLATE(n, self) end
-		elseif private.Templates[template.Name] ~= template then
-			ERROR.BAD_TEMPLATE(template.Name, self)
-		end
-
-		local params = initParams or {}
-		params.Name = params.Name or template.Name
-		template:CreateFragment(params)
-		params.Template = template
-		
-		return self:Fragment(params)
-	end
-
-	function raw:Fragment(params)
-		if not self[Common.ServiceHeader] then ERROR.BAD_SELF_CALL("Service.Fragment") end
-		if type(params) ~= "table" then ERROR.BAD_ARG(2, "Service.Fragment", "table", typeof(params)) end
-
-		if self.CreateFragment then self:CreateFragment(params) end
-		return createFragmentForService(params, self)
-	end
+	raw.GetFragment = ServiceReflection.GetFragment
+	raw.GetFragments = ServiceReflection.GetFragments
+	raw.GetFragmentsOfName = ServiceReflection.GetFragmentsOfName
+	raw.Template = ServiceReflection.Template
+	raw.CreateFragmentFromTemplate = ServiceReflection.CreateFragmentFromTemplate
+	raw.Fragment = ServiceReflection.Fragment
 
 	if not raw.Spawning then
 		function raw:Spawning(fragment)
@@ -145,9 +154,4 @@ local function commonServiceCtor(params, enableTemplates)
 	Common._eServiceAdded:Fire(raw)
 	
 	return raw
-end
-
-return function(params)
-	local useTemplateService = (params.TemplateAdded ~= nil) or params.EnableTemplates
-	return commonServiceCtor(params, useTemplateService)
 end

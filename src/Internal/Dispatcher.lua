@@ -1,7 +1,7 @@
 -- better to handle this in its own module than try to weave it into Catwork
 -- handles dispatching of Fragments
 
-local Common = require(script.Parent.Common)
+local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Error)
 
 local Dispatcher = {}
