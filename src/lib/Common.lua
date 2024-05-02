@@ -3,15 +3,15 @@ local Event = require(script.Parent.Event)
 local ERROR = require(script.Parent.Error)
 local HttpService = game:GetService("HttpService")
 
-local VERSION = "0.4.4"
+local VERSION = "0.5.0"
 local GUID_PATTERN = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
 
 local Common = {}
+local PrivateStore = setmetatable({}, {__mode = "k"})
 
 -- Flags
 Common.Flags = {
-	DONT_ASSIGN_OBJECT_MT = false,
-	ENABLE_STATIC_FRAGMENTS = true
+	DONT_ASSIGN_OBJECT_MT = true,
 }
 
 -- Storage
@@ -66,23 +66,41 @@ function Common.validateTable(tab, oName, rules: {[string]: string})
 	return table.clone(tab)
 end
 
-function Common.assignFragmentID(f: Types.Fragment<any>)
+function Common.assignFragmentID(f: Types.Fragment<any>, service)
 	local id = f.ID
+	f.ID = nil
+	local private = Common.getPrivate(f)
 
-	if Common.Flags.ENABLE_STATIC_FRAGMENTS and id then
+	if id then
 		if string.match(id, GUID_PATTERN) then
 			ERROR.GUID_IDS_NOT_ALLOWED(id)
-			f.ID = HttpService:GenerateGUID(false)
+			private.ID = HttpService:GenerateGUID(false)
 		end
 	else
-		f.ID = HttpService:GenerateGUID(false)
+		private.ID = HttpService:GenerateGUID(false)
 	end
 
-	f.FullID = `{f.Service.Name}_{f.ID}`
+	private.FullID = `{service.Name}_{private.ID}`
 
 	if Common.Fragments[id] then
 		ERROR.DUPLICATE_FRAGMENT(id)
 	end
+end
+
+function Common.private<A,B>(generator: (A) -> B): (A) -> B
+	return function(obj: A): B
+		local privateObj = PrivateStore[obj]
+		if not privateObj then
+			privateObj = generator(obj)
+			PrivateStore[obj] = privateObj
+		end
+
+		return privateObj
+	end
+end
+
+function Common.getPrivate(obj)
+	return PrivateStore[obj]
 end
 
 -- Headers

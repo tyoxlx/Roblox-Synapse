@@ -3,11 +3,8 @@
 -- if you experience problems, please file a Pull request
 
 export type Fragment<A> = {
-	ID: string,
-	Name: string,
-	Service: any,
-	Template: any,
-	FullID: string,
+	GetID: (Fragment<A>, full: boolean?) -> string,
+	GetName: (Fragment<A>) -> string,
 
 	Destroy: (Fragment<A>) -> (),
 	Spawn: (
@@ -28,25 +25,22 @@ export type BlankFragment = Fragment<{[string]: any}>
 
 export type Template = {
 	Name: string,
-	CreateFragment: <A>(Template, A) -> Fragment<A>,
-	Service: Service,
-	[string]: any
+	CreateFragment: <A>(A) -> Fragment<A>,
 }
 
 export type Service = {
-	EnableTemplates: boolean,
 	Name: string,
-
-	Fragments: {[string]: BlankFragment},
-	FragmentNameStore: {[string]: BlankFragment},
+	
+	Fragment: <A>(Service, A) -> Fragment<A>,
+	GetFragment: (Service, name: string) -> BlankFragment,
+	GetFragments: (Service) -> {[string]: BlankFragment},
 	GetFragmentsOfName: (Service, name: string) -> {[string]: BlankFragment},
 	
-	Template: (Service, Template) -> Template,
-	Templates: {[string]: Template},
+	Template: (Service, name: string, createFragment: <A>(A) -> A) -> Template,
 	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>,
 
 	Spawning: (Service, BlankFragment) -> (),
-	Fragment: <A>(Service, A) -> Fragment<A>,
+	CreateFragment: <A>(Service, A) -> (),
 	FragmentAdded: (Service, BlankFragment) -> (),
 	FragmentRemoved: (Service, BlankFragment) -> (),
 	TemplateAdded: (Service, Template) -> ()

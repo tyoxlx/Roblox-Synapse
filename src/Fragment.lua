@@ -1,6 +1,6 @@
-local Dispatcher = require(script.Parent.Dispatcher)
-local Common = require(script.Parent.Common)
-local ERROR = require(script.Parent.Error)
+local Dispatcher = require(script.Parent.lib.Dispatcher)
+local Common = require(script.Parent.lib.Common)
+local ERROR = require(script.Parent.lib.Error)
 
 local FRAGMENT_PARAMS = {
 	Name = "string?",
@@ -9,13 +9,27 @@ local FRAGMENT_PARAMS = {
 	Init = "function?"
 }
 
+local FragmentPrivate = Common.private(function()
+	return {
+		ID = "",
+		FullID = "",
+		Name = "",
+		Service = nil,
+		Template = nil
+	}
+end)
+
 return function(params: {[string]: any}, service)
 	local raw = Common.validateTable(params, "Fragment", FRAGMENT_PARAMS)
-	raw[Common.FragmentHeader] = true
-	raw.Name = params.Name or `CatworkFragment`
-	raw.Service = service
+	local private = FragmentPrivate(raw)
 
-	Common.assignFragmentID(raw)
+	raw[Common.FragmentHeader] = true
+
+	private.Name = params.Name or `CatworkFragment`
+	private.Service = service
+
+	Common.assignFragmentID(raw, service)
+	raw.Name = nil
 
 	function raw:Spawn(xpcallHandler, asyncHandler)
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Spawn") end
@@ -37,17 +51,31 @@ return function(params: {[string]: any}, service)
 
 		Dispatcher.slotHandleAsync(self, asyncHandler)
 	end
+	
+	function raw:GetID(full: boolean?)
+		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.GetID") end
+		if full ~= nil and type(full) ~= "boolean" then ERROR.BAD_ARG(2, "Fragment.GetID", "boolean?", typeof(full)) end
+		
+		return full and FragmentPrivate(self).FullID or FragmentPrivate(self).ID
+	end
+	
+	function raw:GetName()
+		return FragmentPrivate(self).Name
+	end
 
 	function raw:Destroy()
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Destroy") end
+		local privateObj = FragmentPrivate(self)
 
-		local service = self.Service
-		if service.Fragments[self.ID] then
-			Common.Fragments[self.FullID] = nil
-			service.Fragments[self.ID] = nil
+		local service = privateObj.Service
+		local servicePrivate = Common.getPrivate(service)
 
-			Common.FlushNameStore(Common.FragmentNameStore, self.Name, self.ID)
-			Common.FlushNameStore(service.FragmentNameStore, self.Name, self.ID)
+		if servicePrivate.Fragments[privateObj.FullID] then
+			Common.Fragments[privateObj.FullID] = nil
+			servicePrivate.Fragments[privateObj.FullID] = nil
+
+			Common.FlushNameStore(Common.FragmentNameStore, privateObj.Name, privateObj.FullID)
+			Common.FlushNameStore(servicePrivate.FragmentNameStore, privateObj.Name, privateObj.FullID)
 			Dispatcher.cleanFragmentState(self)
 
 			local destroying = self.Destroying
