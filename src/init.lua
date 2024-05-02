@@ -1,9 +1,9 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
-local Common = require(script.lib.Common)
+local Common = require(script.Common)
 local Service = require(script.Service)
-local Native = require(script.lib.Native)
-local Types = require(script.lib.Types)
-local ERROR = require(script.lib.Error)
+local Native = require(script.Native)
+local Types = require(script.Types)
+local ERROR = require(script.Error)
 
 export type Fragment<Parameters> = Types.Fragment<Parameters>
 export type Template = Types.Template
@@ -15,7 +15,7 @@ type ServiceCtorParams = {
 	EnableTemplates: boolean?,
 	
 	Spawning: (Service, Types.BlankFragment) -> ()?,
-	Fragment: (<A>(Service, A) -> Fragment<A>)?,
+	CreateFragment: (<A>(Service, A) -> Fragment<A>)?,
 	FragmentAdded: (Service, Types.BlankFragment) -> ()?,
 	FragmentRemoved: (Service, Types.BlankFragment) -> ()?,
 	TemplateAdded: (Service, Template) -> ()?,

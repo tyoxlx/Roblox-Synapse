@@ -1,6 +1,6 @@
-local Dispatcher = require(script.Parent.lib.Dispatcher)
-local Common = require(script.Parent.lib.Common)
-local ERROR = require(script.Parent.lib.Error)
+local Dispatcher = require(script.Parent.Dispatcher)
+local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
 
 local FRAGMENT_PARAMS = {
 	Name = "string?",

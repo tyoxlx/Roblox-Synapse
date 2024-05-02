@@ -1,7 +1,7 @@
-local Template = require(script.Parent.lib.Template)
+local Template = require(script.Parent.Template)
 local Fragment = require(script.Parent.Fragment)
-local Common = require(script.Parent.lib.Common)
-local ERROR = require(script.Parent.lib.Error)
+local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
 
 local SERVICE_PARAMS = {
 	Name = "string",
