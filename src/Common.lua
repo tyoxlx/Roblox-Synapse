@@ -11,7 +11,7 @@ local PrivateStore = setmetatable({}, {__mode = "k"})
 
 -- Flags
 Common.Flags = {
-	DONT_ASSIGN_OBJECT_MT = true,
+	DONT_ASSIGN_OBJECT_MT = false,
 }
 
 -- Storage
