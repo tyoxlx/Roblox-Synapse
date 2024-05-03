@@ -16,25 +16,24 @@ local function ASSERTION_REFLECTION_TEST(ok, eType, ...)
 	end
 end
 
-local function REFLECTION_TEST(obj: any, arg: ReflectionArg, idx, fName)
-	if arg.Type then
-		if arg.Type == "any" then return end
+local function REFLECTION(intended: {ReflectionArg}, fName: string, ...)
+	for idx, arg in intended do
+		local obj = select(1, ...)
 		
-		-- classic type assert
-		local objType = typeof(obj)
-		if obj == nil and arg.Optional then return end
-		
-		if objType ~= arg.Type then ERROR.BAD_ARG(idx, fName, arg.Type, objType) end
-		return
-	end
-	
-	ASSERTION_REFLECTION_TEST(arg.CustomAssert(obj, fName, idx))
-end
+		local aType = arg.Type
+		local optional = arg.Optional
 
-local function REFLECTION(intended: {ReflectionArg}, given, fName: string)
-	for idx, obj in intended do
-		local other = given[idx]
-		REFLECTION_TEST(other, obj, idx, fName)
+		if aType == "any" then continue end
+		if optional and obj == nil then continue end
+
+		if aType then
+			-- classic type assert
+			local objType = typeof(obj)
+			if objType ~= aType then ERROR.BAD_ARG(idx, fName, arg.Type, objType) end
+			continue
+		end
+
+		ASSERTION_REFLECTION_TEST(arg.CustomAssert(obj, fName, idx))
 	end
 end
 
@@ -53,7 +52,7 @@ local function Reflection<A..., R...>(fName, f: (A...) -> R..., ...): (A...) -> 
 	end
 	
 	return function(...)
-		REFLECTION(reflectionArgs, {...}, fName)
+		REFLECTION(reflectionArgs, fName, ...)
 		return f(...)
 	end
 end
