@@ -3,7 +3,7 @@ local Common = require(script.Common)
 local Service = require(script.Objects.Service)
 local Native = require(script.Internal.Native)
 local Types = require(script.Types.Types)
-local Reflection = require(script.Types.Reflection)
+local REFLECTION = require(script.Types.Reflection)
 
 local Catwork
 local function CatworkSelfCallTest(self, fName)
@@ -23,37 +23,54 @@ Catwork = setmetatable({
 	FragmentRemoved = Common._eFragmentRemoved.Signal,
 	ServiceAdded = Common._eServiceAdded.Signal,
 	TemplateAdded = Common._eTemplateAdded.Signal,
-	
+
 	-- Constructors
-	Fragment = Reflection("Fragment", function(params)
+	Fragment = function<A>(params: A): Types.Fragment<A>
+		REFLECTION.ARG(1, "Catwork.Fragment", REFLECTION.TABLE, params)
+
 		return Native(params)
-	end, "table") :: <A>(A) -> Fragment<A>,
+	end,
 	
-	Service = Reflection("Service", function(params)
+	Service = function(params: Types.ServiceCtorParams): Types.Service
+		REFLECTION.ARG(1, "Catwork.Service", REFLECTION.TABLE, params)
+
 		return Service(params)
-	end, "table") :: (Types.ServiceCtorParams) -> Service,
+	end,
 	
 	-- Methods
-	GetFragment = Reflection("GetFragment", function(self, id)
+	GetFragment = function(self: Catwork, id: string): Types.BlankFragment
+		REFLECTION.CUSTOM(1, "Catwork.GetFragment", self, CatworkSelfCallTest)
+		REFLECTION.ARG(2, "Catwork.GetFragment", REFLECTION.STRING, id)
+
 		return Common.Fragments[id]
-	end, CatworkSelfCallTest, "string") :: (Catwork, string) -> Types.BlankFragment,
+	end,
 	
-	GetFragments = Reflection("GetFragments", function(self)
+	GetFragments = function(self: Catwork): {[string]: Types.BlankFragment}
+		REFLECTION.CUSTOM(1, "Catwork.GetFragments", self, CatworkSelfCallTest)
+		
 		return table.clone(Common.Fragments)
-	end, CatworkSelfCallTest) :: (Catwork) -> {[string]: Types.BlankFragment},
+	end,
 	
-	GetFragmentsOfName = Reflection("GetFragmentsOfName", function(self, name)
+	GetFragmentsOfName = function(self: Catwork, name: string): {[string]: Types.BlankFragment}
+		REFLECTION.CUSTOM(1, "Catwork.GetFragmentsOfName", self, CatworkSelfCallTest)
+		REFLECTION.ARG(2, "Catwork.GetFragmentsOfName", REFLECTION.STRING, name)
+
 		local nameStore = Common.FragmentNameStore[name]
 		return if nameStore then table.clone(nameStore) else {}
-	end, CatworkSelfCallTest, "string") :: (Catwork, string) -> {[string]: Types.BlankFragment},
+	end,
 	
-	GetService = Reflection("GetService", function(self, name)
+	GetService = function(self: Catwork, name: string): Types.Service
+		REFLECTION.CUSTOM(1, "Catwork.GetService", self, CatworkSelfCallTest)
+		REFLECTION.ARG(2, "Catwork.GetService", REFLECTION.STRING, name)
+
 		return Common.Services[name]
-	end, CatworkSelfCallTest, "string") :: (Catwork, string) -> Types.Service,
+	end,
 	
-	GetServices = Reflection("GetServices", function(self)
+	GetServices = function(self: Catwork): {[string]: Types.Service}
+		REFLECTION.CUSTOM(1, "Catwork.GetServices", self, CatworkSelfCallTest)
+
 		return table.clone(Common.Services)
-	end, CatworkSelfCallTest)
+	end
 },{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
 })

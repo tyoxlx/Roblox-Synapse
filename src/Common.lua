@@ -63,7 +63,7 @@ function Common.validateTable(tab, oName, rules: {[string]: string})
 		end
 	end
 
-	return table.clone(tab)
+	return tab
 end
 
 function Common.assignFragmentID(f: Types.Fragment<any>, service)

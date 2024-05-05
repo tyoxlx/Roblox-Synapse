@@ -2,7 +2,7 @@ local Template = require(script.Parent.Template)
 local Fragment = require(script.Parent.Fragment)
 local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
-local Reflection = require(script.Parent.Parent.Types.Reflection)
+local REFLECTION = require(script.Parent.Parent.Types.Reflection)
 
 local SERVICE_PARAMS = {
 	Name = "string",
@@ -53,26 +53,55 @@ local function createFragmentForService(params, service)
 	return f
 end
 
--- Reflection
-local ServiceReflection = {
-	GetFragment = Reflection("GetFragment", function(self, id)
+-- Constructor
+return function(params)
+	local enableTemplates = (params.TemplateAdded ~= nil) or params.EnableTemplates
+	
+	if Common.Services[params.Name] then
+		ERROR.DUPLICATE_SERVICE(params.Name)
+	end
+
+	local raw = Common.validateTable(params, "Service", SERVICE_PARAMS)	
+	raw[Common.ServiceHeader] = true
+
+	local private = ServicePrivate(raw)
+	private.EnableTemplates = if enableTemplates then enableTemplates else false
+	params.EnableTemplates = nil
+	
+	function raw:GetFragment(id)
+		REFLECTION.CUSTOM(1, "Service.GetFragment", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Service.GetFragment", REFLECTION.STRING, id)
+
 		return ServicePrivate(self).Fragments[id]
-	end, SERVICE_REFLECTION_TEST, "string"),
+	end
 
-	GetFragments = Reflection("GetFragments", function(self)
+	function raw:GetFragments()
+		REFLECTION.CUSTOM(1, "Service.GetFragments", self, SERVICE_REFLECTION_TEST)
+
 		return table.clone(ServicePrivate(self).Fragments)
-	end, SERVICE_REFLECTION_TEST),
+	end
 
-	GetFragmentsOfName = Reflection("GetFragmentsOfName", function(self, name)
+	function raw:GetFragmentsOfName(name)
+		REFLECTION.CUSTOM(1, "Service.GetFragmentsOfName", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Service.GetFragmentsOfName", REFLECTION.STRING, name)
+
 		local nameStore = ServicePrivate(self).FragmentNameStore[name]
 		return if nameStore then table.clone(nameStore) else {}	
-	end, SERVICE_REFLECTION_TEST, "string"),
+	end
 
-	Template = Reflection("Template", function(self, name, createFragment)
+	function raw:Template(name, createFragment)
+		REFLECTION.CUSTOM(1, "Service.Template", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Service.Template", REFLECTION.STRING, name)
+		REFLECTION.ARG(3, "Service.Template", REFLECTION.FUNCTION, name)
+
 		return Template(self, name, createFragment)
-	end, SERVICE_REFLECTION_TEST, TEMPLATE_REFLECTION_ASSERT, "function"),
+	end
 
-	CreateFragmentFromTemplate = Reflection("CreateFragmentFromTemplate", function(self, template, initParams)
+	function raw:CreateFragmentFromTemplate(template, initParams)
+		REFLECTION.CUSTOM(1, "Service.CreateFragmentFromTemplate", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.CUSTOM(2, "Service.CreateFragmentFromTemplate", template, TEMPLATE_REFLECTION_ASSERT)
+		REFLECTION.ARG(3, "Service.CreateFragmentFromTemplate", REFLECTION.OPT_TABLE, initParams)
+
 		local private = ServicePrivate(self)
 
 		if not template[Common.TemplateHeader] and type(template) ~= "string" then
@@ -97,35 +126,15 @@ local ServiceReflection = {
 		params.Template = template
 
 		return self:Fragment(params)
-	end, SERVICE_REFLECTION_TEST, "any", "table?"), -- TODO: assert template
-
-	Fragment = Reflection("Fragment", function(self, params)
-		if self.CreateFragment then self:CreateFragment(params) end
-		return createFragmentForService(params, self)
-	end, SERVICE_REFLECTION_TEST, "table")
-}
-
--- Constructor
-return function(params)
-	local enableTemplates = (params.TemplateAdded ~= nil) or params.EnableTemplates
-	
-	if Common.Services[params.Name] then
-		ERROR.DUPLICATE_SERVICE(params.Name)
 	end
 
-	local raw = Common.validateTable(params, "Service", SERVICE_PARAMS)	
-	raw[Common.ServiceHeader] = true
+	function raw:Fragment(params)
+		REFLECTION.CUSTOM(1, "Service.Fragment", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Service.Fragment", REFLECTION.TABLE, params)
 
-	local private = ServicePrivate(raw)
-	private.EnableTemplates = if enableTemplates then enableTemplates else false
-	params.EnableTemplates = nil
-	
-	raw.GetFragment = ServiceReflection.GetFragment
-	raw.GetFragments = ServiceReflection.GetFragments
-	raw.GetFragmentsOfName = ServiceReflection.GetFragmentsOfName
-	raw.Template = ServiceReflection.Template
-	raw.CreateFragmentFromTemplate = ServiceReflection.CreateFragmentFromTemplate
-	raw.Fragment = ServiceReflection.Fragment
+		if self.CreateFragment then self:CreateFragment(params) end
+		return createFragmentForService(params, self)
+	end
 
 	if not raw.Spawning then
 		function raw:Spawning(fragment)

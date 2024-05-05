@@ -1,7 +1,7 @@
 local Dispatcher = require(script.Parent.Parent.Internal.Dispatcher)
 local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
-local Reflection = require(script.Parent.Parent.Types.Reflection)
+local REFLECTION = require(script.Parent.Parent.Types.Reflection)
 
 local FRAGMENT_PARAMS = {
 	Name = "string?",
@@ -23,30 +23,56 @@ local FragmentPrivate = Common.private(function()
 	}
 end)
 
--- Reflection bindings
-local FragmentReflection = {
-	Spawn = Reflection("Spawn", function(self, xpcallHandler, asyncHandler)
-		return Dispatcher.spawnFragment(self, xpcallHandler, asyncHandler)
-	end, FRAGMENT_REFLECTION_TEST, "functiion?", "function?"),
+return function(params: {[string]: any}, service)
+	local raw = Common.validateTable(params, "Fragment", FRAGMENT_PARAMS)
+	local private = FragmentPrivate(raw)
 
-	Await = Reflection("Await", function(self)
+	raw[Common.FragmentHeader] = true
+
+	private.Name = params.Name or `CatworkFragment`
+	private.Service = service
+
+	Common.assignFragmentID(raw, service)
+	raw.Name = nil
+	
+	function raw:Spawn(xpcallHandler, asyncHandler)
+		REFLECTION.CUSTOM(1, "Fragment.Spawn", self, FRAGMENT_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Fragment.Spawn", REFLECTION.OPT_FUNCTION, xpcallHandler)
+		REFLECTION.ARG(3, "Fragment.Spawn", REFLECTION.OPT_FUNCTION, asyncHandler)
+		
+		return Dispatcher.spawnFragment(self, xpcallHandler, asyncHandler)
+	end
+	
+	function raw:Await()
+		REFLECTION.CUSTOM(1, "Fragment.Await", self, FRAGMENT_REFLECTION_TEST)
+		
 		if Dispatcher.isSelfAsyncCall(self) then ERROR.FRAGMENT_SELF_AWAIT(self) end
 		return Dispatcher.slotAwait(self)
-	end, FRAGMENT_REFLECTION_TEST),
-
-	HandleAsync = Reflection("HandleAsync", function(self, asyncHandler)
+	end
+	
+	function raw:HandleAsync(asyncHandler)
+		REFLECTION.CUSTOM(1, "Fragment.HandleAsync", self, FRAGMENT_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Fragment.HandleAsync", REFLECTION.FUNCTION, asyncHandler)
+		
 		Dispatcher.slotHandleAsync(self, asyncHandler)
-	end, FRAGMENT_REFLECTION_TEST, "function"),
-
-	GetID = Reflection("GetID", function(self, full: boolean?)
+	end
+	
+	function raw:GetID(full: boolean?)
+		REFLECTION.CUSTOM(1, "Fragment.GetID", self, FRAGMENT_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Fragment.GetID", REFLECTION.OPT_BOOLEAN, full)		
+		
 		return full and FragmentPrivate(self).FullID or FragmentPrivate(self).ID
-	end, FRAGMENT_REFLECTION_TEST, "boolean?"),
-
-	GetName = Reflection("GetName", function(self)
+	end
+	
+	function raw:GetName()
+		REFLECTION.CUSTOM(1, "Fragment.GetName", self, FRAGMENT_REFLECTION_TEST)
+		
 		return FragmentPrivate(self).Name
-	end, FRAGMENT_REFLECTION_TEST),
+	end
 
-	Destroy = Reflection("Destroy", function(self)
+	function raw:Destroy()
+		REFLECTION.CUSTOM(1, "Fragment.Destroy", self, FRAGMENT_REFLECTION_TEST)
+		
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Destroy") end
 		local privateObj = FragmentPrivate(self)
 
@@ -69,27 +95,7 @@ local FragmentReflection = {
 
 			Common._eFragmentRemoved:Fire(self)
 		end
-	end, FRAGMENT_REFLECTION_TEST)
-}
-
-return function(params: {[string]: any}, service)
-	local raw = Common.validateTable(params, "Fragment", FRAGMENT_PARAMS)
-	local private = FragmentPrivate(raw)
-
-	raw[Common.FragmentHeader] = true
-
-	private.Name = params.Name or `CatworkFragment`
-	private.Service = service
-
-	Common.assignFragmentID(raw, service)
-	raw.Name = nil
-	
-	raw.Spawn = FragmentReflection.Spawn
-	raw.Await = FragmentReflection.Await
-	raw.HandleAsync = FragmentReflection.HandleAsync
-	raw.GetID = FragmentReflection.GetID
-	raw.GetName = FragmentReflection.GetName
-	raw.Destroy = FragmentReflection.Destroy
+	end
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {

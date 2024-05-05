@@ -1,71 +1,79 @@
--- Reflection generator
+-- Reflection typechecker
 -- type = required type
 -- type? = optional type
 
-local ERROR = require(script.Parent.Parent.Internal.Error)
-local KNOWN_TYPES = {}
-local KNOWN_CUSTOM = {}
+-- metatablecat 2024, part of Catwork
 
-type ReflectionArg = {
-	Optional: boolean,
-	Type: string?,
-	CustomAssert: ((any, string, number) -> boolean)
+local ERROR = require(script.Parent.Parent.Internal.Error)
+
+local Reflection = {}
+
+Reflection.NULL = 0
+-- Reflection.OPTIONAL = 1 (implemented as a low is-odd bit)
+Reflection.BOOLEAN = 2
+Reflection.NUMBER = 4
+Reflection.STRING = 6
+Reflection.TABLE = 8
+Reflection.FUNCTION = 10
+Reflection.THREAD = 12
+Reflection.USERDATA = 14
+Reflection.VECTOR = 16
+Reflection.BUFFER = 18
+
+-- Optional Bindings
+Reflection.OPT_BOOLEAN = 3
+Reflection.OPT_NUMBER = 5
+Reflection.OPT_STRING = 7
+Reflection.OPT_TABLE = 9
+Reflection.OPT_FUNCTION = 11
+Reflection.OPT_THREAD = 13
+Reflection.OPT_USERDATA = 15
+Reflection.OPT_VECTOR = 17
+Reflection.OPT_BUFFER = 19	
+
+
+local LUAU_NATIVE_TYPE = {
+	-- Enum -> type() bindings
+	
+	[Reflection.BOOLEAN] = "boolean",
+	[Reflection.NUMBER] = "number",
+	[Reflection.STRING] = "string",
+	[Reflection.TABLE] = "table",
+	[Reflection.FUNCTION] = "function",
+	[Reflection.THREAD] = "thread",
+	[Reflection.USERDATA] = "userdata",
+	[Reflection.VECTOR] = "vector",
+	[Reflection.BUFFER] = "buffer",
 }
 
-local function ASSERTION_REFLECTION_TEST(ok, eType, ...)
-	if not ok then
-		ERROR[eType](...)
-	end
+local function reflectionCallbackHandler(ok, eID, ...)
+	if ok then return end
+	ERROR[eID](...)
 end
 
-local function REFLECTION(intended: {ReflectionArg}, fName: string, ...)
-	for idx, arg in intended do
-		local obj = select(idx, ...)
-		
-		local aType = arg.Type
-		local optional = arg.Optional
-
-		if aType == "any" then continue end
-		if optional and obj == nil then continue end
-
-		if aType then
-			-- classic type assert
-			local objType = typeof(obj)
-			if objType ~= aType then ERROR.BAD_ARG(idx, fName, arg.Type, objType) end
-			continue
+function Reflection.ARG(argIdx: number, functionName: string, enum: number, incoming: any)
+	if enum == 0 then
+		-- fast-path, enum val is NIL
+		if incoming ~= nil then
+			ERROR.BAD_ARG(argIdx, functionName, "nil", type(incoming))
 		end
-
-		ASSERTION_REFLECTION_TEST(arg.CustomAssert(obj, fName, idx))
+		
+		return
 	end
+	
+	local isOpt = bit32.band(enum, 1) == 1
+	local typeVal = LUAU_NATIVE_TYPE[bit32.band(enum, 0b1111110)]
+	
+	if not typeVal then return end
+	if isOpt and incoming == nil then return end
+	
+	local t = type(incoming)
+	if t == typeVal then return end
+	ERROR.BAD_ARG(argIdx, functionName, typeVal, t)
 end
 
-local function Reflection<A..., R...>(fName, f: (A...) -> R..., ...): (A...) -> R...
-	local reflectionArgs = {}
-	
-	for i, v in {...} do
-		local isFunctional = type(v) == "function"
-		
-		local arg = if isFunctional then KNOWN_CUSTOM[v] else KNOWN_TYPES[v]
-		if not arg then
-			local isOpt = if not isFunctional then string.sub(v, -1) == "?" else false
-		
-			arg = {
-				Optional = isOpt,
-				Type = if not isFunctional then if isOpt	then string.sub(v, 1, -2) else v else nil,
-				CustomAssert = if isFunctional then v else nil	
-			}
-			
-			(if isFunctional then KNOWN_CUSTOM else KNOWN_TYPES)[v] = arg
-		end
-		
-		reflectionArgs[i] = arg
-	end
-
-	
-	return function(...)
-		REFLECTION(reflectionArgs, fName, ...)
-		return f(...)
-	end
+function Reflection.CUSTOM(argIdx: number, functionName: string, incoming: any, assertion: (any, string, number) -> (boolean, ...any)) 
+	reflectionCallbackHandler(assertion(incoming, functionName, argIdx))
 end
 
 return Reflection
