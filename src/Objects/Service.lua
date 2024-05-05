@@ -92,7 +92,7 @@ return function(params)
 	function raw:Template(name, createFragment)
 		REFLECTION.CUSTOM(1, "Service.Template", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.ARG(2, "Service.Template", REFLECTION.STRING, name)
-		REFLECTION.ARG(3, "Service.Template", REFLECTION.FUNCTION, name)
+		REFLECTION.ARG(3, "Service.Template", REFLECTION.FUNCTION, createFragment)
 
 		return Template(self, name, createFragment)
 	end
@@ -123,8 +123,6 @@ return function(params)
 		local params = initParams or {}
 		params.Name = params.Name or template.Name
 		template:CreateFragment(params)
-		params.Template = template
-
 		return self:Fragment(params)
 	end
 
