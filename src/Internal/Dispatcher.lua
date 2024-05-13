@@ -36,9 +36,9 @@ end
 
 local function timeoutTracker(f, state): thread?
 	if state.TimeoutDisabled then return end
-	
+
 	return task.spawn(function(self)
-		task.wait(60)
+		task.wait(5)
 		ERROR.DISPATCHER_TIMEOUT(self)
 	end, f)
 end
