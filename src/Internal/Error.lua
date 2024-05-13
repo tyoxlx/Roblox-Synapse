@@ -80,6 +80,8 @@ local ErrorBuffer = {
 	DUPLICATE_SERVICE = e("DUPLICATE_SERVICE", "Service %s is already defined.", "E"),
 	DUPLICATE_FRAGMENT = e("DUPLICATE_FRAGMENT", "Fragment %s is already defined", "E"),
 
+	ANALYSIS_MODE_NOT_AVAILABLE = e("ANALYSIS_MODE_NOT_AVAILABLE", "Analysis mode cannot be used in %s", "E"),
+
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Fragment %* has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_FRAGMENT = e("DISPATCHER_DESTROYED_FRAGMENT", "Fragment %* cannot be spawned because it has been destroyed.", "E"),
 	DISPATCHER_SPAWN_ERR = e("DISPATCHER_SPAWN_ERR", "A fragment experienced an error while spawning: %s", "W"),

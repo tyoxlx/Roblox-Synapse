@@ -36,10 +36,12 @@ return function(params: {[string]: any}, service)
 	raw.Name = nil
 	
 	function raw:Spawn(xpcallHandler, asyncHandler)
+		if Common.AnalysisMode then return end
+
 		REFLECTION.CUSTOM(1, "Fragment.Spawn", self, FRAGMENT_REFLECTION_TEST)
 		REFLECTION.ARG(2, "Fragment.Spawn", REFLECTION.OPT_FUNCTION, xpcallHandler)
 		REFLECTION.ARG(3, "Fragment.Spawn", REFLECTION.OPT_FUNCTION, asyncHandler)
-		
+
 		return Dispatcher.spawnFragment(self, xpcallHandler, asyncHandler)
 	end
 	

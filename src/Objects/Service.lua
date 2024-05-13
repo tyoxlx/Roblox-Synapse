@@ -38,17 +38,18 @@ local function createFragmentForService(params, service)
 	local f = Fragment(params, service)
 	local private = ServicePrivate(service)
 	local fPrivate = Common.getPrivate(f)
-
-	Common.Fragments[fPrivate.FullID] = f
-	private.Fragments[fPrivate.FullID] = f
 	
-	Common.PushToNameStore(Common.FragmentNameStore, fPrivate.Name, fPrivate.FullID, f)
-	Common.PushToNameStore(private.FragmentNameStore, fPrivate.Name, fPrivate.FullID, f)
-	
-	Common._eFragmentAdded:Fire(f)
+	if not Common.AnalysisMode then
+		Common.Fragments[fPrivate.FullID] = f
+		private.Fragments[fPrivate.FullID] = f
+		Common.PushToNameStore(Common.FragmentNameStore, fPrivate.Name, fPrivate.FullID, f)
+		Common.PushToNameStore(private.FragmentNameStore, fPrivate.Name, fPrivate.FullID, f)
+		
+		Common._eFragmentAdded:Fire(f)
 
-	local fragAdded = service.FragmentAdded
-	if fragAdded then task.spawn(fragAdded, service, f) end
+		local fragAdded = service.FragmentAdded
+		if fragAdded then task.spawn(fragAdded, service, f) end
+	end
 
 	return f
 end
@@ -112,7 +113,6 @@ return function(params)
 
 		if type(template) == "string" then
 			local n = template
-			print(private)
 			template = private.Templates[n]
 
 			if not template then ERROR.BAD_TEMPLATE(n, self) end
@@ -157,8 +157,11 @@ return function(params)
 	end
 	
 	table.freeze(raw)
-	Common.Services[raw.Name] = raw
-	Common._eServiceAdded:Fire(raw)
+
+	if not Common.AnalysisMode then
+		Common.Services[raw.Name] = raw
+		Common._eServiceAdded:Fire(raw)
+	end
 	
 	return raw
 end

@@ -27,12 +27,15 @@ return function(service, name, createFragment)
 	end
 
 	table.freeze(params)
-	private.Templates[name] = params
 
-	if service.TemplateAdded then
-		service:TemplateAdded(params)
+	if not Common.AnalysisMode then
+		private.Templates[name] = params
+		if service.TemplateAdded then
+			service:TemplateAdded(params)
+		end
+
+		Common._eTemplateAdded:Fire(params)
 	end
 
-	Common._eTemplateAdded:Fire(params)
 	return params
 end

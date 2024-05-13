@@ -1,9 +1,12 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
+local RunService = game:GetService("RunService")
 local Common = require(script.Common)
 local Service = require(script.Objects.Service)
 local Native = require(script.Internal.Native)
 local Types = require(script.Types.Types)
+
 local REFLECTION = require(script.Types.Reflection)
+local ERROR = require(script.Internal.Error)
 
 local Catwork
 local function CatworkSelfCallTest(self, fName)
@@ -70,6 +73,11 @@ Catwork = setmetatable({
 		REFLECTION.CUSTOM(1, "Catwork.GetServices", self, CatworkSelfCallTest)
 
 		return table.clone(Common.Services)
+	end,
+
+	EnableAnalysis = function(self: Catwork)
+		if RunService:IsRunning() then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Run Mode") end
+		if self.Plugin then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Plugin") end
 	end
 },{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end

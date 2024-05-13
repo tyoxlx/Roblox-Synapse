@@ -14,6 +14,9 @@ Common.Flags = {
 	DONT_ASSIGN_OBJECT_MT = false,
 }
 
+-- Analysis mode, disables spawning
+Common.AnalysisMode = false
+
 -- Storage
 Common.WelcomeMessage = `Catwork🐈 Loaded. API Version - {VERSION}. meow :3`
 Common.Fragments = {}
