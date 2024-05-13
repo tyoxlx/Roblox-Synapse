@@ -151,7 +151,7 @@ return function(params)
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				return `CatworkService({self.Name} Templates: {self.EnableTemplates})`
+				return `CatworkService({self.Name} Templates: {ServicePrivate(self).EnableTemplates})`
 			end,
 		})
 	end

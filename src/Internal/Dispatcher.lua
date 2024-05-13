@@ -22,6 +22,7 @@ local function getFragmentState(f)
 			Thread = nil,
 			Ready = false,
 			XPC = safeAsyncHandler,
+			TimeoutDisabled = false,
 
 			HeldThreads = {},
 			Dispatchers = {}
@@ -33,6 +34,15 @@ local function getFragmentState(f)
 	return state
 end
 
+local function timeoutTracker(f, state): thread?
+	if state.TimeoutDisabled then return end
+	
+	return task.spawn(function(self)
+		task.wait(60)
+		ERROR.DISPATCHER_TIMEOUT(self)
+	end, f)
+end
+
 local function runFragmentAction(
 	f,
 	spawnSignal,
@@ -41,7 +51,10 @@ local function runFragmentAction(
 )
 	state.Spawned = true
 	state.Thread = coroutine.running()
+
+	local thread = timeoutTracker(f, state)
 	local ok, err = xpcall(spawnSignal, state.XPC, service, f)
+	if thread then coroutine.close(thread) end
 	
 	state.Ready = true
 	state.IsOK = ok
@@ -82,6 +95,7 @@ function Dispatcher.spawnFragment(f, xpcallHandler, asyncHandler)
 	end
 	
 	local state = getFragmentState(f)
+	state.TimeoutDisabled = fPrivate.TimeoutDisabled
 	
 	-- basically new logic for Spawn
 	if state.Spawned then

@@ -20,6 +20,7 @@ local FragmentPrivate = Common.private(function()
 		FullID = "",
 		Name = "",
 		Service = nil,
+		TimeoutDisabled = false
 	}
 end)
 
@@ -29,6 +30,7 @@ return function(params: {[string]: any}, service)
 
 	raw[Common.FragmentHeader] = true
 
+	private.TimeoutDisabled = if params.TimeoutDisabled then params.TimeoutDisabled else false
 	private.Name = params.Name or `CatworkFragment`
 	private.Service = service
 

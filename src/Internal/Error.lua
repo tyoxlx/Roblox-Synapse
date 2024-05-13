@@ -85,6 +85,7 @@ local ErrorBuffer = {
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Fragment %* has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_FRAGMENT = e("DISPATCHER_DESTROYED_FRAGMENT", "Fragment %* cannot be spawned because it has been destroyed.", "E"),
 	DISPATCHER_SPAWN_ERR = e("DISPATCHER_SPAWN_ERR", "A fragment experienced an error while spawning: %s", "W"),
+	DISPATCHER_TIMEOUT = e("DISPATCHER_TIMEOUT", "Fragment %* is taking a long time to intialise. If this is intentional, disable with `TimeoutDisabled = true`", "W"),
 	
 	FRAGMENT_SELF_AWAIT = e("FRAGMENT_SELF_AWAIT", "Fragment %* is awaiting upon itself and will never resolve. Use HandleAsync instead.", "W"),
 
