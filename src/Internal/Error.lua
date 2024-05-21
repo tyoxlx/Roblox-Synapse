@@ -100,17 +100,17 @@ local unknown = e("UNKNOWN", "Unknown Error", "E")
 
 type ErrorTable = typeof(
 	setmetatable(
-		{}::typeof(ErrorBuffer), 
+		{}::typeof(ErrorBuffer) & typeof(errorFuncs), 
 		{}::{
 			__index: (ErrorTable, string) -> (...string) -> never
 		}
 	)
 )
 
-local Error: ErrorTable = setmetatable(errorFuncs, {
+local Error = setmetatable(errorFuncs, {
 	__index = function(self, k)
 		return ErrorBuffer[k] or unknown
 	end
 })
 
-return Error
+return Error::ErrorTable

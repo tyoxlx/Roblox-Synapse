@@ -29,12 +29,10 @@ export type Template = {
 }
 
 export type Service = {
+	EnableTemplates: boolean,
 	Name: string,
-	
+
 	Fragment: <A>(Service, A) -> Fragment<A>,
-	GetFragment: (Service, name: string) -> BlankFragment,
-	GetFragments: (Service) -> {[string]: BlankFragment},
-	GetFragmentsOfName: (Service, name: string) -> {[string]: BlankFragment},
 	
 	Template: (Service, name: string, createFragment: <A>(A) -> A) -> Template,
 	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>,

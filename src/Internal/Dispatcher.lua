@@ -1,7 +1,6 @@
 -- better to handle this in its own module than try to weave it into Catwork
 -- handles dispatching of Fragments
 
-local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Error)
 
 local Dispatcher = {}
@@ -12,27 +11,20 @@ local function safeAsyncHandler(err)
 	return err
 end
 
-local function getFragmentState(f)
-	local state = fragmentDispatchState[f]
-	if not state then
-		state = {
-			Spawned = false,
-			IsOK = false,
-			ErrMsg = nil,
-			Thread = nil,
-			Ready = false,
-			XPC = safeAsyncHandler,
-			TimeoutDisabled = false,
+function Dispatcher.getFragmentState(f)
+	return fragmentDispatchState[f]
+end
 
-			HeldThreads = {},
-			Dispatchers = {}
-		}
-
-		fragmentDispatchState[f] = state
-	end
+local function getFragmentStateError(f)
+	local state = Dispatcher.getFragmentState(f)
 	
+	if not state then
+		ERROR.DISPATCHER_DESTROYED_FRAGMENT(f)
+	end
+
 	return state
 end
+
 
 local function timeoutTracker(f, state): thread?
 	if state.TimeoutDisabled then return end
@@ -87,14 +79,8 @@ local function spawnFragment(self, service, state, asyncMode)
 	return nil
 end
 
-function Dispatcher.spawnFragment(f, xpcallHandler, asyncHandler)
-	local fPrivate = Common.getPrivate(f)
-	if not Common.Fragments[fPrivate.FullID] then
-		-- the fragment does not exist, most likely because it was destroyed
-		ERROR:DISPATCHER_DESTROYED_FRAGMENT(f)
-	end
-	
-	local state = getFragmentState(f)
+function Dispatcher.spawnFragment(f, fPrivate, xpcallHandler, asyncHandler)
+	local state = getFragmentStateError(f)
 	state.TimeoutDisabled = fPrivate.TimeoutDisabled
 	
 	-- basically new logic for Spawn
@@ -114,11 +100,11 @@ function Dispatcher.cleanFragmentState(f)
 end
 
 function Dispatcher.slotAwait(f)
-	local state = getFragmentState(f)
+	local state = getFragmentStateError(f)
 
 	if state.ErrMsg then
 		return false, state.ErrMsg
-	elseif state.IsOk then
+	elseif state.IsOK then
 		return true
 	end
 
@@ -127,11 +113,11 @@ function Dispatcher.slotAwait(f)
 end
 
 function Dispatcher.slotHandleAsync(f, asyncHandler)
-	local state = getFragmentState(f)
+	local state = getFragmentStateError(f)
 
 	if state.ErrMsg then
 		asyncHandler(false, state.ErrMsg)
-	elseif state.IsOk then
+	elseif state.IsOK then
 		asyncHandler(true)
 	else
 		table.insert(state.Dispatchers, asyncHandler)
@@ -140,7 +126,7 @@ end
 
 function Dispatcher.isSelfAsyncCall(f)
 	-- blocks self:Await calls while Init is running
-	local state = getFragmentState(f)
+	local state = getFragmentStateError(f)
 	local co = coroutine.running()
 	
 	if state.Spawned and co == state.Thread then
@@ -148,6 +134,26 @@ function Dispatcher.isSelfAsyncCall(f)
 	end
 	
 	return false
+end
+
+function Dispatcher.initFragmentState(f)
+	if fragmentDispatchState[f] then return fragmentDispatchState[f] end
+
+	local state = {
+		Spawned = false,
+		IsOK = false,
+		ErrMsg = nil,
+		Thread = nil,
+		Ready = false,
+		XPC = safeAsyncHandler,
+		TimeoutDisabled = false,
+
+		HeldThreads = {},
+		Dispatchers = {}
+	}
+	fragmentDispatchState[f] = state
+
+	return state
 end
 
 return Dispatcher

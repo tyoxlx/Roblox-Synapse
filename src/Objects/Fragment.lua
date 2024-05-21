@@ -34,7 +34,7 @@ return function(params: {[string]: any}, service)
 	private.Name = params.Name or `CatworkFragment`
 	private.Service = service
 
-	Common.assignFragmentID(raw, service)
+	Common.assignFragmentID(raw, private, service)
 	raw.Name = nil
 	
 	function raw:Spawn(xpcallHandler, asyncHandler)
@@ -44,7 +44,7 @@ return function(params: {[string]: any}, service)
 		REFLECTION.ARG(2, "Fragment.Spawn", REFLECTION.OPT_FUNCTION, xpcallHandler)
 		REFLECTION.ARG(3, "Fragment.Spawn", REFLECTION.OPT_FUNCTION, asyncHandler)
 
-		return Dispatcher.spawnFragment(self, xpcallHandler, asyncHandler)
+		return Dispatcher.spawnFragment(self, FragmentPrivate(self), xpcallHandler, asyncHandler)
 	end
 	
 	function raw:Await()
@@ -78,26 +78,15 @@ return function(params: {[string]: any}, service)
 		REFLECTION.CUSTOM(1, "Fragment.Destroy", self, FRAGMENT_REFLECTION_TEST)
 		
 		if not self[Common.FragmentHeader] then ERROR.BAD_SELF_CALL("Fragment.Destroy") end
-		local privateObj = FragmentPrivate(self)
+		local service = FragmentPrivate(self).Service
 
-		local service = privateObj.Service
-		local servicePrivate = Common.getPrivate(service)
-
-		if servicePrivate.Fragments[privateObj.FullID] then
-			Common.Fragments[privateObj.FullID] = nil
-			servicePrivate.Fragments[privateObj.FullID] = nil
-
-			Common.FlushNameStore(Common.FragmentNameStore, privateObj.Name, privateObj.FullID)
-			Common.FlushNameStore(servicePrivate.FragmentNameStore, privateObj.Name, privateObj.FullID)
+		if Dispatcher.getFragmentState(self) then
 			Dispatcher.cleanFragmentState(self)
-
 			local destroying = self.Destroying
 			local fragRemoved = service.FragmentRemoved
 
 			if destroying then task.spawn(destroying, self) end
 			if fragRemoved then task.spawn(fragRemoved, service, self) end
-
-			Common._eFragmentRemoved:Fire(self)
 		end
 	end
 
@@ -110,5 +99,6 @@ return function(params: {[string]: any}, service)
 		})
 	end
 
+	Dispatcher.initFragmentState(raw)
 	return raw
 end
