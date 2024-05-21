@@ -1,4 +1,5 @@
 local Template = require(script.Parent.Template)
+local Dispatcher = require(script.Parent.Parent.Internal.Dispatcher)
 local Fragment = require(script.Parent.Fragment)
 local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
@@ -35,6 +36,7 @@ local function createFragmentForService(params, service)
 	local f = Fragment(params, service)
 
 	if not Common.AnalysisMode then
+		Dispatcher.initFragmentState(f)
 		local fragAdded = service.FragmentAdded
 		if fragAdded then task.spawn(fragAdded, service, f) end
 	end

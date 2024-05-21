@@ -98,7 +98,6 @@ return function(params: {[string]: any}, service)
 			end
 		})
 	end
-
-	Dispatcher.initFragmentState(raw)
+	
 	return raw
 end
