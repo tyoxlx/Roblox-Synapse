@@ -12,7 +12,8 @@ export type Fragment<A> = {
 		xpcallHandler: ((string?) -> string)?,
 		asyncHandler: (boolean, string?) -> ()?
 	) -> (boolean, string?),
- 
+	
+	Update: (Fragment<A>, dt: number) -> ()?,
 	Destroying: (Fragment<A>) -> (),
 	Init: (Fragment<A>) -> (),
 

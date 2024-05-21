@@ -41,9 +41,7 @@ local function e(id, msg, severity)
 	end
 end
 
-local errorFuncs = {}
-
-function errorFuncs.traceback(msg)
+local function traceback(msg)
 	-- same as debug.traceback but strips messages involving Catwork
 	local msgStack = {msg or "No output from Lua", "Traceback:"}
 	local depth = 1
@@ -93,24 +91,25 @@ local ErrorBuffer = {
 	SERVICE_DUPLICATE_TEMPLATE = e("SERVICE_DUPLICATE_TEMPLATE", "Template %s already exists", "E"),
 
 	DEPRECATED = e("DEPRECATED", "Function %q is deprecated. Use %q instead.", "W"),
-	INTERNAL = e("INTERNAL", "Error: %*. This is likely a known internal error, please report it!", "E")
+	INTERNAL = e("INTERNAL", "Error: %*. This is likely a known internal error, please report it!", "E"),
+	traceback = traceback
 }
 
 local unknown = e("UNKNOWN", "Unknown Error", "E")
 
 type ErrorTable = typeof(
 	setmetatable(
-		{}::typeof(ErrorBuffer) & typeof(errorFuncs), 
+		{}::typeof(ErrorBuffer), 
 		{}::{
 			__index: (ErrorTable, string) -> (...string) -> never
 		}
 	)
 )
 
-local Error = setmetatable(errorFuncs, {
+local Error: ErrorTable = setmetatable(ErrorBuffer, {
 	__index = function(self, k)
 		return ErrorBuffer[k] or unknown
 	end
 })
 
-return Error::ErrorTable
+return Error
