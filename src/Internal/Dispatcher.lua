@@ -13,7 +13,9 @@ end
 
 local function doServiceLoopForFragment(fragment, service, state)
 	while not state.Destroyed do
-		service:Updating(fragment, task.wait())
+		local dt = task.wait()
+		if state.Destroyed then break end -- fixes a bug where loops continue an extra tick after destruction
+		service:Updating(fragment, dt)
 	end
 end
 
