@@ -39,6 +39,7 @@ export type Service = {
 	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>,
 
 	Spawning: (Service, BlankFragment) -> (),
+	Updating: (Service, BlankFragment, dt: number) -> (),
 	CreateFragment: <A>(Service, A) -> (),
 	FragmentAdded: (Service, BlankFragment) -> (),
 	FragmentRemoved: (Service, BlankFragment) -> (),
@@ -51,6 +52,7 @@ export type ServiceCtorParams = {
 	EnableTemplates: boolean?,
 
 	Spawning: (Service, BlankFragment) -> ()?,
+	Updating: (Service, BlankFragment, dt: number) -> ()?,
 	CreateFragment: (<A>(Service, A) -> Fragment<A>)?,
 	FragmentAdded: (Service, BlankFragment) -> ()?,
 	FragmentRemoved: (Service, BlankFragment) -> ()?,

@@ -103,6 +103,12 @@ return function(params)
 		end
 	end
 
+	if not raw.Updating then
+		function raw:Updating(fragment, dt)
+			fragment:Update(dt)
+		end
+	end
+
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)

@@ -11,6 +11,12 @@ local function safeAsyncHandler(err)
 	return err
 end
 
+local function doServiceLoopForFragment(fragment, service, state)
+	while not state.Destroyed do
+		service:Updating(fragment, task.wait())
+	end
+end
+
 function Dispatcher.getFragmentState(f)
 	return fragmentDispatchState[f]
 end
@@ -59,6 +65,10 @@ local function runFragmentAction(
 	for _, v in state.HeldThreads do
 		task.spawn(v, ok, err)
 	end
+
+	if service.Updating and f.Update then
+		task.spawn(doServiceLoopForFragment, f, service, state)
+	end
 	
 	return ok, err
 end
@@ -96,6 +106,10 @@ function Dispatcher.spawnFragment(f, fPrivate, xpcallHandler, asyncHandler)
 end
 
 function Dispatcher.cleanFragmentState(f)
+	local state = Dispatcher.getFragmentState(f)
+
+	if not state then return end
+	state.Destroyed = true
 	fragmentDispatchState[f] = nil
 end
 
@@ -145,6 +159,7 @@ function Dispatcher.initFragmentState(f)
 		ErrMsg = nil,
 		Thread = nil,
 		Ready = false,
+		Destroyed = false,
 		XPC = safeAsyncHandler,
 		TimeoutDisabled = false,
 
