@@ -77,7 +77,7 @@ return function(params)
 		
 		local params = initParams or {}
 		params.Name = params.Name or template.Name
-		template:CreateFragment(params)
+		template.CreateFragment(params)
 		return self:Fragment(params)
 	end
 

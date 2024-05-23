@@ -35,8 +35,8 @@ export type Service = {
 
 	Fragment: <A>(Service, A) -> Fragment<A>,
 	
-	Template: (Service, name: string, createFragment: <A>(A) -> A) -> Template,
-	CreateFragmentFromTemplate: <A>(Service, A) -> Fragment<A>,
+	Template: (Service, name: string, createFragment: (BlankFragment) -> ()) -> Template,
+	CreateFragmentFromTemplate: (Service, Template, initParams: {[string]: any}?) -> BlankFragment,
 
 	Spawning: (Service, BlankFragment) -> (),
 	Updating: (Service, BlankFragment, dt: number) -> (),
