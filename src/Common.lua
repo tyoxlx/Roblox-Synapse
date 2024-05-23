@@ -48,6 +48,8 @@ function Common.assignFragmentID(f: Types.Fragment<any>, fPrivate, service)
 		if string.match(id, GUID_PATTERN) then
 			ERROR.GUID_IDS_NOT_ALLOWED(id)
 			fPrivate.ID = HttpService:GenerateGUID(false)
+		else
+			fPrivate.ID = id
 		end
 	else
 		fPrivate.ID = HttpService:GenerateGUID(false)
