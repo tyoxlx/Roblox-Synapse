@@ -81,19 +81,19 @@ return function(params: {[string]: any}, service)
 		
 		if not self[Common.ObjectHeader] then ERROR.BAD_SELF_CALL("Object.Destroy") end
 		local service = ObjectPrivate(self).Service
+		local state = Dispatcher.getObjectState(self)
 
 		if Dispatcher.getObjectState(self) then
 			-- we need to run this in a parallel thread to stop this breaking if called within Init
-			task.spawn(function()
-				Dispatcher.clearRunState(self)
-				Dispatcher.cleanObjectState(self)
-				
-				local destroying = self.Destroying
-				local fragRemoved = service.ObjectRemoved
+			Dispatcher.cleanObjectState(self)
 
-				if destroying then task.spawn(destroying, self) end
-				if fragRemoved then task.spawn(fragRemoved, service, self) end
-			end)
+			local destroying = self.Destroying
+			local fragRemoved = service.ObjectRemoved
+
+			if destroying then task.spawn(destroying, self) end
+			if fragRemoved then task.spawn(fragRemoved, service, self) end
+
+			Dispatcher.stop(self, state)
 		end
 	end
 

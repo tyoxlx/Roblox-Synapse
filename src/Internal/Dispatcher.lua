@@ -89,9 +89,7 @@ local function killThread(t: thread)
 	end
 end
 
-function Dispatcher.clearRunState(o)
-	local state = Dispatcher.getObjectState(o)
-
+function Dispatcher.stop(o, state)
 	-- already destroyed checks
 	if not state then return end
 	if not Dispatcher.isSelfAsyncCall(o) then end
