@@ -33,6 +33,19 @@ local function getObjectStateError(o)
 	return state
 end
 
+local function free(state, ok, err, o, service)
+	state.Ready = true
+	state.IsOK = ok
+	state.ErrMsg = err
+
+	for _, v in state.Dispatchers do
+		task.spawn(v, ok, err)
+	end
+
+	for _, v in state.HeldThreads do
+		task.spawn(v, ok, err)
+	end
+end
 
 local function timeoutTracker(o, state): thread?
 	if state.TimeoutDisabled then return end
@@ -52,27 +65,42 @@ local function runObjectAction(
 	state.Spawned = true
 	state.Thread = coroutine.running()
 
-	local thread = timeoutTracker(o, state)
+	state.TimeoutThread = timeoutTracker(o, state)
 	local ok, err = xpcall(spawnSignal, state.XPC, service, o)
-	if thread then coroutine.close(thread) end
-	
-	state.Ready = true
-	state.IsOK = ok
-	state.ErrMsg = err
+	if state.TimeoutThread then coroutine.close(state.TimeoutThread) end
+	state.TimeoutThread = nil
 
-	for _, v in state.Dispatchers do
-		task.spawn(v, ok, err)
-	end
-
-	for _, v in state.HeldThreads do
-		task.spawn(v, ok, err)
-	end
+	free(state, ok, err, o, service)
 
 	if service.Updating and o.Update then
 		task.spawn(doServiceLoopForObject, o, service, state)
 	end
-	
+
 	return ok, err
+end
+
+local function killThread(t: thread)
+	local co = coroutine.running()
+	if co ~= t then
+		coroutine.close(t)
+	else
+		task.defer(coroutine.close, t)
+		coroutine.yield()
+	end
+end
+
+function Dispatcher.clearRunState(o)
+	local state = Dispatcher.getObjectState(o)
+
+	-- already destroyed checks
+	if not state then return end
+	if not Dispatcher.isSelfAsyncCall(o) then end
+
+	-- not destroyed, kill running thread then free as false
+	killThread(state.Thread)
+	if state.TimeoutThread then killThread(state.TimeoutThread) end
+
+	free(state, false, "Object has been destroyed before it could return")
 end
 
 local function spawnObject(object, service, state, asyncMode)
@@ -144,7 +172,9 @@ end
 
 function Dispatcher.isSelfAsyncCall(o)
 	-- blocks self:Await calls while Init is running
-	local state = getObjectStateError(o)
+	local state = Dispatcher.getObjectState(o)
+	if not state then return false end -- object is destroyed, will never self-await here.
+
 	local co = coroutine.running()
 	
 	if state.Spawned and co == state.Thread then
@@ -161,7 +191,10 @@ function Dispatcher.initObjectState(o)
 		Spawned = false,
 		IsOK = false,
 		ErrMsg = nil,
+
 		Thread = nil,
+		TimeoutThread = nil,
+
 		Ready = false,
 		Destroyed = false,
 		XPC = safeAsyncHandler,

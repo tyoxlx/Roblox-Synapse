@@ -99,10 +99,9 @@ local ErrorBuffer = {
 	DEPRECATED = e("DEPRECATED", "Function %q is deprecated. Use %q instead.", "W"),
 	INTERNAL = e("INTERNAL", "Error: %*. This is likely a known internal error, please report it!", "E"),
 
-	traceback = traceback
+	traceback = traceback,
+	UNKNOWN = e("UNKNOWN", "Unknown Error", "E")
 }
-
-local unknown = e("UNKNOWN", "Unknown Error", "E")
 
 
 
@@ -117,7 +116,7 @@ type ErrorTable = typeof(
 
 local Error: ErrorTable = setmetatable(ErrorBuffer, {
 	__index = function(self, k)
-		return ErrorBuffer[k] or unknown
+		return ErrorBuffer[k] or ErrorBuffer.UNKNOWN
 	end
 })
 

@@ -83,12 +83,17 @@ return function(params: {[string]: any}, service)
 		local service = ObjectPrivate(self).Service
 
 		if Dispatcher.getObjectState(self) then
-			Dispatcher.cleanObjectState(self)
-			local destroying = self.Destroying
-			local fragRemoved = service.ObjectRemoved
+			-- we need to run this in a parallel thread to stop this breaking if called within Init
+			task.spawn(function()
+				Dispatcher.clearRunState(self)
+				Dispatcher.cleanObjectState(self)
+				
+				local destroying = self.Destroying
+				local fragRemoved = service.ObjectRemoved
 
-			if destroying then task.spawn(destroying, self) end
-			if fragRemoved then task.spawn(fragRemoved, service, self) end
+				if destroying then task.spawn(destroying, self) end
+				if fragRemoved then task.spawn(fragRemoved, service, self) end
+			end)
 		end
 	end
 
