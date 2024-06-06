@@ -38,11 +38,14 @@ local function free(state, ok, err, o, service)
 	state.IsOK = ok
 	state.ErrMsg = err
 
-	for _, v in state.Dispatchers do
+	local dispatchers = state.Dispatchers; state.Dispatchers = {}
+	local held = state.HeldThreads; state.HeldThreads = {}
+
+	for _, v in dispatchers do
 		task.spawn(v, ok, err)
 	end
 
-	for _, v in state.HeldThreads do
+	for _, v in held do
 		task.spawn(v, ok, err)
 	end
 end
