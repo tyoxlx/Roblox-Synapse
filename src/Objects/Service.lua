@@ -1,118 +1,129 @@
-local Template = require(script.Parent.Template)
+local Class = require(script.Parent.Class)
 local Dispatcher = require(script.Parent.Parent.Internal.Dispatcher)
-local Fragment = require(script.Parent.Fragment)
+local Object = require(script.Parent.Object)
 local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
 local REFLECTION = require(script.Parent.Parent.Types.Reflection)
 
 local SERVICE_PARAMS = {
 	Name = "string",
+	EnableClasses = "boolean?",
+	EnableUpdating = "boolean?",
 	
 	Spawning = "function?",
-	CreateFragment = "function?",
-	FragmentAdded = "function?",
-	FragmentRemoved = "function?",
-	TemplateAdded = "function?"
+	CreateObject = "function?",
+	ObjectAdded = "function?",
+	ObjectRemoved = "function?",
+	ClassAdded = "function?",
+	Updating = "function?"
 }
 
 local function SERVICE_REFLECTION_TEST(service, fName)
 	return service and service[Common.ServiceHeader], "BAD_SELF_CALL", fName
 end
 
-local function TEMPLATE_REFLECTION_ASSERT(template, fName, idx)
-	-- string|Template
-	local oType = typeof(template)
-	return template and template[Common.TemplateHeader], "BAD_OBJECT", idx, fName, oType, "Template"
+local function CLASS_REFLECTION_ASSERT(class, fName, idx)
+	-- string|Class
+	local oType = typeof(class)
+	return class and class[Common.ClassHeader], "BAD_OBJECT", idx, fName, oType, "Class"
 end
 
 local ServicePrivate = Common.private(function(a)
 	return {
-		Templates = {},
-		EnableTemplates = false
+		Classes = {},
+		EnableClasses = false
 	}
 end)
 
-local function createFragmentForService(params, service)
-	local f = Fragment(params, service)
+local function createObjectForService(params, service)
+	local o = Object(params, service)
 
 	if not Common.AnalysisMode then
-		Dispatcher.initFragmentState(f)
-		local fragAdded = service.FragmentAdded
-		if fragAdded then task.spawn(fragAdded, service, f) end
+		Dispatcher.initObjectState(o)
+		local objAdded = service.ObjectAdded
+		if objAdded then task.spawn(objAdded, service, o) end
 	end
 
-	return f
+	return o
 end
 
 -- Constructor
 return function(params)
-	local enableTemplates = (params.TemplateAdded ~= nil) or params.EnableTemplates
+	local enableClasses = (params.ClassAdded ~= nil) or params.EnableClasses
 
 	local raw = Common.validateTable(params, "Service", SERVICE_PARAMS)	
 	raw[Common.ServiceHeader] = true
 
 	local private = ServicePrivate(raw)
-	private.EnableTemplates = if enableTemplates then enableTemplates else false
-	params.EnableTemplates = nil
 
-	function raw:Template(name, createFragment)
-		REFLECTION.CUSTOM(1, "Service.Template", self, SERVICE_REFLECTION_TEST)
-		REFLECTION.ARG(2, "Service.Template", REFLECTION.STRING, name)
-		REFLECTION.ARG(3, "Service.Template", REFLECTION.FUNCTION, createFragment)
+	local enableUpdateLoop = if raw.EnableUpdating ~= nil then raw.EnableUpdating else false
+	private.EnableClasses = if enableClasses then enableClasses else false
+	raw.EnableClasses = nil
+	raw.EnableUpdateLoop = nil
 
-		return Template(self, ServicePrivate(self), name, createFragment)
+	function raw:Class(name, createObject)
+		REFLECTION.CUSTOM(1, "Service.Class", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Service.Class", REFLECTION.STRING, name)
+		REFLECTION.ARG(3, "Service.Class", REFLECTION.FUNCTION, createObject)
+
+		return Class(self, ServicePrivate(self), name, createObject)
 	end
 
-	function raw:CreateFragmentFromTemplate(template, initParams)
-		REFLECTION.CUSTOM(1, "Service.CreateFragmentFromTemplate", self, SERVICE_REFLECTION_TEST)
-		REFLECTION.CUSTOM(2, "Service.CreateFragmentFromTemplate", template, TEMPLATE_REFLECTION_ASSERT)
-		REFLECTION.ARG(3, "Service.CreateFragmentFromTemplate", REFLECTION.OPT_TABLE, initParams)
+	function raw:CreateObjectFromClass(class, initParams)
+		REFLECTION.CUSTOM(1, "Service.CreateObjectFromClass", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.CUSTOM(2, "Service.CreateObjectFromClass", class, CLASS_REFLECTION_ASSERT)
+		REFLECTION.ARG(3, "Service.CreateObjectFromClass", REFLECTION.OPT_TABLE, initParams)
 
 		local private = ServicePrivate(self)
-		if not private.EnableTemplates then ERROR.SERVICE_NO_TEMPLATES(self) end
+		if not private.EnableClasses then ERROR.SERVICE_NO_CLASSES(self) end
 
-		if private.Templates[template.Name] ~= template then
-			ERROR.BAD_TEMPLATE(template.Name, self)
+		if private.Classes[class.Name] ~= class then
+			ERROR.BAD_CLASS(class.Name, self)
 		end
 		
 		local params = initParams or {}
-		params.Name = params.Name or template.Name
-		template.CreateFragment(params)
-		return self:Fragment(params)
+		params.Name = params.Name or class.Name
+		class.CreateObject(params)
+		return self:Object(params)
 	end
 
-	function raw:Fragment(params)
-		REFLECTION.CUSTOM(1, "Service.Fragment", self, SERVICE_REFLECTION_TEST)
-		REFLECTION.ARG(2, "Service.Fragment", REFLECTION.TABLE, params)
+	function raw:Object(params)
+		REFLECTION.CUSTOM(1, "Service.Object", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.ARG(2, "Service.Object", REFLECTION.TABLE, params)
 
-		if self.CreateFragment then self:CreateFragment(params) end
-		return createFragmentForService(params, self)
+		if self.CreateObject then self:CreateObject(params) end
+		return createObjectForService(params, self)
 	end
 
 	if not raw.Spawning then
-		function raw:Spawning(fragment)
-			local i = fragment.Init
+		function raw:Spawning(object)
+			local i = object.Init
 			if not i then return end
-			i(fragment)
+			i(object)
 		end
 	end
 
-	if not raw.FragmentAdded then
-		function raw:FragmentAdded(fragment)
-			fragment:Spawn()
+	if not raw.ObjectAdded then
+		function raw:ObjectAdded(object)
+			object:Spawn()
 		end
 	end
 
-	if not raw.Updating then
-		function raw:Updating(fragment, dt)
-			fragment:Update(dt)
+	if enableUpdateLoop then
+		if not raw.Updating then
+			function raw:Updating(object, dt)
+				object:Update(dt)
+			end
 		end
+	elseif raw.Updating then
+		ERROR.SERVICE_UPDATING_DISABLED(raw.Name)
+		raw.Updating = nil
 	end
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				return `CatworkService({self.Name} Templates: {ServicePrivate(self).EnableTemplates})`
+				return `CatworkService({self.Name} Classes: {ServicePrivate(self).EnableClasses})`
 			end,
 		})
 	end

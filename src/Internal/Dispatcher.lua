@@ -1,50 +1,50 @@
 -- better to handle this in its own module than try to weave it into Catwork
--- handles dispatching of Fragments
+-- handles dispatching of objects
 
 local ERROR = require(script.Parent.Error)
 
 local Dispatcher = {}
-local fragmentDispatchState = {}
+local objectDispatchState = {}
 
 local function safeAsyncHandler(err)
 	ERROR.DISPATCHER_SPAWN_ERR(ERROR.traceback(err))
 	return err
 end
 
-local function doServiceLoopForFragment(fragment, service, state)
+local function doServiceLoopForObject(object, service, state)
 	while not state.Destroyed do
 		local dt = task.wait()
 		if state.Destroyed then break end -- fixes a bug where loops continue an extra tick after destruction
-		service:Updating(fragment, dt)
+		service:Updating(object, dt)
 	end
 end
 
-function Dispatcher.getFragmentState(f)
-	return fragmentDispatchState[f]
+function Dispatcher.getObjectState(o)
+	return objectDispatchState[o]
 end
 
-local function getFragmentStateError(f)
-	local state = Dispatcher.getFragmentState(f)
+local function getObjectStateError(o)
+	local state = Dispatcher.getObjectState(o)
 	
 	if not state then
-		ERROR.DISPATCHER_DESTROYED_FRAGMENT(f)
+		ERROR.DISPATCHER_DESTROYED_OBJECT(o)
 	end
 
 	return state
 end
 
 
-local function timeoutTracker(f, state): thread?
+local function timeoutTracker(o, state): thread?
 	if state.TimeoutDisabled then return end
 
 	return task.spawn(function(self)
 		task.wait(5)
 		ERROR.DISPATCHER_TIMEOUT(self)
-	end, f)
+	end, o)
 end
 
-local function runFragmentAction(
-	f,
+local function runObjectAction(
+	o,
 	spawnSignal,
 	service,
 	state
@@ -52,8 +52,8 @@ local function runFragmentAction(
 	state.Spawned = true
 	state.Thread = coroutine.running()
 
-	local thread = timeoutTracker(f, state)
-	local ok, err = xpcall(spawnSignal, state.XPC, service, f)
+	local thread = timeoutTracker(o, state)
+	local ok, err = xpcall(spawnSignal, state.XPC, service, o)
 	if thread then coroutine.close(thread) end
 	
 	state.Ready = true
@@ -68,55 +68,56 @@ local function runFragmentAction(
 		task.spawn(v, ok, err)
 	end
 
-	if service.Updating and f.Update then
-		task.spawn(doServiceLoopForFragment, f, service, state)
+	if service.Updating and o.Update then
+		task.spawn(doServiceLoopForObject, o, service, state)
 	end
 	
 	return ok, err
 end
 
-local function spawnFragment(self, service, state, asyncMode)
+local function spawnObject(object, service, state, asyncMode)
 	local spawnSignal = service.Spawning
 
 	if asyncMode then
-		self:HandleAsync(asyncMode)
+		object:HandleAsync(asyncMode)
 	end
 
-	task.spawn(runFragmentAction, self, spawnSignal, service, state)
+	task.spawn(runObjectAction, object, spawnSignal, service, state)
 
 	if not asyncMode then
-		return self:Await()
+		return object:Await()
 	end
 
 	return nil
 end
 
-function Dispatcher.spawnFragment(f, fPrivate, xpcallHandler, asyncHandler)
-	local state = getFragmentStateError(f)
+function Dispatcher.spawnObject(o, fPrivate, xpcallHandler, asyncHandler)
+	local state = getObjectStateError(o)
 	state.TimeoutDisabled = fPrivate.TimeoutDisabled
 	
 	-- basically new logic for Spawn
 	if state.Spawned then
-		ERROR:DISPATCHER_ALREADY_SPAWNED(f)
+		ERROR:DISPATCHER_ALREADY_SPAWNED(o)
 	end
 
 	if xpcallHandler then
 		state.XPC = xpcallHandler
 	end
 
-	return spawnFragment(f, fPrivate.Service, state, asyncHandler)
+	return spawnObject(o, fPrivate.Service, state, asyncHandler)
 end
 
-function Dispatcher.cleanFragmentState(f)
-	local state = Dispatcher.getFragmentState(f)
+function Dispatcher.cleanObjectState(o)
+	local state = Dispatcher.getObjectState(o)
 
 	if not state then return end
 	state.Destroyed = true
-	fragmentDispatchState[f] = nil
+	objectDispatchState[o] = nil
 end
 
-function Dispatcher.slotAwait(f)
-	local state = getFragmentStateError(f)
+function Dispatcher.slotAwait(o)
+	local state = Dispatcher.getObjectState(o)
+	if not state then return false, "The object was destroyed" end
 
 	if state.ErrMsg then
 		return false, state.ErrMsg
@@ -128,8 +129,9 @@ function Dispatcher.slotAwait(f)
 	return coroutine.yield()
 end
 
-function Dispatcher.slotHandleAsync(f, asyncHandler)
-	local state = getFragmentStateError(f)
+function Dispatcher.slotHandleAsync(o, asyncHandler)
+	local state = Dispatcher.getObjectState(o)
+	if not state then task.spawn(asyncHandler, false, "The object was destroyed") end
 
 	if state.ErrMsg then
 		asyncHandler(false, state.ErrMsg)
@@ -140,9 +142,9 @@ function Dispatcher.slotHandleAsync(f, asyncHandler)
 	end
 end
 
-function Dispatcher.isSelfAsyncCall(f)
+function Dispatcher.isSelfAsyncCall(o)
 	-- blocks self:Await calls while Init is running
-	local state = getFragmentStateError(f)
+	local state = getObjectStateError(o)
 	local co = coroutine.running()
 	
 	if state.Spawned and co == state.Thread then
@@ -152,8 +154,8 @@ function Dispatcher.isSelfAsyncCall(f)
 	return false
 end
 
-function Dispatcher.initFragmentState(f)
-	if fragmentDispatchState[f] then return fragmentDispatchState[f] end
+function Dispatcher.initObjectState(o)
+	if objectDispatchState[o] then return objectDispatchState[o] end
 
 	local state = {
 		Spawned = false,
@@ -168,7 +170,7 @@ function Dispatcher.initFragmentState(f)
 		HeldThreads = {},
 		Dispatchers = {}
 	}
-	fragmentDispatchState[f] = state
+	objectDispatchState[o] = state
 
 	return state
 end

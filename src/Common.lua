@@ -40,7 +40,7 @@ function Common.validateTable(tab, oName, rules: {[string]: string})
 	return tab
 end
 
-function Common.assignFragmentID(f: Types.Fragment<any>, fPrivate, service)
+function Common.assignObjectID(f: Types.Object<any>, fPrivate, service)
 	local id = f.ID
 	f.ID = nil
 
@@ -72,8 +72,8 @@ end
 
 -- Headers
 Common.ServiceHeader = newproxy(false)
-Common.FragmentHeader = newproxy(false)
-Common.TemplateHeader = newproxy(false)
+Common.ObjectHeader = newproxy(false)
+Common.ClassHeader = newproxy(false)
 
 -- Native Service
 Common.NativeService = {} :: Types.Service

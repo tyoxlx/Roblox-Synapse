@@ -8,5 +8,5 @@ local native = Service {
 }
 
 return function(params)
-	return native:Fragment(params)
+	return native:Object(params)
 end

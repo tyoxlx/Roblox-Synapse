@@ -2,12 +2,12 @@ local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
 
 
-return function(service, sPrivate, name, createFragment)
+return function(service, sPrivate, name, createObject)
 	-- just clones the template params and pushes it to the service if its nil
 	local params = {}
 	params.Name = name
-	params.CreateFragment = createFragment
-	params[Common.TemplateHeader] = true
+	params.CreateClass = createObject
+	params[Common.ClassHeader] = true
 
 	if not sPrivate.EnableTemplates then
 		ERROR.SERVICE_NO_TEMPLATES(service)

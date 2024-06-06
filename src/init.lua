@@ -9,8 +9,8 @@ local REFLECTION = require(script.Types.Reflection)
 local ERROR = require(script.Internal.Error)
 
 local Catwork
-export type Fragment<Parameters> = Types.Fragment<Parameters>
-export type Template = Types.Template
+export type Object<Parameters> = Types.Object<Parameters>
+export type Class = Types.Class
 export type Service = Types.Service
 
 Catwork = setmetatable({
@@ -18,8 +18,8 @@ Catwork = setmetatable({
 	Plugin = script:FindFirstAncestorOfClass("Plugin"),
 	
 	-- Constructors
-	Fragment = function<A>(params: A): Types.Fragment<A>
-		REFLECTION.ARG(1, "Catwork.Fragment", REFLECTION.TABLE, params)
+	new = function<A>(params: A): Types.Object<A>
+		REFLECTION.ARG(1, "Catwork.new", REFLECTION.TABLE, params)
 
 		return Native(params)
 	end,
@@ -28,6 +28,11 @@ Catwork = setmetatable({
 		REFLECTION.ARG(1, "Catwork.Service", REFLECTION.TABLE, params)
 
 		return Service(params)
+	end,
+
+	-- Deprecated
+	Fragment = function(params)
+		ERROR.FRAGMENT_DEPRECATED_MIGRATION()
 	end,
 
 	EnableAnalysis = function(self: Catwork)
