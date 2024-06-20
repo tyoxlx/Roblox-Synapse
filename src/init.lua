@@ -30,7 +30,7 @@ Catwork = setmetatable({
 		return Service(params)
 	end,
 
-	Class = function<A>(name: string, createFn: (Types.Object<A>)): ({[string]: any}) -> Types.Object<A>
+	Class = function<A>(name: string, createFn: (Types.Object<A>) -> ()): ({[string]: any}) -> Types.Object<A>
 		return Native.GetClassLike(name, createFn)
 	end,
 
