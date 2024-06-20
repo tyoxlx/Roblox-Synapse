@@ -3,8 +3,8 @@
 -- if you experience problems, please file a Pull request
 
 export type Object<A> = {
+	Name: string,
 	GetID: (Object<A>, full: boolean?) -> string,
-	GetName: (Object<A>) -> string,
 
 	Destroy: (Object<A>) -> (),
 	Spawn: (

@@ -24,7 +24,6 @@ return function(params: {[string]: any}, service)
 	local private = {
 		ID = "",
 		FullID = "",
-		Name = params.Name or `CatworkObject`,
 		Service = service,
 		TimeoutDisabled = if params.TimeoutDisabled then params.TimeoutDisabled else false
 	}
@@ -32,7 +31,7 @@ return function(params: {[string]: any}, service)
 	OBJECT_PRIVATE[raw] = private
 	raw[Common.ObjectHeader] = true
 	Common.assignObjectID(raw, private, service)
-	raw.Name = nil
+	raw.Name = params.Name or `CatworkObject`
 	
 	function raw:Spawn(xpcallHandler, asyncHandler)
 		if Common.AnalysisMode then return end
@@ -64,12 +63,6 @@ return function(params: {[string]: any}, service)
 		
 		return full and OBJECT_PRIVATE[self].FullID or OBJECT_PRIVATE[self].ID
 	end
-	
-	function raw:GetName()
-		REFLECTION.CUSTOM(1, "Object.GetName", self, OBJECT_REFLECTION_TEST)
-		
-		return OBJECT_PRIVATE[self].Name
-	end
 
 	function raw:Destroy()
 		REFLECTION.CUSTOM(1, "Object.Destroy", self, OBJECT_REFLECTION_TEST)
@@ -96,7 +89,7 @@ return function(params: {[string]: any}, service)
 		setmetatable(raw, {
 			__tostring = function(self)
 				local private = OBJECT_PRIVATE[self]
-				return `CatworkAsyncObject({private.Name}::{private.FullID})`
+				return `CatworkAsyncObject({self.Name}::{private.FullID})`
 			end
 		})
 	end
