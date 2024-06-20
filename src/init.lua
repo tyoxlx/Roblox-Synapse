@@ -21,13 +21,17 @@ Catwork = setmetatable({
 	new = function<A>(params: A): Types.Object<A>
 		REFLECTION.ARG(1, "Catwork.new", REFLECTION.TABLE, params)
 
-		return Native(params)
+		return Native.Object(params)
 	end,
 	
 	Service = function(params: Types.ServiceCtorParams): Types.Service
 		REFLECTION.ARG(1, "Catwork.Service", REFLECTION.TABLE, params)
 
 		return Service(params)
+	end,
+
+	Class = function<A>(name: string, createFn: (Types.Object<A>)): ({[string]: any}) -> Types.Object<A>
+		return Native.GetClassLike(name, createFn)
 	end,
 
 	-- Deprecated

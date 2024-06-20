@@ -6,8 +6,6 @@ local VERSION = "0.5.0"
 local GUID_PATTERN = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
 
 local Common = {}
-local PrivateStore = setmetatable({}, {__mode = "k"})
-
 -- Flags
 Common.Flags = {
 	DONT_ASSIGN_OBJECT_MT = false,
@@ -56,18 +54,6 @@ function Common.assignObjectID(f: Types.Object<any>, fPrivate, service)
 	end
 
 	fPrivate.FullID = `{service.Name}_{fPrivate.ID}`
-end
-
-function Common.private<A,B>(generator: (A) -> B): (A) -> B
-	return function(obj: A): B
-		local privateObj = PrivateStore[obj]
-		if not privateObj then
-			privateObj = generator(obj)
-			PrivateStore[obj] = privateObj
-		end
-
-		return privateObj
-	end
 end
 
 -- Headers

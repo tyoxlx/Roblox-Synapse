@@ -28,13 +28,6 @@ local function CLASS_REFLECTION_ASSERT(class, fName, idx)
 	return class and class[Common.ClassHeader], "BAD_OBJECT", idx, fName, oType, "Class"
 end
 
-local ServicePrivate = Common.private(function(a)
-	return {
-		Classes = {},
-		EnableClasses = false
-	}
-end)
-
 local function createObjectForService(params, service)
 	local o = Object(params, service)
 
@@ -54,31 +47,25 @@ return function(params)
 	local raw = Common.validateTable(params, "Service", SERVICE_PARAMS)	
 	raw[Common.ServiceHeader] = true
 
-	local private = ServicePrivate(raw)
-
 	local enableUpdateLoop = if raw.EnableUpdating ~= nil then raw.EnableUpdating else false
-	private.EnableClasses = if enableClasses then enableClasses else false
-	raw.EnableClasses = nil
-	raw.EnableUpdateLoop = nil
+	raw.enableClasses = enableClasses
 
 	function raw:Class(name, createObject)
 		REFLECTION.CUSTOM(1, "Service.Class", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.ARG(2, "Service.Class", REFLECTION.STRING, name)
 		REFLECTION.ARG(3, "Service.Class", REFLECTION.FUNCTION, createObject)
 
-		return Class(self, ServicePrivate(self), name, createObject)
+		return Class(self, name, createObject)
 	end
 
 	function raw:CreateObjectFromClass(class, initParams)
 		REFLECTION.CUSTOM(1, "Service.CreateObjectFromClass", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.CUSTOM(2, "Service.CreateObjectFromClass", class, CLASS_REFLECTION_ASSERT)
 		REFLECTION.ARG(3, "Service.CreateObjectFromClass", REFLECTION.OPT_TABLE, initParams)
+		if not self.EnableClasses then ERROR.SERVICE_NO_CLASSES(self.Name) end
 
-		local private = ServicePrivate(self)
-		if not private.EnableClasses then ERROR.SERVICE_NO_CLASSES(self) end
-
-		if private.Classes[class.Name] ~= class then
-			ERROR.BAD_CLASS(class.Name, self)
+		if class.Service ~= self then
+			ERROR.BAD_CLASS(class.Name, self.Name)
 		end
 		
 		local params = initParams or {}
@@ -123,7 +110,7 @@ return function(params)
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				return `CatworkService({self.Name} Classes: {ServicePrivate(self).EnableClasses})`
+				return `CatworkService({self.Name}; Classes: {self.EnableClasses})`
 			end,
 		})
 	end

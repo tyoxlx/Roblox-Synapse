@@ -2,19 +2,16 @@ local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
 
 
-return function(service, sPrivate, name, createObject)
+return function(service, name, createObject)
 	-- just clones the template params and pushes it to the service if its nil
 	local params = {}
+	params.Service = service
 	params.Name = name
-	params.CreateClass = createObject
+	params.CreateObject = createObject
 	params[Common.ClassHeader] = true
 
-	if not sPrivate.EnableTemplates then
-		ERROR.SERVICE_NO_TEMPLATES(service)
-	end
-
-	if sPrivate.Templates[name] then
-		ERROR.SERVICE_DUPLICATE_TEMPLATE(name)
+	if not service.EnableClasses then
+		ERROR.SERVICE_NO_CLASSES(service.Name)
 	end
 	
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
@@ -28,7 +25,6 @@ return function(service, sPrivate, name, createObject)
 	table.freeze(params)
 
 	if not Common.AnalysisMode then
-		sPrivate.Templates[name] = params
 		if service.TemplateAdded then
 			service:TemplateAdded(params)
 		end

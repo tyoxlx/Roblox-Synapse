@@ -26,6 +26,7 @@ export type BlankObject = Object<{[string]: any}>
 
 export type Class = {
 	Name: string,
+	Service: Service,
 	CreateObject: <A>(A) -> Object<A>,
 }
 

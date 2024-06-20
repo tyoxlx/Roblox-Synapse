@@ -16,26 +16,21 @@ local function OBJECT_REFLECTION_TEST(object, oName)
 	return object and object[Common.ObjectHeader], "BAD_SELF_CALL", oName
 end
 
-local ObjectPrivate = Common.private(function()
-	return {
-		ID = "",
-		FullID = "",
-		Name = "",
-		Service = nil,
-		TimeoutDisabled = false
-	}
-end)
+local OBJECT_PRIVATE = {}
 
 return function(params: {[string]: any}, service)
 	local raw = Common.validateTable(params, "Object", OBJECT_PARAMS)
-	local private = ObjectPrivate(raw)
 
+	local private = {
+		ID = "",
+		FullID = "",
+		Name = params.Name or `CatworkObject`,
+		Service = service,
+		TimeoutDisabled = if params.TimeoutDisabled then params.TimeoutDisabled else false
+	}
+
+	OBJECT_PRIVATE[raw] = private
 	raw[Common.ObjectHeader] = true
-
-	private.TimeoutDisabled = if params.TimeoutDisabled then params.TimeoutDisabled else false
-	private.Name = params.Name or `CatworkObject`
-	private.Service = service
-
 	Common.assignObjectID(raw, private, service)
 	raw.Name = nil
 	
@@ -46,13 +41,13 @@ return function(params: {[string]: any}, service)
 		REFLECTION.ARG(2, "Object.Spawn", REFLECTION.OPT_FUNCTION, xpcallHandler)
 		REFLECTION.ARG(3, "Object.Spawn", REFLECTION.OPT_FUNCTION, asyncHandler)
 
-		return Dispatcher.spawnObject(self, ObjectPrivate(self), xpcallHandler, asyncHandler)
+		return Dispatcher.spawnObject(self, OBJECT_PRIVATE[self], xpcallHandler, asyncHandler)
 	end
 	
 	function raw:Await()
 		REFLECTION.CUSTOM(1, "Object.Await", self, OBJECT_REFLECTION_TEST)
 		
-		if Dispatcher.isSelfAsyncCall(self) then ERROR.OBJECT_SELF_AWAIT(self) end
+		if Dispatcher.isSelfAsyncCall(self) then ERROR.OBJECT_SELF_AWAIT(self.Name) end
 		return Dispatcher.slotAwait(self)
 	end
 	
@@ -67,25 +62,25 @@ return function(params: {[string]: any}, service)
 		REFLECTION.CUSTOM(1, "Object.GetID", self, OBJECT_REFLECTION_TEST)
 		REFLECTION.ARG(2, "Object.GetID", REFLECTION.OPT_BOOLEAN, full)		
 		
-		return full and ObjectPrivate(self).FullID or ObjectPrivate(self).ID
+		return full and OBJECT_PRIVATE[self].FullID or OBJECT_PRIVATE[self].ID
 	end
 	
 	function raw:GetName()
 		REFLECTION.CUSTOM(1, "Object.GetName", self, OBJECT_REFLECTION_TEST)
 		
-		return ObjectPrivate(self).Name
+		return OBJECT_PRIVATE[self].Name
 	end
 
 	function raw:Destroy()
 		REFLECTION.CUSTOM(1, "Object.Destroy", self, OBJECT_REFLECTION_TEST)
 		
 		if not self[Common.ObjectHeader] then ERROR.BAD_SELF_CALL("Object.Destroy") end
-		local service = ObjectPrivate(self).Service
+		local service = OBJECT_PRIVATE[self].Service
 		local state = Dispatcher.getObjectState(self)
 
 		if Dispatcher.getObjectState(self) then
-			-- we need to run this in a parallel thread to stop this breaking if called within Init
 			Dispatcher.cleanObjectState(self)
+			OBJECT_PRIVATE[self] = nil
 
 			local destroying = self.Destroying
 			local fragRemoved = service.ObjectRemoved
@@ -100,8 +95,8 @@ return function(params: {[string]: any}, service)
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				local private = ObjectPrivate(self)
-				return `CatworkObject({private.Name}::{private.FullID})`
+				local private = OBJECT_PRIVATE[self]
+				return `CatworkAsyncObject({private.Name}::{private.FullID})`
 			end
 		})
 	end
