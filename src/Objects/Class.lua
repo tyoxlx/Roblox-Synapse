@@ -25,8 +25,8 @@ return function(service, name, createObject)
 	table.freeze(params)
 
 	if not Common.AnalysisMode then
-		if service.TemplateAdded then
-			service:TemplateAdded(params)
+		if service.ClassAdded then
+			service:ClassAdded(params)
 		end
 	end
 
