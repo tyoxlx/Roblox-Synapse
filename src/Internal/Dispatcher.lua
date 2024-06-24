@@ -27,7 +27,7 @@ local function getObjectStateError(o)
 	local state = Dispatcher.getObjectState(o)
 	
 	if not state then
-		ERROR.DISPATCHER_DESTROYED_OBJECT(o)
+		ERROR.DISPATCHER_DESTROYED_OBJECT(o:GetID(true))
 	end
 
 	return state
@@ -55,7 +55,7 @@ local function timeoutTracker(o, state): thread?
 
 	return task.spawn(function(self)
 		task.wait(5)
-		ERROR.DISPATCHER_TIMEOUT(self)
+		ERROR.DISPATCHER_TIMEOUT(self:GetID(true))
 	end, o)
 end
 

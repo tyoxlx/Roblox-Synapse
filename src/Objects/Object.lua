@@ -31,7 +31,7 @@ return function(params: {[string]: any}, service)
 	OBJECT_PRIVATE[raw] = private
 	raw[Common.ObjectHeader] = true
 	Common.assignObjectID(raw, private, service)
-	raw.Name = params.Name or `CatworkObject`
+	raw.Name = params.Name or `CatworkAsyncObject`
 	
 	function raw:Spawn(xpcallHandler, asyncHandler)
 		if Common.AnalysisMode then return end
@@ -46,7 +46,7 @@ return function(params: {[string]: any}, service)
 	function raw:Await()
 		REFLECTION.CUSTOM(1, "Object.Await", self, OBJECT_REFLECTION_TEST)
 		
-		if Dispatcher.isSelfAsyncCall(self) then ERROR.OBJECT_SELF_AWAIT(self.Name) end
+		if Dispatcher.isSelfAsyncCall(self) then ERROR.OBJECT_SELF_AWAIT(self:GetID(true)) end
 		return Dispatcher.slotAwait(self)
 	end
 	

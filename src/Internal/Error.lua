@@ -77,9 +77,6 @@ local ErrorBuffer = {
 	BAD_TABLE_SHAPE = e("BAD_TABLE_SHAPE", "Object %* cannot be converted to %s. Type of key %s is invalid. Expected %q, got %q.", "E"),
 	GUID_IDS_NOT_ALLOWED = e("GUID_IDS_NOT_ALLOWED", "Cannot use Object ID %s, a new ID has been generated.", "W"),
 
-	DUPLICATE_SERVICE = e("DUPLICATE_SERVICE", "Service %s is already defined.", "E"),
-	DUPLICATE_OBJECT = e("DUPLICATE_OBJECT", "Object %s is already defined", "E"),
-
 	ANALYSIS_MODE_NOT_AVAILABLE = e("ANALYSIS_MODE_NOT_AVAILABLE", "Analysis mode cannot be used in %s", "E"),
 
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Object %s has already been spawned.", "E"),
@@ -90,7 +87,6 @@ local ErrorBuffer = {
 	OBJECT_SELF_AWAIT = e("OBJECT_SELF_AWAIT", "Object %s is awaiting upon itself and will never resolve. Use HandleAsync instead.", "W"),
 
 	SERVICE_NO_CLASSES = e("SERVICE_NO_CLASSES", "Service %s does not implement classes.", "E"),
-	SERVICE_DUPLICATE_CLASS = e("SERVICE_DUPLICATE_CLASS", "Class %s already exists", "E"),
 	SERVICE_UPDATING_DISABLED = e("SERVICE_UPDATING_DISABLED", "Updating is not enabled on service %s, yet it implements Updating. This can be fixed by adding `[meta \"EnableUpdating\"] = true` to your service definition.", "W"),
 
 	-- Remove in 0.5.1
