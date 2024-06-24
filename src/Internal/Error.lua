@@ -85,13 +85,13 @@ local ErrorBuffer = {
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Object %s has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_OBJECT = e("DISPATCHER_DESTROYED_OBJECT", "Object %s cannot be spawned because it has been destroyed.", "E"),
 	DISPATCHER_SPAWN_ERR = e("DISPATCHER_SPAWN_ERR", "An object experienced an error while spawning: %s", "W"),
-	DISPATCHER_TIMEOUT = e("DISPATCHER_TIMEOUT", "Object %s is taking a long time to intialise. If this is intentional, disable with `TimeoutDisabled = true`", "W"),
+	DISPATCHER_TIMEOUT = e("DISPATCHER_TIMEOUT", "Object %s is taking a long time to intialise. If this is intentional, disable with `[meta \"TimeoutDisabled\"] = true`", "W"),
 	
 	OBJECT_SELF_AWAIT = e("OBJECT_SELF_AWAIT", "Object %s is awaiting upon itself and will never resolve. Use HandleAsync instead.", "W"),
 
 	SERVICE_NO_CLASSES = e("SERVICE_NO_CLASSES", "Service %s does not implement classes.", "E"),
 	SERVICE_DUPLICATE_CLASS = e("SERVICE_DUPLICATE_CLASS", "Class %s already exists", "E"),
-	SERVICE_UPDATING_DISABLED = e("SERVICE_UPDATING_DISABLED", "Updating is not enabled on service %s, yet it implements Updating. This can be fixed by adding EnableUpdating = true to your service definition.", "W"),
+	SERVICE_UPDATING_DISABLED = e("SERVICE_UPDATING_DISABLED", "Updating is not enabled on service %s, yet it implements Updating. This can be fixed by adding `[meta \"EnableUpdating\"]` = true to your service definition.", "W"),
 
 	-- Remove in 0.5.1
 	FRAGMENT_DEPRECATED_MIGRATION = e("FRAGMENT_DEPRECATED_MIGRATION", `Catwork.Fragment is deprecated and no longer works, use Catwork.new instead.\n\nIf migrating from 0.4.x, please read this guide: {FRAGMENT_DEP_GUIDE}`, "E"),
