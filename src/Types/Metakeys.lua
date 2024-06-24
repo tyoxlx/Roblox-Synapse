@@ -5,10 +5,7 @@ local MetakeySymbolic = newproxy(false)
 local function metakey<A>(key): Types.Metakey<A>
 	return setmetatable({
 		[MetakeySymbolic] = true,
-		Key = key,
-		IsA = function(lhs: Types.Metakey<A>, rhs: string)
-			return lhs.Key == rhs
-		end
+		Key = key
 	}, {
 		__tostring = function(self)
 			return `Metakey<{self.Key}>`

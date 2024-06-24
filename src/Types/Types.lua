@@ -3,8 +3,7 @@
 -- if you experience problems, please file a Pull request
 
 export type Metakey<A> = typeof(setmetatable({}::{
-	Key: A,
-	IsA: (lhs: Metakey<A>, string) -> boolean
+	Key: A
 }, {}::{
 	__tostring: (Metakey<A>) -> string
 }))
