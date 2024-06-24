@@ -24,7 +24,8 @@ return function(params: {[string]: any}, service)
 		ID = "",
 		FullID = "",
 		Service = service,
-		TimeoutDisabled = if metakeys.TimeoutDisabled then metakeys.TimeoutDisabled else false
+		TimeoutDisabled = if metakeys.TimeoutDisabled then metakeys.TimeoutDisabled else false,
+		AwaitFor = metakeys.AwaitFor or {}
 	}
 
 	OBJECT_PRIVATE[raw] = private

@@ -16,7 +16,13 @@ local function metakey<A>(key): Types.Metakey<A>
 	})
 end
 
-type METAKEY_WELL_KNOWN = "EnableClasses"|"EnableUpdating"|"TimeoutDisabled"
+type METAKEY_WELL_KNOWN = 
+	"AwaitFor"
+	|"EnableClasses"
+	|"EnableUpdating"
+	|"PluginMetadata"
+	|"TimeoutDisabled"
+
 local MetakeyMemoization = {}
 
 return {

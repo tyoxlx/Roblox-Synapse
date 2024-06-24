@@ -68,6 +68,10 @@ local function runObjectAction(
 	state.Spawned = true
 	state.Thread = coroutine.running()
 
+	for _, v in state.AwaitFor do
+		v:Await()
+	end
+
 	state.TimeoutThread = timeoutTracker(o, state)
 	local ok, err = xpcall(spawnSignal, state.XPC, service, o)
 	if state.TimeoutThread then coroutine.close(state.TimeoutThread) end
@@ -123,6 +127,7 @@ end
 function Dispatcher.spawnObject(o, fPrivate, xpcallHandler, asyncHandler)
 	local state = getObjectStateError(o)
 	state.TimeoutDisabled = fPrivate.TimeoutDisabled
+	state.AwaitFor = fPrivate.AwaitFor
 	
 	-- basically new logic for Spawn
 	if state.Spawned then
@@ -201,6 +206,7 @@ function Dispatcher.initObjectState(o)
 		XPC = safeAsyncHandler,
 		TimeoutDisabled = false,
 
+		AwaitFor = {},
 		HeldThreads = {},
 		Dispatchers = {}
 	}
