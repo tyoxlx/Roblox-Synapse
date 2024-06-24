@@ -37,7 +37,6 @@ export type Class = {
 }
 
 export type Service = {
-	EnableClasses: boolean,
 	Name: string,
 	Object: <A>(Service, A) -> Object<A>,
 	
@@ -54,9 +53,6 @@ export type Service = {
 
 export type ServiceCtorParams = {
 	Name: string,
-
-	EnableUpdating: boolean?,
-	EnableClasses: boolean?,
 
 	Spawning: (Service, BlankObject) -> ()?,
 	Updating: (Service, BlankObject, dt: number) -> ()?,
