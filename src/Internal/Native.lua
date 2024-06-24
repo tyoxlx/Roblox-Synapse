@@ -2,9 +2,10 @@
 -- as the default Service behaviour
 
 local Service = require(script.Parent.Parent.Objects.Service)
+local meta = require(script.Parent.Parent.Types.Metakeys).export
 
 local native = Service {
-	EnableClasses = true,
+	[meta "EnableClasses"] = true,
 	Name = "catwork",
 }
 

@@ -9,7 +9,6 @@ local OBJECT_PARAMS = {
 	Destroying = "function?",
 	Init = "function?",
 	Updating = "function?",
-	TimeoutDisabled = "boolean?"
 }
 
 local function OBJECT_REFLECTION_TEST(object, oName)
@@ -19,13 +18,13 @@ end
 local OBJECT_PRIVATE = {}
 
 return function(params: {[string]: any}, service)
-	local raw = Common.validateTable(params, "Object", OBJECT_PARAMS)
+	local raw, metakeys = Common.validateTable(params, "Object", OBJECT_PARAMS)
 
 	local private = {
 		ID = "",
 		FullID = "",
 		Service = service,
-		TimeoutDisabled = if params.TimeoutDisabled then params.TimeoutDisabled else false
+		TimeoutDisabled = if metakeys.TimeoutDisabled then metakeys.TimeoutDisabled else false
 	}
 
 	OBJECT_PRIVATE[raw] = private

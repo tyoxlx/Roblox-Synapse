@@ -2,6 +2,13 @@
 -- for the time being, we should let most stuff pass
 -- if you experience problems, please file a Pull request
 
+export type Metakey<A> = typeof(setmetatable({}::{
+	Key: A,
+	IsA: (lhs: Metakey<A>, string) -> boolean
+}, {}::{
+	__tostring: (Metakey<A>) -> string
+}))
+
 export type Object<A> = {
 	Name: string,
 	GetID: (Object<A>, full: boolean?) -> string,
@@ -59,7 +66,7 @@ export type ServiceCtorParams = {
 	ObjectRemoved: (Service, BlankObject) -> ()?,
 	ClassAdded: (Service, Class) -> ()?,
 
-	[string]: any
+	[string|Metakey<any>]: any
 }
 
 return nil

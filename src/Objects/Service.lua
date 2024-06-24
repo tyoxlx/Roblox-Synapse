@@ -4,12 +4,12 @@ local Object = require(script.Parent.Object)
 local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
 local REFLECTION = require(script.Parent.Parent.Types.Reflection)
+local Metakeys = require(script.Parent.Parent.Types.Metakeys)
+
+local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
 local SERVICE_PARAMS = {
 	Name = "string",
-	EnableClasses = "boolean?",
-	EnableUpdating = "boolean?",
-	
 	Spawning = "function?",
 	CreateObject = "function?",
 	ObjectAdded = "function?",
@@ -42,14 +42,15 @@ end
 
 -- Constructor
 return function(params)
-	local enableClasses = (params.ClassAdded ~= nil) or params.EnableClasses
+	local raw, metakeys = Common.validateTable(params, "Service", SERVICE_PARAMS)	
 
-	local raw = Common.validateTable(params, "Service", SERVICE_PARAMS)	
+	local enableClasses = (params.ClassAdded ~= nil) or (metakeys.EnableClasses or false)
+
 	raw[Common.ServiceHeader] = true
+	raw[ENABLE_CLASSES_METAKEY] = enableClasses
 
-	local enableUpdateLoop = if raw.EnableUpdating ~= nil then raw.EnableUpdating else false
-	raw.enableClasses = enableClasses
-
+	local enableUpdateLoop = if metakeys.EnableUpdating ~= nil then metakeys.EnableUpdating else false
+	
 	function raw:Class(name, createObject)
 		REFLECTION.CUSTOM(1, "Service.Class", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.ARG(2, "Service.Class", REFLECTION.STRING, name)
@@ -62,7 +63,7 @@ return function(params)
 		REFLECTION.CUSTOM(1, "Service.CreateObjectFromClass", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.CUSTOM(2, "Service.CreateObjectFromClass", class, CLASS_REFLECTION_ASSERT)
 		REFLECTION.ARG(3, "Service.CreateObjectFromClass", REFLECTION.OPT_TABLE, initParams)
-		if not self.EnableClasses then ERROR.SERVICE_NO_CLASSES(self.Name) end
+		if not self[ENABLE_CLASSES_METAKEY] then ERROR.SERVICE_NO_CLASSES(self.Name) end
 
 		if class.Service ~= self then
 			ERROR.BAD_CLASS(class.Name, self.Name)
@@ -110,7 +111,7 @@ return function(params)
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
 			__tostring = function(self)
-				return `CatworkService({self.Name}; Classes: {self.EnableClasses})`
+				return `CatworkService({self.Name}; Classes: {self[ENABLE_CLASSES_METAKEY]})`
 			end,
 		})
 	end

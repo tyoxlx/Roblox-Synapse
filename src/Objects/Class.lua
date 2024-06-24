@@ -1,6 +1,8 @@
 local Common = require(script.Parent.Parent.Common)
 local ERROR = require(script.Parent.Parent.Internal.Error)
 
+local Metakeys= require(script.Parent.Parent.Types.Metakeys)
+local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
 return function(service, name, createObject)
 	-- just clones the template params and pushes it to the service if its nil
@@ -10,7 +12,7 @@ return function(service, name, createObject)
 	params.CreateObject = createObject
 	params[Common.ClassHeader] = true
 
-	if not service.EnableClasses then
+	if not service[ENABLE_CLASSES_METAKEY] then
 		ERROR.SERVICE_NO_CLASSES(service.Name)
 	end
 	

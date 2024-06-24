@@ -1,5 +1,6 @@
 local Types = require(script.Parent.Types.Types)
 local ERROR = require(script.Parent.Internal.Error)
+local Metakeys = require(script.Parent.Types.Metakeys)
 local HttpService = game:GetService("HttpService")
 
 local VERSION = "0.5.0"
@@ -21,6 +22,20 @@ Common.Version = VERSION
 -- Misc functions
 
 local OPT_PAT = "(.-)%?$"
+
+local function getMetakeysAsStrings(tab)
+	local metakeys = {}
+	for key: Types.Metakey<any>, value in tab do
+		if type(key) == "table" and key[Metakeys.Symbol] then
+			-- key is symbol
+			metakeys[key.Key] = value
+		end
+	end
+
+	return metakeys
+end
+
+
 function Common.validateTable(tab, oName, rules: {[string]: string})
 	for key, typof in rules do
 		local optional = string.match(typof, OPT_PAT)
@@ -35,7 +50,7 @@ function Common.validateTable(tab, oName, rules: {[string]: string})
 		end
 	end
 
-	return tab
+	return tab, getMetakeysAsStrings(tab)
 end
 
 function Common.assignObjectID(f: Types.Object<any>, fPrivate, service)

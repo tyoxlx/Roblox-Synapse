@@ -1,9 +1,10 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
-local RunService = game:GetService("RunService")
+--local RunService = game:GetService("RunService")
 local Common = require(script.Common)
 local Service = require(script.Objects.Service)
 local Native = require(script.Internal.Native)
 local Types = require(script.Types.Types)
+local Metakeys = require(script.Types.Metakeys)
 
 local REFLECTION = require(script.Types.Reflection)
 local ERROR = require(script.Internal.Error)
@@ -16,7 +17,8 @@ export type Service = Types.Service
 Catwork = setmetatable({
 	__VERSION = Common.Version,
 	Plugin = script:FindFirstAncestorOfClass("Plugin"),
-	
+	meta = Metakeys.export,
+
 	-- Constructors
 	new = function<A>(params: A): Types.Object<A>
 		REFLECTION.ARG(1, "Catwork.new", REFLECTION.TABLE, params)
@@ -39,10 +41,12 @@ Catwork = setmetatable({
 		ERROR.FRAGMENT_DEPRECATED_MIGRATION()
 	end,
 
+	--[[
 	EnableAnalysis = function(self: Catwork)
 		if RunService:IsRunning() then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Run Mode") end
 		if self.Plugin then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Plugin") end
 	end
+	]]--
 },{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
 })
