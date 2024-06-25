@@ -30,25 +30,25 @@ export type Object<A> = {
 
 export type BlankObject = Object<{[string]: any}>
 
-export type Class = {
+export type Class<A> = {
 	Name: string,
-	Service: Service,
-	CreateObject: <A>(A) -> (),
+	Service: any,
+	CreateObject: (Object<A>) -> Object<A>,
 }
 
 export type Service = {
 	Name: string,
 	Object: <A>(Service, A) -> Object<A>,
 	
-	Class: (Service, name: string, createObject: (BlankObject) -> ()) -> Class,
-	CreateObjectFromClass: (Service, Class, initParams: {[string]: any}?) -> BlankObject,
+	Class: <A>(Service, name: string, createObject: (Object<A>) -> ()) -> Class<A>,
+	CreateObjectFromClass: <A>(Service, Class<A>, initParams: {[string]: any}?) -> Object<A>,
 
 	Spawning: (Service, BlankObject) -> (),
 	Updating: (Service, BlankObject, dt: number) -> (),
 	CreateObject: <A>(Service, A) -> (),
 	ObjectAdded: (Service, BlankObject) -> (),
 	ObjectRemoved: (Service, BlankObject) -> (),
-	ClassAdded: (Service, Class) -> ()
+	ClassAdded: <A>(Service, Class<A>) -> ()
 }
 
 export type ServiceCtorParams = {
@@ -59,7 +59,7 @@ export type ServiceCtorParams = {
 	CreateObject: (<A>(Service, A) -> Object<A>)?,
 	ObjectAdded: (Service, BlankObject) -> ()?,
 	ObjectRemoved: (Service, BlankObject) -> ()?,
-	ClassAdded: (Service, Class) -> ()?,
+	ClassAdded: <A>(Service, Class<A>) -> ()?,
 
 	[string|Metakey<any>]: any
 }
