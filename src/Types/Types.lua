@@ -41,7 +41,7 @@ export type Service = {
 	Object: <A>(Service, A) -> Object<A>,
 	
 	Class: <A>(Service, name: string, createObject: (Object<A>) -> ()) -> Class<A>,
-	CreateObjectFromClass: <A>(Service, Class<A>, initParams: {[string]: any}?) -> Object<A>,
+	CreateObjectFromClass: <A, B>(Service, Class<A>, initParams: B?) -> Object<A & B>,
 
 	Spawning: (Service, BlankObject) -> (),
 	Updating: (Service, BlankObject, dt: number) -> (),
