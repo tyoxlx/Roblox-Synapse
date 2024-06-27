@@ -10,6 +10,7 @@ local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
 local SERVICE_PARAMS = {
 	Name = "string",
+	StartService = "function?",
 	Spawning = "function?",
 	CreateObject = "function?",
 	ObjectAdded = "function?",

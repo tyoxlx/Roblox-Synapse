@@ -2,9 +2,15 @@
 -- handles dispatching of objects
 
 local ERROR = require(script.Parent.Error)
+local Types = require(script.Parent.Parent.Types.Types)
 
 local Dispatcher = {}
 local objectDispatchState = {}
+
+local serviceStartState: {[Types.Service]: {
+	State: "suspended"|"running"|"finished",
+	HeldThreads: {thread}
+}} = {}
 
 local function safeAsyncHandler(err)
 	ERROR.DISPATCHER_SPAWN_ERR(ERROR.traceback(err))
@@ -59,6 +65,36 @@ local function timeoutTracker(o, state): thread?
 	end, o)
 end
 
+local function serviceStartup(service)
+	if not service.StartService then return end
+	local thread = coroutine.running()
+
+	local serviceState = serviceStartState[service]
+	if not serviceState then
+		serviceState = {
+			State = "suspended",
+			HeldThreads = {}
+		}
+
+		serviceStartState[service] = serviceState
+	end
+
+	if serviceState.State == "finished" then
+		return
+	elseif serviceState.State == "running" then
+		table.insert(serviceState.HeldThreads, thread)
+		coroutine.yield()
+	else
+		serviceState.State = "running"
+		service:StartService()
+		serviceState.State = "finished"
+
+		for _, t in serviceState.HeldThreads do
+			task.spawn(t)
+		end
+	end
+end
+
 local function runObjectAction(
 	o,
 	spawnSignal,
@@ -77,7 +113,7 @@ local function runObjectAction(
 	if state.TimeoutThread then coroutine.close(state.TimeoutThread) end
 	state.TimeoutThread = nil
 
-	free(state, ok, err, o, service)
+	free(state, ok, err)
 
 	if service.Updating and o.Update then
 		task.spawn(doServiceLoopForObject, o, service, state)
@@ -110,6 +146,7 @@ end
 
 local function spawnObject(object, service, state, asyncMode)
 	local spawnSignal = service.Spawning
+	serviceStartup(service)
 
 	if asyncMode then
 		object:HandleAsync(asyncMode)

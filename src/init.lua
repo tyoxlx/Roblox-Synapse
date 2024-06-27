@@ -11,7 +11,7 @@ local ERROR = require(script.Internal.Error)
 
 local Catwork
 export type Object<Parameters> = Types.Object<Parameters>
-export type Class = Types.Class
+export type Class<A> = Types.Class<A>
 export type Service = Types.Service
 
 Catwork = setmetatable({

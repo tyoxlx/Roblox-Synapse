@@ -43,6 +43,7 @@ export type Service = {
 	Class: <A>(Service, name: string, createObject: (Object<A>) -> ()) -> Class<A>,
 	CreateObjectFromClass: <A, B>(Service, Class<A>, initParams: B?) -> Object<A & B>,
 
+	StartService: (Service) -> (),
 	Spawning: (Service, BlankObject) -> (),
 	Updating: (Service, BlankObject, dt: number) -> (),
 	CreateObject: <A>(Service, A) -> (),
@@ -54,6 +55,7 @@ export type Service = {
 export type ServiceCtorParams = {
 	Name: string,
 
+	StartService: (Service) -> ()?,
 	Spawning: (Service, BlankObject) -> ()?,
 	Updating: (Service, BlankObject, dt: number) -> ()?,
 	CreateObject: (<A>(Service, A) -> Object<A>)?,
