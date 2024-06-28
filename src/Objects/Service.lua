@@ -50,7 +50,7 @@ return function(params)
 	raw[Common.ServiceHeader] = true
 	raw[ENABLE_CLASSES_METAKEY] = enableClasses
 
-	local enableUpdateLoop = if metakeys.EnableUpdating ~= nil then metakeys.EnableUpdating else false
+	local enableUpdateLoop = if metakeys.EnableUpdating ~= nil then metakeys.EnableUpdating else true
 	
 	function raw:Class(name, createObject)
 		REFLECTION.CUSTOM(1, "Service.Class", self, SERVICE_REFLECTION_TEST)
