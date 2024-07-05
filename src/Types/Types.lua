@@ -19,7 +19,7 @@ export type Object<A> = {
 		asyncHandler: (boolean, string?) -> ()?
 	) -> (boolean, string?),
 	
-	Update: (Object<A>, dt: number) -> ()?,
+	Update: (Object<A>, dt: number) -> number?,
 	Destroying: (Object<A>) -> (),
 	Init: (Object<A>) -> (),
 
@@ -45,7 +45,7 @@ export type Service = {
 
 	StartService: (Service) -> (),
 	Spawning: (Service, BlankObject) -> (),
-	Updating: (Service, BlankObject, dt: number) -> (),
+	Updating: (Service, BlankObject, dt: number) -> number?,
 	CreateObject: <A>(Service, A) -> (),
 	ObjectAdded: (Service, BlankObject) -> (),
 	ObjectRemoved: (Service, BlankObject) -> (),
@@ -57,7 +57,7 @@ export type ServiceCtorParams = {
 
 	StartService: (Service) -> ()?,
 	Spawning: (Service, BlankObject) -> ()?,
-	Updating: (Service, BlankObject, dt: number) -> ()?,
+	Updating: ((Service, BlankObject, dt: number) -> number?)?,
 	CreateObject: (<A>(Service, A) -> Object<A>)?,
 	ObjectAdded: (Service, BlankObject) -> ()?,
 	ObjectRemoved: (Service, BlankObject) -> ()?,

@@ -18,10 +18,12 @@ local function safeAsyncHandler(err)
 end
 
 local function doServiceLoopForObject(object, service, state)
+	local resumptionDelay = 0
+	
 	while not state.Destroyed do
-		local dt = task.wait()
+		local dt = if resumptionDelay and resumptionDelay < 0 then 0 else task.wait(resumptionDelay or 0)
 		if state.Destroyed then break end -- fixes a bug where loops continue an extra tick after destruction
-		service:Updating(object, dt)
+		resumptionDelay = service:Updating(object, dt)
 	end
 end
 

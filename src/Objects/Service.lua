@@ -101,7 +101,7 @@ return function(params)
 	if enableUpdateLoop then
 		if not raw.Updating then
 			function raw:Updating(object, dt)
-				object:Update(dt)
+				return object:Update(dt)
 			end
 		end
 	elseif raw.Updating then
