@@ -1,0 +1,58 @@
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #00FF90;
+  --md-primary-fg-color--light: #7FFFC7;
+  --md-primary-fg-color--dark:  #00FF90;
+	--md-accent-fg-color:         #7FFFC7;
+	--md-primary-bg-color:        #000000;
+	--md-accent-bg-color:         #000000;
+
+	--md-default-fg-color--light: #ffffff;
+
+	/* background tuning */
+	--md-default-bg-color: #001111;
+
+	/* code blocks */
+
+	--md-code-fg-color: #ffffff;
+	--md-code-bg-color: #000000;
+}
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #FF6A00;
+  --md-primary-fg-color--light: #FFB47F;
+  --md-primary-fg-color--dark:  #FF6A00;
+	--md-accent-fg-color:         #FFB47F;
+
+	--md-default-fg-color--light: #000000;
+
+	/* background tuning */
+	--md-default-bg-color: #ffffee;
+}
+
+.md-typeset h1 {
+	margin-bottom: 0;
+	font-weight: bold;
+}
+
+.md-typeset h2 {
+	font-weight: bold;
+	color: var(--md-default-fg-color--light);
+}
+
+
+.md-content {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 120em;
+}
+
+.md-grid {
+	margin-left: 1rem;
+	margin-right: 1rem;
+	max-width: none;
+}
+
+.highlight span.filename {
+	color: var(--md-default-fg-color--light);
+	font-family: var(--md-code-font-family);
+}

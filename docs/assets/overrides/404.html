@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% block content %}
+
+<h1>404 - Not Found!</h1>
+<p>The content you're looking for never existed, was moved, or deleted.</p>
+
+<p>Here's a silly cat</p>
+<img src="https://http.cat/404"/>
+
+<p>
+	<a class="md-button" onclick="history.back()">
+		<span class="twemoji">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+				<path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path>
+			</svg>
+		</span> Go Back
+	</a>
+	
+	<a class="md-button md-button--primary" href="http://127.0.0.1:8000/">
+		<span class="twemoji">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+				<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5Z"></path>
+			</svg>
+		</span> Home
+	</a>
+</p>
+
+
+{% endblock %}

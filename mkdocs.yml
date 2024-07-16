@@ -1,0 +1,96 @@
+site_name: Catwork
+repo_url: https://github.com/metatablecatgames/catwork
+site_url: https://metatablecatgames.github.io/catwork
+repo_name: metatablecatgames/catwork
+
+theme:
+  icon:
+    repo: fontawesome/brands/github
+
+  palette:
+    - scheme: default
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      media: "(prefers-color-scheme: dark)"
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  font:
+    text: Montserrat
+    code: JetBrains Mono 
+
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.sections
+    - navigation.instant
+    - navigation.indexes
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+
+  custom_dir: docs/assets/overrides
+  name: material
+
+extra:
+  social:
+    - icon: fontawesome/brands/mastodon 
+      link: https://tech.lgbt/@metatablecat
+
+extra_css:
+  - assets/stylesheet/extra.css
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - tutorials/index.md
+      - Getting Started:
+        - Installation: tutorials/getting-started/installation.md
+        - Basic Fragment: tutorials/getting-started/basic-fragment.md
+      - Services:
+        - tutorials/services/index.md
+        - Example Service: tutorials/services/example.md
+        - Template Services: tutorials/services/template-services.md
+  - Reference: 
+    - reference/index.md
+    - Catwork:
+      - reference/catwork/index.md
+      - Fragment: reference/catwork/fragment.md
+      - Service: reference/catwork/service.md
+      - Template: reference/catwork/template.md
+    - Errors: reference/errors.md
+
+copyright: metatablecatgames 2024 - MIT License
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.betterem
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      guess_lang: false
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
