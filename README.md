@@ -1,5 +1,5 @@
 <div align="center">
-<img>put an image here when we have one</img>
+<img src="res/logo.png" alt="The Catwork Logo" width=400></img>
 <h1>Catwork</h1>
 The Cat framework for Roblox! 🐈
 </div>
@@ -10,7 +10,7 @@ The Cat framework for Roblox! 🐈
 
 Catwork does not natively come packaged with a runtime, although `Script` instances can safely access the `Catwork`
 module. You'll need some way of starting `ModuleScript` instances if you wish to take full advantage of the motivations
-behind `Fragment`s though.
+behind `Object`s though.
 
 # Installation
 
@@ -28,13 +28,13 @@ catwork = "metatablecat/catwork@0.0.0" # add the version as neccessary, use the 
 
 # Usage
 
-This Fragment simply greets the player when they join:
+This Object simply greets the player when they join:
 
 ```lua
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local Catwork = require(ReplicatedFirst.Catwork)
 
-Catwork.Fragment {
+Catwork.new {
   Init = function(self)
     Players.PlayerAdded:Connect(function(p)
       print(`Hello {p.Name}!`)
@@ -49,3 +49,11 @@ Catwork! See the documentation for more information.
 # License
 
 Catwork is licensed under the MIT License. 2024 metatablecatgames
+
+# Sponsor Catwork
+
+Catwork is maintainted mostly by just me, [support me and what I do!](https://github.com/sponsors/metatablecat)
+
+# Attributions
+
+Logo made by Alex. [Website](https://hofnarretje.eu/).
