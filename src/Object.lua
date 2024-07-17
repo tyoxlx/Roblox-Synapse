@@ -1,7 +1,5 @@
-if not game then
-	script = require("./RelativeString")
-	task = require("@lune/task")
-end
+if not script then script = require("./RelativeString") end
+if not task then task = require("@lune/task") end
 
 local Dispatcher = require(script.Parent.Dispatcher)
 local Common = require(script.Parent.Common)

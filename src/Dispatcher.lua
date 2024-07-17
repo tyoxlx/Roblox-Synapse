@@ -1,7 +1,5 @@
-if not game then
-	script = require("./RelativeString")
-	task = require("@lune/task")
-end
+if not script then script = require("./RelativeString") end
+if not task then task = require("@lune/task") end
 
 -- better to handle this in its own module than try to weave it into Catwork
 -- handles dispatching of objects

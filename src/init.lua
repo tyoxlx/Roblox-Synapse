@@ -1,4 +1,4 @@
-if not game then script = require("./RelativeString") end
+if not script then script = require("./RelativeString") end
 
 -- metatablecatgames 2024 - Licensed under the MIT License
 --local RunService = game:GetService("RunService")

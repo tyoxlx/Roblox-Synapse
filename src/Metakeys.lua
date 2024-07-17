@@ -1,4 +1,4 @@
-if not game then script = require("./RelativeString") end
+if not script then script = require("./RelativeString") end
 
 -- Defines metakey values
 local Types = require(script.Parent.Types)

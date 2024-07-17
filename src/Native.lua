@@ -1,4 +1,4 @@
-if not game then script = require("./RelativeString") end
+if not script then script = require("./RelativeString") end
 
 -- This module mostly exists for typing, as catwork's logic is defined implicitly
 -- as the default Service behaviour
