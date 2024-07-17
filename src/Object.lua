@@ -1,7 +1,12 @@
-local Dispatcher = require(script.Parent.Parent.Internal.Dispatcher)
-local Common = require(script.Parent.Parent.Common)
-local ERROR = require(script.Parent.Parent.Internal.Error)
-local REFLECTION = require(script.Parent.Parent.Types.Reflection)
+if not game then
+	script = require("./RelativeString")
+	task = require("@lune/task")
+end
+
+local Dispatcher = require(script.Parent.Dispatcher)
+local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
+local REFLECTION = require(script.Parent.Reflection)
 
 local OBJECT_PARAMS = {
 	Name = "string?",

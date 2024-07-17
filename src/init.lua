@@ -1,13 +1,15 @@
+if not game then script = require("./RelativeString") end
+
 -- metatablecatgames 2024 - Licensed under the MIT License
 --local RunService = game:GetService("RunService")
 local Common = require(script.Common)
-local Service = require(script.Objects.Service)
-local Native = require(script.Internal.Native)
-local Types = require(script.Types.Types)
-local Metakeys = require(script.Types.Metakeys)
+local Service = require(script.Service)
+local Native = require(script.Native)
+local Types = require(script.Types)
+local Metakeys = require(script.Metakeys)
 
-local REFLECTION = require(script.Types.Reflection)
-local ERROR = require(script.Internal.Error)
+local REFLECTION = require(script.Reflection)
+local ERROR = require(script.Error)
 
 local Catwork
 export type Object<Parameters> = Types.Object<Parameters>
@@ -16,7 +18,7 @@ export type Service = Types.Service
 
 Catwork = setmetatable({
 	__VERSION = Common.Version,
-	Plugin = script:FindFirstAncestorOfClass("Plugin"),
+	Plugin = if game then script:FindFirstAncestorOfClass("Plugin") else nil,
 	meta = Metakeys.export,
 
 	-- Constructors

@@ -1,6 +1,8 @@
+if not game then script = require("./RelativeString") end
+
 -- Provides error reporting as well as some shape checks for object constructors
 
-local CatworkRoot = `^{script.Parent.Parent:GetFullName()}`
+local CatworkRoot = if game then `^{script.Parent.Parent:GetFullName()}` else nil
 
 local FRAGMENT_DEP_GUIDE = "LINK_HERE"
 
@@ -16,7 +18,7 @@ local function findFirstNonCatworkFunc()
 		if not s then break end
 		if s == "[C]" then continue end
 
-		if string.find(s, CatworkRoot) then
+		if CatworkRoot and string.find(s, CatworkRoot) then
 			depth += 1
 			continue
 		end

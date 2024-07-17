@@ -1,3 +1,5 @@
+if not game then script = require("./RelativeString") end
+
 -- Defines metakey values
 local Types = require(script.Parent.Types)
 local MetakeySymbolic = newproxy(false)

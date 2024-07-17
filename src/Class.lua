@@ -1,7 +1,9 @@
-local Common = require(script.Parent.Parent.Common)
-local ERROR = require(script.Parent.Parent.Internal.Error)
+if not game then script = require("./RelativeString") end
 
-local Metakeys= require(script.Parent.Parent.Types.Metakeys)
+local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
+
+local Metakeys= require(script.Parent.Metakeys)
 local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
 return function(service, name, createObject)

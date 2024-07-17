@@ -1,7 +1,20 @@
-local Types = require(script.Parent.Types.Types)
-local ERROR = require(script.Parent.Internal.Error)
-local Metakeys = require(script.Parent.Types.Metakeys)
-local HttpService = game:GetService("HttpService")
+if not game then script = require("./RelativeString") end
+
+local Types = require(script.Parent.Types)
+local ERROR = require(script.Parent.Error)
+local Metakeys = require(script.Parent.Metakeys)
+
+local HttpService = if game then game:GetService("HttpService") else {
+	GenerateGUID = function(self, withBrackets)
+		local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+		if withBrackets then template = `\{{template}\}` end
+
+		return string.gsub(template, "[xy]", function(c)
+			local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
+			return string.format("%x", v)
+		end)
+	end
+}
 
 local VERSION = "0.5.0"
 local GUID_PATTERN = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"

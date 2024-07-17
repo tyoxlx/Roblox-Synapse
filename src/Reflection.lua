@@ -1,10 +1,12 @@
+if not game then script = require("./RelativeString") end
+
 -- Reflection typechecker
 -- type = required type
 -- type? = optional type
 
 -- metatablecat 2024, part of Catwork
 
-local ERROR = require(script.Parent.Parent.Internal.Error)
+local ERROR = require(script.Parent.Error)
 
 local Reflection = {}
 

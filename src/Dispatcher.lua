@@ -1,8 +1,13 @@
+if not game then
+	script = require("./RelativeString")
+	task = require("@lune/task")
+end
+
 -- better to handle this in its own module than try to weave it into Catwork
 -- handles dispatching of objects
 
 local ERROR = require(script.Parent.Error)
-local Types = require(script.Parent.Parent.Types.Types)
+local Types = require(script.Parent.Types)
 
 local Dispatcher = {}
 local objectDispatchState = {}

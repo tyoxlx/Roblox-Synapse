@@ -4,4 +4,5 @@
 # To add a new tool, add an entry to this table.
 [tools]
 wally = "UpliftGames/wally@0.3.2"
+lune = "lune-org/lune@0.8.6"
 # rojo = "rojo-rbx/rojo@6.2.0"

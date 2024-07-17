@@ -1,10 +1,15 @@
+if not game then
+	script = require("./RelativeString")
+	task = require("@lune/task")
+end
+
 local Class = require(script.Parent.Class)
-local Dispatcher = require(script.Parent.Parent.Internal.Dispatcher)
+local Dispatcher = require(script.Parent.Dispatcher)
 local Object = require(script.Parent.Object)
-local Common = require(script.Parent.Parent.Common)
-local ERROR = require(script.Parent.Parent.Internal.Error)
-local REFLECTION = require(script.Parent.Parent.Types.Reflection)
-local Metakeys = require(script.Parent.Parent.Types.Metakeys)
+local Common = require(script.Parent.Common)
+local ERROR = require(script.Parent.Error)
+local REFLECTION = require(script.Parent.Reflection)
+local Metakeys = require(script.Parent.Metakeys)
 
 local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
