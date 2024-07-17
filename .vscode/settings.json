@@ -1,0 +1,23 @@
+{
+  "luau-lsp.require.mode": "relativeToFile",
+  "luau-lsp.require.directoryAliases": {
+    "@lune/": "~/.lune/.typedefs/0.8.6/"
+  },
+  
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/.luaurc"
+      ],
+      "url": "./.vscode/luaurc.json"
+    }
+  ],
+
+  "editor.insertSpaces": false,
+	"editor.tabSize": 2,
+	"files.associations": {
+		".luaurc": "json"
+	},
+
+	"editor.rulers": [80],
+}

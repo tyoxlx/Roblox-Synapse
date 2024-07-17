@@ -4,6 +4,3 @@ sourcemap.json
 # moonwave build files
 build/**
 wax.luau
-
-# vscode configs
-.vscode/**

@@ -1,0 +1,57 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "luaurc",
+	"description": "config file for the Luau language server",
+	"type": "object",
+	
+	"properties": {
+		"languageMode": {
+			"description": "type checking mode, can be one of `nocheck`, `nonstrict`, `strict`",
+			"type": "string",
+			"enum": ["nocheck", "nonstrict", "strict"]
+		},
+		"lint": {
+			"description": "lints to enable; points to an object that maps string literals that correspond to the names of linting rules (see https://luau-lang.org/lint), or `*` that means \"all rules\", to a boolean (to enable/disable the lint)",
+			"type": "object",
+			"properties": {
+				"*": {"type": "boolean"},
+				"UnknownGlobal": {"type": "boolean"},
+				"DeprecatedGlobal": {"type": "boolean"},
+				"GlobalUsedAsLocal": {"type": "boolean"},
+				"LocalShadow": {"type": "boolean"},
+				"SameLineStatement": {"type": "boolean"},
+				"MultiLineStatement": {"type": "boolean"},
+				"LocalUnused": {"type": "boolean"},
+				"FunctionUnused": {"type": "boolean"},
+				"ImportUnused": {"type": "boolean"},
+				"BuiltinGlobalWrite": {"type": "boolean"},
+				"PlaceholderRead": {"type": "boolean"},
+				"UnreachableCode": {"type": "boolean"},
+				"UnknownType": {"type": "boolean"},
+				"ForRange": {"type": "boolean"},
+				"UnbalancedAssignment": {"type": "boolean"},
+				"ImplicitReturn": {"type": "boolean"},
+				"DuplicateLocal": {"type": "boolean"},
+				"FormatString": {"type": "boolean"},
+				"TableLiteral": {"type": "boolean"},
+				"UninitializedGlobal": {"type": "boolean"},
+				"DuplicateFunction": {"type": "boolean"},
+				"DeprecatedApi": {"type": "boolean"},
+				"TableOperations": {"type": "boolean"},
+				"DuplicateCondition": {"type": "boolean"},
+				"MisleadingAndOr": {"type": "boolean"},
+				"CommentDirective": {"type": "boolean"},
+				"IntegerParsing": {"type": "boolean"},
+				"ComparisonPrecedence": {"type": "boolean"}
+			}
+		},
+		"lintErrors": {
+			"description": " a boolean that controls whether lint issues are reported as errors or warnings (off by default)",
+			"type": "boolean"
+		},
+		"globals": {
+			"description": "extra global values; points to an array of strings where each string names a global that the type checker and linter must assume is valid and of type `any`",
+			"type": "array"
+		}
+	}
+}
