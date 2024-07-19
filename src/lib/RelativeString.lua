@@ -6,6 +6,9 @@ local function dir(directory: string)
 end
 
 local script = dir ""
+script.lib = dir "lib/"
 script.Parent = dir "./"
+script.Parent.lib = dir "./lib/"
+script.Parent.Parent = dir "../"
 
 return script

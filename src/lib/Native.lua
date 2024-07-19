@@ -4,7 +4,7 @@ if not script then script = require("./RelativeString") end
 -- as the default Service behaviour
 
 local Service = require(script.Parent.Service)
-local meta = require(script.Parent.Metakeys).export
+local meta = require(script.Parent.Parent.meta).export
 
 local native = Service {
 	[meta "EnableClasses"] = true,

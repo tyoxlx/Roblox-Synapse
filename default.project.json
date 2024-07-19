@@ -1,5 +1,6 @@
 {
 	"name": "Catwork",
+	"globIgnorePaths": ["**/*.spec.lua", "src/RelativeString.lua"],
 
 	"tree": {
 		"$path": "src",

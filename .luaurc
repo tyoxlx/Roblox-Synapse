@@ -7,5 +7,9 @@
 		"FunctionUnused": false,
 		"ImportUnused": false,
 		"BuiltinGlobalWrite": false
+	},
+
+	"aliases": {
+		"catwork": "./src"
 	}
 }

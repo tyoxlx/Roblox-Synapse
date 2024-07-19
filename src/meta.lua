@@ -1,7 +1,7 @@
-if not script then script = require("./RelativeString") end
+if not script then script = require("lib/RelativeString") end
 
 -- Defines metakey values
-local Types = require(script.Parent.Types)
+local Types = require(script.Parent.lib.Types)
 local MetakeySymbolic = newproxy(false)
 
 local function metakey<A>(key): Types.Metakey<A>
