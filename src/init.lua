@@ -1,15 +1,13 @@
-if not script then script = require("lib/RelativeString") end
-
 -- metatablecatgames 2024 - Licensed under the MIT License
 --local RunService = game:GetService("RunService")
-local Common = require(script.Parent.lib.Common)
-local Service = require(script.Parent.lib.Service)
-local Native = require(script.Parent.lib.Native)
-local Types = require(script.Parent.lib.Types)
-local Metakeys = require(script.Parent.meta)
+local Common = require("./lib/Common")
+local Service = require("./lib/Service")
+local Native = require("./lib/Native")
+local Types = require("./lib/Types")
+local Metakeys = require("./meta")
 
-local REFLECTION = require(script.Parent.lib.Reflection)
-local ERROR = require(script.Parent.lib.Error)
+local REFLECTION = require("./lib/Reflection")
+local ERROR = require("./lib/Error")
 
 local Catwork
 export type Object<Parameters> = Types.Object<Parameters>

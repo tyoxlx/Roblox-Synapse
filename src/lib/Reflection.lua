@@ -1,12 +1,10 @@
-if not script then script = require("./RelativeString") end
-
 -- Reflection typechecker
 -- type = required type
 -- type? = optional type
 
 -- metatablecat 2024, part of Catwork
 
-local ERROR = require(script.Parent.Error)
+local ERROR = require("./Error")
 
 local Reflection = {}
 

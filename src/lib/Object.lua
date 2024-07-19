@@ -1,10 +1,9 @@
-if not script then script = require("./RelativeString") end
 if not task then task = require("@lune/task") end
 
-local Dispatcher = require(script.Parent.Dispatcher)
-local Common = require(script.Parent.Common)
-local ERROR = require(script.Parent.Error)
-local REFLECTION = require(script.Parent.Reflection)
+local Dispatcher = require("./Dispatcher")
+local Common = require("./Common")
+local ERROR = require("./Error")
+local REFLECTION = require("./Reflection")
 
 local OBJECT_PARAMS = {
 	Name = "string?",

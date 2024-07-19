@@ -1,8 +1,6 @@
-if not script then script = require("./RelativeString") end
-
-local Types = require(script.Parent.Types)
-local ERROR = require(script.Parent.Error)
-local Metakeys = require(script.Parent.Parent.meta)
+local Types = require("./Types")
+local ERROR = require("./Error")
+local Metakeys = require("../meta")
 
 local HttpService = if game then game:GetService("HttpService") else {
 	GenerateGUID = function(self, withBrackets)

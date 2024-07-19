@@ -1,8 +1,6 @@
-if not script then script = require("./RelativeString") end
-
-local Common = require(script.Parent.Common)
-local ERROR = require(script.Parent.Error)
-local Metakeys= require(script.Parent.Parent.meta)
+local Common = require("./Common")
+local ERROR = require("./Error")
+local Metakeys = require("../meta")
 local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
 return function(service, name, createObject)

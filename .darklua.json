@@ -1,0 +1,18 @@
+{
+  "generator": "readable",
+
+  "rules": [
+    {
+      "rule": "convert_require",
+      "current": {
+        "name": "path",
+        "module_folder_name": "init"
+      },
+      "target": {
+        "name": "roblox",
+        "rojo_sourcemap": "sourcemap.json",
+        "indexing_style": "property"
+      }
+    }
+  ]
+}

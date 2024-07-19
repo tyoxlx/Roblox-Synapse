@@ -1,11 +1,10 @@
-if not script then script = require("./RelativeString") end
 if not task then task = require("@lune/task") end
 
 -- better to handle this in its own module than try to weave it into Catwork
 -- handles dispatching of objects
 
-local ERROR = require(script.Parent.Error)
-local Types = require(script.Parent.Types)
+local ERROR = require("./Error")
+local Types = require("./Types")
 
 local Dispatcher = {}
 local objectDispatchState = {}

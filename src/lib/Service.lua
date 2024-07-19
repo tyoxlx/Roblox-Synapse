@@ -1,13 +1,12 @@
-if not script then script = require("./RelativeString") end
 if not task then task = require("@lune/task") end
 
-local Class = require(script.Parent.Class)
-local Dispatcher = require(script.Parent.Dispatcher)
-local Object = require(script.Parent.Object)
-local Common = require(script.Parent.Common)
-local ERROR = require(script.Parent.Error)
-local REFLECTION = require(script.Parent.Reflection)
-local Metakeys = require(script.Parent.Parent.meta)
+local Class = require("./Class")
+local Dispatcher = require("./Dispatcher")
+local Object = require("./Object")
+local Common = require("./Common")
+local ERROR = require("./Error")
+local REFLECTION = require("./Reflection")
+local Metakeys = require("../meta")
 
 local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 

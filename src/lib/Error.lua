@@ -1,5 +1,3 @@
-if not script then script = require("./RelativeString") end
-
 -- Provides error reporting as well as some shape checks for object constructors
 
 local CatworkRoot = if game then `^{script.Parent.Parent:GetFullName()}` else nil

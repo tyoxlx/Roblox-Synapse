@@ -1,10 +1,8 @@
-if not script then script = require("./RelativeString") end
-
 -- This module mostly exists for typing, as catwork's logic is defined implicitly
 -- as the default Service behaviour
 
-local Service = require(script.Parent.Service)
-local meta = require(script.Parent.Parent.meta).export
+local Service = require("./Service")
+local meta = require("../meta").export
 
 local native = Service {
 	[meta "EnableClasses"] = true,
