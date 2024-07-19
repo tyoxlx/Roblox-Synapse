@@ -20,11 +20,10 @@ Download the latest release and drag it into Studio, or use a tool like [Dropper
 
 ## In external editors
 
-Catwork's stable releases are published to Wally, and you can add it to your package index using the following string:
+To use Catwork in an external, download the /src/ folder, and drag it into your project.
 
-```toml
-catwork = "metatablecat/catwork@0.0.0" # add the version as neccessary, use the wally index for latest version
-```
+There are packages on Wally, however, these **are not supported or maintained** and should not be used, we found it easier to just maintain the package
+as a downloadable ZIP archive when publishing a release.
 
 # Usage
 
