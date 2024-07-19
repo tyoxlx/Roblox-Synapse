@@ -4,8 +4,6 @@ if not script then script = require("./RelativeString") end
 
 local CatworkRoot = if game then `^{script.Parent.Parent:GetFullName()}` else nil
 
-local FRAGMENT_DEP_GUIDE = "LINK_HERE"
-
 local function findFirstNonCatworkFunc()
 	-- travels up the trace until a non-Catwork func is found
 	local depth = 1
@@ -92,7 +90,7 @@ local ErrorBuffer = {
 	SERVICE_UPDATING_DISABLED = e("SERVICE_UPDATING_DISABLED", "Updating is not enabled on service %s, yet it implements Updating. This can be fixed by adding `[meta \"EnableUpdating\"] = true` to your service definition.", "W"),
 
 	-- Remove in 0.5.1
-	FRAGMENT_DEPRECATED_MIGRATION = e("FRAGMENT_DEPRECATED_MIGRATION", `Catwork.Fragment is deprecated and no longer works, use Catwork.new instead.\n\nIf migrating from 0.4.x, please read this guide: {FRAGMENT_DEP_GUIDE}`, "E"),
+	FRAGMENT_DEPRECATED_MIGRATION = e("FRAGMENT_DEPRECATED_MIGRATION", "Catwork.Fragment is deprecated and no longer works, use Catwork.new instead.", "E"),
 
 	DEPRECATED = e("DEPRECATED", "Function %q is deprecated. Use %q instead.", "W"),
 	INTERNAL = e("INTERNAL", "Error: %*. This is likely a known internal error, please report it!", "E"),
