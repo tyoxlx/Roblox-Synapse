@@ -63,10 +63,7 @@ end
 local function timeoutTracker(o, state): thread?
 	if state.TimeoutDisabled then return end
 
-	return task.spawn(function(self)
-		task.wait(5)
-		ERROR.DISPATCHER_TIMEOUT(self:GetID(true))
-	end, o)
+	return task.delay(5, ERROR.DISPATCHER_TIMEOUT, o:GetID(true))
 end
 
 local function serviceStartup(service)
