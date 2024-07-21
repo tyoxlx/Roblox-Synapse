@@ -80,8 +80,8 @@ return function(params: {[string]: any}, service)
 			local destroying = self.Destroying
 			local fragRemoved = service.ObjectRemoved
 
-			if destroying then task.spawn(destroying, self) end
-			if fragRemoved then task.spawn(fragRemoved, service, self) end
+			if destroying then task.defer(destroying, self) end
+			if fragRemoved then task.defer(fragRemoved, service, self) end
 
 			Dispatcher.stop(self, state)
 		end
