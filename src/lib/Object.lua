@@ -73,6 +73,10 @@ return function(params: {[string]: any}, service)
 		local service = OBJECT_PRIVATE[self].Service
 		local state = Dispatcher.getObjectState(self)
 
+		if not state.Spawned then
+			ERROR.DESTROYED_BEFORE_SPAWNED(self:GetID(true))
+		end
+
 		if Dispatcher.getObjectState(self) then
 			Dispatcher.cleanObjectState(self)
 			OBJECT_PRIVATE[self] = nil

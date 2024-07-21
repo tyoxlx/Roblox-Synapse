@@ -102,7 +102,6 @@ local function runObjectAction(
 	service,
 	state
 )
-	state.Spawned = true
 	state.Thread = coroutine.running()
 
 	for _, v in state.AwaitFor do
@@ -153,6 +152,7 @@ local function spawnObject(object, service, state, asyncMode)
 		object:HandleAsync(asyncMode)
 	end
 
+	state.Spawned = true
 	task.defer(runObjectAction, object, spawnSignal, service, state)
 
 	if not asyncMode then
@@ -169,7 +169,7 @@ function Dispatcher.spawnObject(o, fPrivate, xpcallHandler, asyncHandler)
 	
 	-- basically new logic for Spawn
 	if state.Spawned then
-		ERROR:DISPATCHER_ALREADY_SPAWNED(o)
+		ERROR.DISPATCHER_ALREADY_SPAWNED(o:GetID(true))
 	end
 
 	if xpcallHandler then
