@@ -56,5 +56,5 @@ Catwork = setmetatable({
 
 table.freeze(Catwork)
 type Catwork = typeof(Catwork)
-if not Catwork.Plugin then print(Common.WelcomeMessage) end
+if game and not Catwork.Plugin then print(Common.WelcomeMessage) end
 return Catwork

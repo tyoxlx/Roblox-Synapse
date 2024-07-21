@@ -77,6 +77,7 @@ local ErrorBuffer = {
 
 	ANALYSIS_MODE_NOT_AVAILABLE = e("ANALYSIS_MODE_NOT_AVAILABLE", "Analysis mode cannot be used in %s", "E"),
 
+	DESTROYED_BEFORE_SPAWNED = e("DESTROYED_BEFORE_SPAWNED", "Attempted to destroy object %s before its spawned", "E"),
 	DISPATCHER_ALREADY_SPAWNED = e("DISPATCHER_ALREADY_SPAWNED", "Object %s has already been spawned.", "E"),
 	DISPATCHER_DESTROYED_OBJECT = e("DISPATCHER_DESTROYED_OBJECT", "Object %s cannot be spawned because it has been destroyed.", "E"),
 	DISPATCHER_SPAWN_ERR = e("DISPATCHER_SPAWN_ERR", "An object experienced an error while spawning: %s", "W"),
