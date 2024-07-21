@@ -37,7 +37,7 @@ local function createObjectForService(params, service)
 	if not Common.AnalysisMode then
 		Dispatcher.initObjectState(o)
 		local objAdded = service.ObjectAdded
-		if objAdded then task.defer(objAdded, service, o) end
+		if objAdded then task.spawn(objAdded, service, o) end
 	end
 
 	return o

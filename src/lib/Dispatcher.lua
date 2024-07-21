@@ -52,18 +52,21 @@ local function free(state, ok, err, o, service)
 	local held = state.HeldThreads; state.HeldThreads = {}
 
 	for _, v in dispatchers do
-		task.defer(v, ok, err)
+		task.spawn(v, ok, err)
 	end
 
 	for _, v in held do
-		task.defer(v, ok, err)
+		task.spawn(v, ok, err)
 	end
 end
 
 local function timeoutTracker(o, state): thread?
 	if state.TimeoutDisabled then return end
 
-	return task.delay(5, ERROR.DISPATCHER_TIMEOUT, o:GetID(true))
+	return task.spawn(function(self)
+		task.wait(5)
+		ERROR.DISPATCHER_TIMEOUT(self:GetID(true))
+	end, o)
 end
 
 local function serviceStartup(service)
@@ -91,7 +94,7 @@ local function serviceStartup(service)
 		serviceState.State = "finished"
 
 		for _, t in serviceState.HeldThreads do
-			task.defer(t)
+			task.spawn(t)
 		end
 	end
 end
@@ -102,6 +105,7 @@ local function runObjectAction(
 	service,
 	state
 )
+	state.Spawned = true
 	state.Thread = coroutine.running()
 
 	for _, v in state.AwaitFor do
@@ -116,7 +120,7 @@ local function runObjectAction(
 	free(state, ok, err)
 
 	if service.Updating and o.Update then
-		task.defer(doServiceLoopForObject, o, service, state)
+		task.spawn(doServiceLoopForObject, o, service, state)
 	end
 
 	return ok, err
@@ -152,8 +156,7 @@ local function spawnObject(object, service, state, asyncMode)
 		object:HandleAsync(asyncMode)
 	end
 
-	state.Spawned = true
-	task.defer(runObjectAction, object, spawnSignal, service, state)
+	task.spawn(runObjectAction, object, spawnSignal, service, state)
 
 	if not asyncMode then
 		return object:Await()
@@ -169,7 +172,7 @@ function Dispatcher.spawnObject(o, fPrivate, xpcallHandler, asyncHandler)
 	
 	-- basically new logic for Spawn
 	if state.Spawned then
-		ERROR.DISPATCHER_ALREADY_SPAWNED(o:GetID(true))
+		ERROR:DISPATCHER_ALREADY_SPAWNED(o)
 	end
 
 	if xpcallHandler then
@@ -203,7 +206,7 @@ end
 
 function Dispatcher.slotHandleAsync(o, asyncHandler)
 	local state = Dispatcher.getObjectState(o)
-	if not state then task.defer(asyncHandler, false, "The object was destroyed") end
+	if not state then task.spawn(asyncHandler, false, "The object was destroyed") end
 
 	if state.ErrMsg then
 		asyncHandler(false, state.ErrMsg)

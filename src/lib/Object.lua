@@ -73,10 +73,6 @@ return function(params: {[string]: any}, service)
 		local service = OBJECT_PRIVATE[self].Service
 		local state = Dispatcher.getObjectState(self)
 
-		if not state.Spawned then
-			ERROR.DESTROYED_BEFORE_SPAWNED(self:GetID(true))
-		end
-
 		if Dispatcher.getObjectState(self) then
 			Dispatcher.cleanObjectState(self)
 			OBJECT_PRIVATE[self] = nil
@@ -84,8 +80,8 @@ return function(params: {[string]: any}, service)
 			local destroying = self.Destroying
 			local fragRemoved = service.ObjectRemoved
 
-			if destroying then task.defer(destroying, self) end
-			if fragRemoved then task.defer(fragRemoved, service, self) end
+			if destroying then task.spawn(destroying, self) end
+			if fragRemoved then task.spawn(fragRemoved, service, self) end
 
 			Dispatcher.stop(self, state)
 		end
