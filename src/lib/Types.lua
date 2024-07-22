@@ -14,10 +14,10 @@ export type Action<S, I..., O...> = {
 	_sender: S,
 
 	Name: string,
-	await: (Action<S, I..., O...>, I...) -> (boolean, O...),
-	cancel: (Action<S, I..., O...>, optmsg: string?) -> (),
+	Await: (Action<S, I..., O...>, I...) -> (boolean, O...),
+	Cancel: (Action<S, I..., O...>, optmsg: string?) -> (),
 
-	handleAsync: (Action<S, I..., O...>, func: (boolean, O...) -> (), I...) -> ()
+	HandleAsync: (Action<S, I..., O...>, func: (boolean, O...) -> (), I...) -> ()
 }
 
 export type Object<A> = {

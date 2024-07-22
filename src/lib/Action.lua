@@ -89,7 +89,7 @@ return function(sender, actionName, callback)
 			Executes the action and yields the current thread until the action
 			completes or is cancelled
 		]]
-		await = function(self, ...)
+		Await = function(self, ...)
 			STATE_ASSERT(self)
 			return handler(self, self._sender, self._signal, ...)
 		end,
@@ -98,7 +98,7 @@ return function(sender, actionName, callback)
 			Cancels all running actions, and resumes any waiting threads. Can be given
 			a custom fail out message
 		]]
-		cancel = function(self, optMsg)
+		Cancel = function(self, optMsg)
 			for srcThread, coThread in self._threads do
 				task.cancel(coThread)
 				coroutine.resume(srcThread, false, "Cancelled", optMsg or "Thread was cancelled.")
@@ -111,7 +111,7 @@ return function(sender, actionName, callback)
 			Executes the action in a seperate thread, but does not yield the currently
 			running thread. Result of action is passed into the callback
 		]]
-		handleAsync = function(
+		HandleAsync = function(
 			self,
 			cb,
 			...
