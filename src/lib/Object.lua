@@ -73,7 +73,7 @@ return function(params: {[string]: any}, service)
 		local service = OBJECT_PRIVATE[self].Service
 		local state = Dispatcher.getObjectState(self)
 
-		if Dispatcher.getObjectState(self) then
+		if state then
 			Dispatcher.cleanObjectState(self)
 			OBJECT_PRIVATE[self] = nil
 

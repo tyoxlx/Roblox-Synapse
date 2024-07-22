@@ -1,2 +1,2 @@
 local Catwork = require(".")
-return Catwork.Service
+return Catwork.Action

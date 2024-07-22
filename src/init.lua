@@ -5,6 +5,7 @@ local Service = require("./lib/Service")
 local Native = require("./lib/Native")
 local Types = require("./lib/Types")
 local Metakeys = require("./meta")
+local Action = require("./lib/Action")
 
 local REFLECTION = require("./lib/Reflection")
 local ERROR = require("./lib/Error")
@@ -39,17 +40,13 @@ Catwork = setmetatable({
 		return Native.GetClassLike(name, createFn)
 	end,
 
-	-- Deprecated
-	Fragment = function(params)
-		ERROR.FRAGMENT_DEPRECATED_MIGRATION()
-	end,
+	Action = function<S, I..., O...>(sender: S, name: string, callback: (Types.Object<S>, I...) -> O...): Types.Action<Types.Object<S>, I..., O...>
+		REFLECTION.ARG(1, "Catwork.Action", REFLECTION.TABLE, sender)
+		REFLECTION.ARG(2, "Catwork.Action", REFLECTION.STRING, name)
+		REFLECTION.ARG(3, "Catwork.Action", REFLECTION.FUNCTION, callback)
 
-	--[[
-	EnableAnalysis = function(self: Catwork)
-		if RunService:IsRunning() then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Run Mode") end
-		if self.Plugin then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Plugin") end
+		return Action(sender, name, callback)
 	end
-	]]--
 },{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
 })
