@@ -127,9 +127,10 @@ local function killThread(t: thread)
 	local co = coroutine.running()
 	if co ~= t then
 		coroutine.close(t)
+		return false
 	else
 		task.defer(coroutine.close, t)
-		coroutine.yield()
+		return true
 	end
 end
 
@@ -139,10 +140,11 @@ function Dispatcher.stop(o, state)
 	if not Dispatcher.isSelfAsyncCall(o) then end
 
 	-- not destroyed, kill running thread then free as false
-	killThread(state.Thread)
 	if state.TimeoutThread then killThread(state.TimeoutThread) end
+	local isSelfCall = killThread(state.Thread)
 
 	free(state, false, "Object has been destroyed before it could return")
+	if isSelfCall then coroutine.yield() end
 end
 
 local function spawnObject(object, service, state, asyncMode)
