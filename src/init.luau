@@ -5,7 +5,6 @@ local Service = require("./lib/Service")
 local Native = require("./lib/Native")
 local Types = require("./lib/Types")
 local Metakeys = require("./meta")
-local Action = require("./lib/Action")
 
 local REFLECTION = require("./lib/Reflection")
 local ERROR = require("./lib/Error")
@@ -38,14 +37,6 @@ Catwork = setmetatable({
 		REFLECTION.ARG(2, "Catwork.Class", REFLECTION.FUNCTION, createFn)
 
 		return Native.GetClassLike(name, createFn)
-	end,
-
-	Action = function<S, I..., O...>(sender: S, name: string, callback: (Types.Object<S>, I...) -> O...): Types.Action<Types.Object<S>, I..., O...>
-		REFLECTION.ARG(1, "Catwork.Action", REFLECTION.TABLE, sender)
-		REFLECTION.ARG(2, "Catwork.Action", REFLECTION.STRING, name)
-		REFLECTION.ARG(3, "Catwork.Action", REFLECTION.FUNCTION, callback)
-
-		return Action(sender, name, callback)
 	end
 },{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end

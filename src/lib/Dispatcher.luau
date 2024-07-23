@@ -253,4 +253,10 @@ function Dispatcher.initObjectState(o)
 	return state
 end
 
+function Dispatcher.getStateString(o)
+	local state = Dispatcher.getObjectState(o)
+	if not state or state.Destroyed then return "dead" end
+	return if state.Ready then "spawned" else "pending"
+end
+
 return Dispatcher

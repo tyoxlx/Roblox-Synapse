@@ -8,21 +8,11 @@ export type Metakey<A> = typeof(setmetatable({}::{
 	__tostring: (Metakey<A>) -> string
 }))
 
-export type Action<S, I..., O...> = {
-	_signal: (S, I...) -> O...,
-	_threads: {[thread]: thread},
-	_sender: S,
-
-	Name: string,
-	Await: (Action<S, I..., O...>, I...) -> (boolean, O...),
-	Cancel: (Action<S, I..., O...>, optmsg: string?) -> (),
-
-	HandleAsync: (Action<S, I..., O...>, func: (boolean, O...) -> (), I...) -> ()
-}
-
+type ObjectState = "dead"|"pending"|"spawned"
 export type Object<A> = {
 	Name: string,
 	GetID: (Object<A>, full: boolean?) -> string,
+	GetState: (Object<A>) -> ObjectState,
 
 	Destroy: (Object<A>) -> (),
 	Spawn: (
