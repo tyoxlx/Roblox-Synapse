@@ -197,6 +197,12 @@ function Dispatcher.slotAwait(o)
 		return true
 	end
 
+	if Dispatcher.isSelfAsyncCall(o) then
+		ERROR.OBJECT_SELF_AWAIT(o:GetID(true))
+		coroutine.yield() -- we can probably kill the thread but this is for compatiblity
+		return true -- if the thread somehow resumes (shouldn't, provides safe fallback)
+	end
+
 	table.insert(state.HeldThreads, coroutine.running())
 	return coroutine.yield()
 end

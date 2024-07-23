@@ -48,7 +48,6 @@ return function(params: {[string]: any}, service)
 	function raw:Await()
 		REFLECTION.CUSTOM(1, "Object.Await", self, OBJECT_REFLECTION_TEST)
 		
-		if Dispatcher.isSelfAsyncCall(self) then ERROR.OBJECT_SELF_AWAIT(self:GetID(true)) end
 		return Dispatcher.slotAwait(self)
 	end
 	
@@ -70,11 +69,11 @@ return function(params: {[string]: any}, service)
 		REFLECTION.CUSTOM(1, "Object.Destroy", self, OBJECT_REFLECTION_TEST)
 		
 		if not self[Common.ObjectHeader] then ERROR.BAD_SELF_CALL("Object.Destroy") end
-		local service = OBJECT_PRIVATE[self].Service
 		local state = Dispatcher.getObjectState(self)
 
 		if state then
 			Dispatcher.cleanObjectState(self)
+			local service = OBJECT_PRIVATE[self].Service
 			OBJECT_PRIVATE[self] = nil
 
 			local destroying = self.Destroying
