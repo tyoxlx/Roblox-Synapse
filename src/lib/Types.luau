@@ -8,9 +8,11 @@ export type Metakey<A> = typeof(setmetatable({}::{
 	__tostring: (Metakey<A>) -> string
 }))
 
+type ObjectState = "dead"|"pending"|"spawned"
 export type Object<A> = {
 	Name: string,
 	GetID: (Object<A>, full: boolean?) -> string,
+	GetState: (Object<A>) -> ObjectState,
 
 	Destroy: (Object<A>) -> (),
 	Spawn: (

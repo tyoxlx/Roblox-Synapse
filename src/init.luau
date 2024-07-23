@@ -37,19 +37,7 @@ Catwork = setmetatable({
 		REFLECTION.ARG(2, "Catwork.Class", REFLECTION.FUNCTION, createFn)
 
 		return Native.GetClassLike(name, createFn)
-	end,
-
-	-- Deprecated
-	Fragment = function(params)
-		ERROR.FRAGMENT_DEPRECATED_MIGRATION()
-	end,
-
-	--[[
-	EnableAnalysis = function(self: Catwork)
-		if RunService:IsRunning() then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Run Mode") end
-		if self.Plugin then ERROR.ANALYSIS_MODE_NOT_AVAILABLE("Plugin") end
 	end
-	]]--
 },{
 	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
 })

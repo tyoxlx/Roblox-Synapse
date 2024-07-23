@@ -73,7 +73,7 @@ return function(params: {[string]: any}, service)
 		local service = OBJECT_PRIVATE[self].Service
 		local state = Dispatcher.getObjectState(self)
 
-		if Dispatcher.getObjectState(self) then
+		if state then
 			Dispatcher.cleanObjectState(self)
 			OBJECT_PRIVATE[self] = nil
 
@@ -85,6 +85,12 @@ return function(params: {[string]: any}, service)
 
 			Dispatcher.stop(self, state)
 		end
+	end
+
+	function raw:GetState()
+		REFLECTION.CUSTOM(1, "Object.GetState", self, OBJECT_REFLECTION_TEST)
+		
+		return Dispatcher.getStateString(self)
 	end
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
