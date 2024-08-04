@@ -40,11 +40,9 @@ end
 local function createObjectForService(params, service)
 	local o = Object(params, service, OBJECT_PRIVATE)
 
-	if not Common.AnalysisMode then
-		Dispatcher.initObjectState(o)
-		local objAdded = service.ObjectAdded
-		if objAdded then task.spawn(objAdded, service, o) end
-	end
+	Dispatcher.initObjectState(o)
+	local objAdded = service.ObjectAdded
+	if objAdded then task.spawn(objAdded, service, o) end
 
 	return o
 end
@@ -93,8 +91,6 @@ return function(params)
 	end
 
 	function raw:SpawnObject(obj, xpcallHandler, asyncHandler)
-		if Common.AnalysisMode then return end
-
 		REFLECTION.CUSTOM(1, "Service.SpawnObject", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.CUSTOM(2, "Service.SpawnObject", obj, OBJECT_REFLECTION_TEST)
 		REFLECTION.ARG(3, "Service.SpawnObject", REFLECTION.OPT_FUNCTION, xpcallHandler)
