@@ -113,7 +113,7 @@ return function(params)
 
 	if not raw.ObjectAdded then
 		function raw:ObjectAdded(object)
-			object:Spawn()
+			self:SpawnObject(object)
 		end
 	end
 
