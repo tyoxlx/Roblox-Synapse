@@ -15,12 +15,6 @@ export type Object<A> = {
 	GetState: (Object<A>) -> ObjectState,
 
 	Destroy: (Object<A>) -> (),
-	Spawn: (
-		Object<A>,
-		xpcallHandler: ((string?) -> string)?,
-		asyncHandler: (boolean, string?) -> ()?
-	) -> (boolean, string?),
-	
 	Update: (Object<A>, dt: number) -> number?,
 	Destroying: (Object<A>) -> (),
 	Init: (Object<A>) -> (),
@@ -44,6 +38,13 @@ export type Service = {
 	
 	Class: <A>(Service, name: string, createObject: (Object<A>) -> ()) -> Class<A>,
 	CreateObjectFromClass: <A, B>(Service, Class<A>, initParams: B?) -> Object<A & B>,
+
+	SpawnObject: (
+		Service,
+		BlankObject,
+		xpcallHandler: ((string?) -> string)?,
+		asyncHandler: (boolean, string?) -> ()?
+	) -> (boolean, string?),
 
 	StartService: (Service) -> (),
 	Spawning: (Service, BlankObject) -> (),

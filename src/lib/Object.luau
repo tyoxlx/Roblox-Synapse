@@ -17,9 +17,7 @@ local function OBJECT_REFLECTION_TEST(object, oName)
 	return object and object[Common.ObjectHeader], "BAD_SELF_CALL", oName
 end
 
-local OBJECT_PRIVATE = {}
-
-return function(params: {[string]: any}, service)
+return function(params: {[string]: any}, service, OBJECT_PRIVATE)
 	local raw, metakeys = Common.validateTable(params, "Object", OBJECT_PARAMS)
 
 	local private = {
@@ -36,13 +34,7 @@ return function(params: {[string]: any}, service)
 	raw.Name = params.Name or `CatworkAsyncObject`
 	
 	function raw:Spawn(xpcallHandler, asyncHandler)
-		if Common.AnalysisMode then return end
-
-		REFLECTION.CUSTOM(1, "Object.Spawn", self, OBJECT_REFLECTION_TEST)
-		REFLECTION.ARG(2, "Object.Spawn", REFLECTION.OPT_FUNCTION, xpcallHandler)
-		REFLECTION.ARG(3, "Object.Spawn", REFLECTION.OPT_FUNCTION, asyncHandler)
-
-		return Dispatcher.spawnObject(self, OBJECT_PRIVATE[self], xpcallHandler, asyncHandler)
+		ERROR.DEPRECATED("Object.Spawn", "Service.SpawnObject")
 	end
 	
 	function raw:Await()
@@ -60,8 +52,13 @@ return function(params: {[string]: any}, service)
 	
 	function raw:GetID(full: boolean?)
 		REFLECTION.CUSTOM(1, "Object.GetID", self, OBJECT_REFLECTION_TEST)
-		REFLECTION.ARG(2, "Object.GetID", REFLECTION.OPT_BOOLEAN, full)		
+		REFLECTION.ARG(2, "Object.GetID", REFLECTION.OPT_BOOLEAN, full)	
 		
+		local private = OBJECT_PRIVATE[self]
+		if not private then
+			ERROR.OBJECT_DESTROYED(self)
+		end
+
 		return full and OBJECT_PRIVATE[self].FullID or OBJECT_PRIVATE[self].ID
 	end
 

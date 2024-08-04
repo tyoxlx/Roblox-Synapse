@@ -8,6 +8,7 @@ local Types = require("./Types")
 
 local Dispatcher = {}
 local objectDispatchState = {}
+local OBJECT_DESTROYED_RETURN_MSG = "The object was destroyed"
 
 local serviceStartState: {[Types.Service]: {
 	State: "suspended"|"running"|"finished",
@@ -37,7 +38,7 @@ local function getObjectStateError(o)
 	local state = Dispatcher.getObjectState(o)
 	
 	if not state then
-		ERROR.DISPATCHER_DESTROYED_OBJECT(o:GetID(true))
+		ERROR.OBJECT_DESTROYED(o)
 	end
 
 	return state
@@ -137,14 +138,15 @@ end
 function Dispatcher.stop(o, state)
 	-- already destroyed checks
 	if not state then return end
-	if not Dispatcher.isSelfAsyncCall(o) then end
 
 	-- not destroyed, kill running thread then free as false
 	if state.TimeoutThread then killThread(state.TimeoutThread) end
-	local isSelfCall = killThread(state.Thread)
+	free(state, false, OBJECT_DESTROYED_RETURN_MSG)
 
-	free(state, false, "Object has been destroyed before it could return")
-	if isSelfCall then coroutine.yield() end
+	if state.Thread then
+		local isSelfCall = killThread(state.Thread)
+		if isSelfCall then coroutine.yield() end
+	end
 end
 
 local function spawnObject(object, service, state, asyncMode)
@@ -164,14 +166,28 @@ local function spawnObject(object, service, state, asyncMode)
 	return nil
 end
 
-function Dispatcher.spawnObject(o, fPrivate, xpcallHandler, asyncHandler)
-	local state = getObjectStateError(o)
+function Dispatcher.spawnObject(o, service, fPrivate, xpcallHandler, asyncHandler)
+	local state = Dispatcher.getObjectState(o)
+
+	if not state then
+		-- object is destroyed
+		if not asyncHandler then return false, OBJECT_DESTROYED_RETURN_MSG end
+		task.spawn(asyncHandler, false, OBJECT_DESTROYED_RETURN_MSG)
+		return
+	end
+
+	-- we would handle this from the service but its safer to handle here
+	-- if an object is dead we just safely cancel it
+	if service ~= fPrivate.Service then
+		ERROR.SERVICE_INVALID_CLASS()
+	end
+
 	state.TimeoutDisabled = fPrivate.TimeoutDisabled
 	state.AwaitFor = fPrivate.AwaitFor
 	
 	-- basically new logic for Spawn
 	if state.Spawned then
-		ERROR:DISPATCHER_ALREADY_SPAWNED(o)
+		ERROR.DISPATCHER_ALREADY_SPAWNED(o)
 	end
 
 	if xpcallHandler then
@@ -191,7 +207,7 @@ end
 
 function Dispatcher.slotAwait(o)
 	local state = Dispatcher.getObjectState(o)
-	if not state then return false, "The object was destroyed" end
+	if not state then return false, OBJECT_DESTROYED_RETURN_MSG end
 
 	if state.ErrMsg then
 		return false, state.ErrMsg
@@ -211,7 +227,7 @@ end
 
 function Dispatcher.slotHandleAsync(o, asyncHandler)
 	local state = Dispatcher.getObjectState(o)
-	if not state then task.spawn(asyncHandler, false, "The object was destroyed") end
+	if not state then task.spawn(asyncHandler, false, OBJECT_DESTROYED_RETURN_MSG) end
 
 	if state.ErrMsg then
 		asyncHandler(false, state.ErrMsg)

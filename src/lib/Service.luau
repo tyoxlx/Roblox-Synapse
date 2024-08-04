@@ -10,6 +10,7 @@ local Metakeys = require("../meta")
 
 local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
 
+local OBJECT_PRIVATE = {}
 local SERVICE_PARAMS = {
 	Name = "string",
 	StartService = "function?",
@@ -31,8 +32,13 @@ local function CLASS_REFLECTION_ASSERT(class, fName, idx)
 	return class and class[Common.ClassHeader], "BAD_OBJECT", idx, fName, oType, "Class"
 end
 
+local function OBJECT_REFLECTION_TEST(object, fName, idx)
+	local oType = typeof(object)
+	return object and object[Common.ObjectHeader], "BAD_OBJECT", idx, fName, oType, "Object"
+end
+
 local function createObjectForService(params, service)
-	local o = Object(params, service)
+	local o = Object(params, service, OBJECT_PRIVATE)
 
 	if not Common.AnalysisMode then
 		Dispatcher.initObjectState(o)
@@ -84,6 +90,17 @@ return function(params)
 
 		if self.CreateObject then self:CreateObject(params) end
 		return createObjectForService(params, self)
+	end
+
+	function raw:SpawnObject(obj, xpcallHandler, asyncHandler)
+		if Common.AnalysisMode then return end
+
+		REFLECTION.CUSTOM(1, "Service.SpawnObject", self, SERVICE_REFLECTION_TEST)
+		REFLECTION.CUSTOM(2, "Service.SpawnObject", obj, OBJECT_REFLECTION_TEST)
+		REFLECTION.ARG(3, "Service.SpawnObject", REFLECTION.OPT_FUNCTION, xpcallHandler)
+		REFLECTION.ARG(4, "Service.SpawnObject", REFLECTION.OPT_FUNCTION, asyncHandler)
+
+		return Dispatcher.spawnObject(obj, self, OBJECT_PRIVATE[obj], xpcallHandler, asyncHandler)
 	end
 
 	if not raw.Spawning then
