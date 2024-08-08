@@ -3,6 +3,7 @@
 set -e
 
 curl -O https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.lua
+rojo sourcemap default.project.json
 rojo sourcemap default.project.json -o sourcemap.json
 
 luau-lsp analyze --definitions=globalTypes.d.lua --base-luaurc=.luaurc \
