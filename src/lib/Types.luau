@@ -2,13 +2,16 @@
 -- for the time being, we should let most stuff pass
 -- if you experience problems, please file a Pull request
 
-export type Metakey<A> = typeof(setmetatable({}::{
-	Key: A
-}, {}::{
-	__tostring: (Metakey<A>) -> string
-}))
+export type Metakey<A> = typeof(setmetatable(
+	{} :: {
+		Key: A,
+	},
+	{} :: {
+		__tostring: (Metakey<A>) -> string,
+	}
+))
 
-type ObjectState = "dead"|"pending"|"spawned"
+type ObjectState = "dead" | "pending" | "spawned"
 export type Object<A> = {
 	Name: string,
 	GetID: (Object<A>, full: boolean?) -> string,
@@ -24,7 +27,7 @@ export type Object<A> = {
 	HandleAsync: (Object<A>, asyncHandler: (boolean, string) -> ()?) -> (),
 } & A
 
-export type BlankObject = Object<{[string]: any}>
+export type BlankObject = Object<{ [string]: any }>
 
 export type Class<A> = {
 	Name: string,
@@ -35,7 +38,7 @@ export type Class<A> = {
 export type Service = {
 	Name: string,
 	Object: <A>(Service, A) -> Object<A>,
-	
+
 	Class: <A>(Service, name: string, createObject: (Object<A>) -> ()) -> Class<A>,
 	CreateObjectFromClass: <A, B>(Service, Class<A>, initParams: B?) -> Object<A & B>,
 
@@ -52,7 +55,7 @@ export type Service = {
 	CreateObject: <A>(Service, A) -> (),
 	ObjectAdded: (Service, BlankObject) -> (),
 	ObjectRemoved: (Service, BlankObject) -> (),
-	ClassAdded: <A>(Service, Class<A>) -> ()
+	ClassAdded: <A>(Service, Class<A>) -> (),
 }
 
 export type ServiceCtorParams = {
@@ -66,7 +69,7 @@ export type ServiceCtorParams = {
 	ObjectRemoved: (Service, BlankObject) -> ()?,
 	ClassAdded: <A>(Service, Class<A>) -> ()?,
 
-	[string|Metakey<any>]: any
+	[string | Metakey<any>]: any,
 }
 
 return nil

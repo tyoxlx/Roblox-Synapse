@@ -1,14 +1,14 @@
 if not task then task = require("@lune/task") end
 
 local Class = require("./Class")
-local Dispatcher = require("./Dispatcher")
-local Object = require("./Object")
 local Common = require("./Common")
+local Dispatcher = require("./Dispatcher")
 local ERROR = require("./Error")
-local REFLECTION = require("./Reflection")
 local Metakeys = require("../meta")
+local Object = require("./Object")
+local REFLECTION = require("./Reflection")
 
-local ENABLE_CLASSES_METAKEY = Metakeys.export "EnableClasses"
+local ENABLE_CLASSES_METAKEY = Metakeys.export("EnableClasses")
 
 local OBJECT_PRIVATE = {}
 local SERVICE_PARAMS = {
@@ -19,7 +19,7 @@ local SERVICE_PARAMS = {
 	ObjectAdded = "function?",
 	ObjectRemoved = "function?",
 	ClassAdded = "function?",
-	Updating = "function?"
+	Updating = "function?",
 }
 
 local function SERVICE_REFLECTION_TEST(service, fName)
@@ -49,7 +49,7 @@ end
 
 -- Constructor
 return function(params)
-	local raw, metakeys = Common.validateTable(params, "Service", SERVICE_PARAMS)	
+	local raw, metakeys = Common.validateTable(params, "Service", SERVICE_PARAMS)
 
 	local enableClasses = (params.ClassAdded ~= nil) or (metakeys.EnableClasses or false)
 
@@ -57,7 +57,7 @@ return function(params)
 	raw[ENABLE_CLASSES_METAKEY] = enableClasses
 
 	local enableUpdateLoop = if metakeys.EnableUpdating ~= nil then metakeys.EnableUpdating else true
-	
+
 	function raw:Class(name, createObject)
 		REFLECTION.CUSTOM(1, "Service.Class", self, SERVICE_REFLECTION_TEST)
 		REFLECTION.ARG(2, "Service.Class", REFLECTION.STRING, name)
@@ -72,10 +72,8 @@ return function(params)
 		REFLECTION.ARG(3, "Service.CreateObjectFromClass", REFLECTION.OPT_TABLE, initParams)
 		if not self[ENABLE_CLASSES_METAKEY] then ERROR.SERVICE_NO_CLASSES(self.Name) end
 
-		if class.Service ~= self then
-			ERROR.BAD_CLASS(class.Name, self.Name)
-		end
-		
+		if class.Service ~= self then ERROR.BAD_CLASS(class.Name, self.Name) end
+
 		local params = initParams or {}
 		params.Name = params.Name or class.Name
 		class.CreateObject(params)
@@ -108,16 +106,12 @@ return function(params)
 	end
 
 	if not raw.ObjectAdded then
-		function raw:ObjectAdded(object)
-			self:SpawnObject(object)
-		end
+		function raw:ObjectAdded(object) self:SpawnObject(object) end
 	end
 
 	if enableUpdateLoop then
 		if not raw.Updating then
-			function raw:Updating(object, dt)
-				return object:Update(dt)
-			end
+			function raw:Updating(object, dt) return object:Update(dt) end
 		end
 	elseif raw.Updating then
 		ERROR.SERVICE_UPDATING_DISABLED(raw.Name)
@@ -126,12 +120,10 @@ return function(params)
 
 	if not Common.Flags.DONT_ASSIGN_OBJECT_MT then
 		setmetatable(raw, {
-			__tostring = function(self)
-				return `CatworkService({self.Name}; Classes: {self[ENABLE_CLASSES_METAKEY]})`
-			end,
+			__tostring = function(self) return `CatworkService({self.Name}; Classes: {self[ENABLE_CLASSES_METAKEY]})` end,
 		})
 	end
-	
+
 	table.freeze(raw)
 	return raw
 end

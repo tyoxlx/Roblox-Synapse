@@ -1,13 +1,13 @@
 -- metatablecatgames 2024 - Licensed under the MIT License
 --local RunService = game:GetService("RunService")
 local Common = require("./lib/Common")
-local Service = require("./lib/Service")
-local Native = require("./lib/Native")
-local Types = require("./lib/Types")
 local Metakeys = require("./meta")
+local Native = require("./lib/Native")
+local Service = require("./lib/Service")
+local Types = require("./lib/Types")
 
-local REFLECTION = require("./lib/Reflection")
 local ERROR = require("./lib/Error")
+local REFLECTION = require("./lib/Reflection")
 
 local Catwork
 export type Object<Parameters> = Types.Object<Parameters>
@@ -25,7 +25,7 @@ Catwork = setmetatable({
 
 		return Native.Object(params)
 	end,
-	
+
 	Service = function(params: Types.ServiceCtorParams): Types.Service
 		REFLECTION.ARG(1, "Catwork.Service", REFLECTION.TABLE, params)
 
@@ -37,9 +37,9 @@ Catwork = setmetatable({
 		REFLECTION.ARG(2, "Catwork.Class", REFLECTION.FUNCTION, createFn)
 
 		return Native.GetClassLike(name, createFn)
-	end
-},{
-	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end
+	end,
+}, {
+	__tostring = function(self) return `Module(Catwork v{self.__VERSION})` end,
 })
 
 table.freeze(Catwork)

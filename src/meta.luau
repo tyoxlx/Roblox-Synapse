@@ -5,25 +5,18 @@ local MetakeySymbolic = newproxy(false)
 local function metakey<A>(key): Types.Metakey<A>
 	return setmetatable({
 		[MetakeySymbolic] = true,
-		Key = key
+		Key = key,
 	}, {
-		__tostring = function(self)
-			return `Metakey<{self.Key}>`
-		end
+		__tostring = function(self) return `Metakey<{self.Key}>` end,
 	})
 end
 
-type METAKEY_WELL_KNOWN = 
-	"AwaitFor"
-	|"EnableClasses"
-	|"EnableUpdating"
-	|"PluginMetadata"
-	|"TimeoutDisabled"
+type METAKEY_WELL_KNOWN = "AwaitFor" | "EnableClasses" | "EnableUpdating" | "PluginMetadata" | "TimeoutDisabled"
 
 local MetakeyMemoization = {}
 
 return {
-	export = function(rhs: METAKEY_WELL_KNOWN|string): Types.Metakey<any>
+	export = function(rhs: METAKEY_WELL_KNOWN | string): Types.Metakey<any>
 		local key = MetakeyMemoization[rhs]
 		if not key then
 			key = metakey(rhs)
@@ -33,5 +26,5 @@ return {
 		return key
 	end,
 
-	Symbol = MetakeySymbolic
+	Symbol = MetakeySymbolic,
 }

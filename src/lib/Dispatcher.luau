@@ -10,10 +10,11 @@ local Dispatcher = {}
 local objectDispatchState = {}
 local OBJECT_DESTROYED_RETURN_MSG = "The object was destroyed"
 
-local serviceStartState: {[Types.Service]: {
-	State: "suspended"|"running"|"finished",
-	HeldThreads: {thread}
-}} = {}
+local serviceStartState: { [Types.Service]: {
+	State: "suspended" | "running" | "finished",
+	HeldThreads: { thread },
+} } =
+	{}
 
 local function safeAsyncHandler(err)
 	ERROR.DISPATCHER_SPAWN_ERR(ERROR.traceback(err))
@@ -22,7 +23,7 @@ end
 
 local function doServiceLoopForObject(object, service, state)
 	local resumptionDelay = 0
-	
+
 	while not state.Destroyed do
 		local dt = if resumptionDelay and resumptionDelay < 0 then 0 else task.wait(resumptionDelay or 0)
 		if state.Destroyed then break end -- fixes a bug where loops continue an extra tick after destruction
@@ -30,16 +31,12 @@ local function doServiceLoopForObject(object, service, state)
 	end
 end
 
-function Dispatcher.getObjectState(o)
-	return objectDispatchState[o]
-end
+function Dispatcher.getObjectState(o) return objectDispatchState[o] end
 
 local function getObjectStateError(o)
 	local state = Dispatcher.getObjectState(o)
-	
-	if not state then
-		ERROR.OBJECT_DESTROYED(o)
-	end
+
+	if not state then ERROR.OBJECT_DESTROYED(o) end
 
 	return state
 end
@@ -49,8 +46,10 @@ local function free(state, ok, err, o, service)
 	state.IsOK = ok
 	state.ErrMsg = err
 
-	local dispatchers = state.Dispatchers; state.Dispatchers = {}
-	local held = state.HeldThreads; state.HeldThreads = {}
+	local dispatchers = state.Dispatchers
+	state.Dispatchers = {}
+	local held = state.HeldThreads
+	state.HeldThreads = {}
 
 	for _, v in dispatchers do
 		task.spawn(v, ok, err)
@@ -75,7 +74,7 @@ local function serviceStartup(service)
 	if not serviceState then
 		serviceState = {
 			State = "suspended",
-			HeldThreads = {}
+			HeldThreads = {},
 		}
 
 		serviceStartState[service] = serviceState
@@ -97,12 +96,7 @@ local function serviceStartup(service)
 	end
 end
 
-local function runObjectAction(
-	o,
-	spawnSignal,
-	service,
-	state
-)
+local function runObjectAction(o, spawnSignal, service, state)
 	state.Spawned = true
 	state.Thread = coroutine.running()
 
@@ -117,9 +111,7 @@ local function runObjectAction(
 
 	free(state, ok, err)
 
-	if service.Updating and o.Update then
-		task.spawn(doServiceLoopForObject, o, service, state)
-	end
+	if service.Updating and o.Update then task.spawn(doServiceLoopForObject, o, service, state) end
 
 	return ok, err
 end
@@ -153,15 +145,11 @@ local function spawnObject(object, service, state, asyncMode)
 	local spawnSignal = service.Spawning
 	serviceStartup(service)
 
-	if asyncMode then
-		object:HandleAsync(asyncMode)
-	end
+	if asyncMode then object:HandleAsync(asyncMode) end
 
 	task.spawn(runObjectAction, object, spawnSignal, service, state)
 
-	if not asyncMode then
-		return object:Await()
-	end
+	if not asyncMode then return object:Await() end
 
 	return nil
 end
@@ -178,21 +166,15 @@ function Dispatcher.spawnObject(o, service, fPrivate, xpcallHandler, asyncHandle
 
 	-- we would handle this from the service but its safer to handle here
 	-- if an object is dead we just safely cancel it
-	if service ~= fPrivate.Service then
-		ERROR.SERVICE_INVALID_CLASS()
-	end
+	if service ~= fPrivate.Service then ERROR.SERVICE_INVALID_CLASS() end
 
 	state.TimeoutDisabled = fPrivate.TimeoutDisabled
 	state.AwaitFor = fPrivate.AwaitFor
-	
-	-- basically new logic for Spawn
-	if state.Spawned then
-		ERROR.DISPATCHER_ALREADY_SPAWNED(o)
-	end
 
-	if xpcallHandler then
-		state.XPC = xpcallHandler
-	end
+	-- basically new logic for Spawn
+	if state.Spawned then ERROR.DISPATCHER_ALREADY_SPAWNED(o) end
+
+	if xpcallHandler then state.XPC = xpcallHandler end
 
 	return spawnObject(o, fPrivate.Service, state, asyncHandler)
 end
@@ -244,11 +226,9 @@ function Dispatcher.isSelfAsyncCall(o)
 	if not state then return false end -- object is destroyed, will never self-await here.
 
 	local co = coroutine.running()
-	
-	if state.Spawned and co == state.Thread then
-		return not state.Ready
-	end
-	
+
+	if state.Spawned and co == state.Thread then return not state.Ready end
+
 	return false
 end
 
@@ -270,7 +250,7 @@ function Dispatcher.initObjectState(o)
 
 		AwaitFor = {},
 		HeldThreads = {},
-		Dispatchers = {}
+		Dispatchers = {},
 	}
 	objectDispatchState[o] = state
 

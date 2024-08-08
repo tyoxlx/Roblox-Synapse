@@ -29,12 +29,11 @@ Reflection.OPT_FUNCTION = 11
 Reflection.OPT_THREAD = 13
 Reflection.OPT_USERDATA = 15
 Reflection.OPT_VECTOR = 17
-Reflection.OPT_BUFFER = 19	
-
+Reflection.OPT_BUFFER = 19
 
 local LUAU_NATIVE_TYPE = {
 	-- Enum -> type() bindings
-	
+
 	[Reflection.BOOLEAN] = "boolean",
 	[Reflection.NUMBER] = "number",
 	[Reflection.STRING] = "string",
@@ -54,25 +53,28 @@ end
 function Reflection.ARG(argIdx: number, functionName: string, enum: number, incoming: any)
 	if enum == 0 then
 		-- fast-path, enum val is NIL
-		if incoming ~= nil then
-			ERROR.BAD_ARG(argIdx, functionName, "nil", type(incoming))
-		end
-		
+		if incoming ~= nil then ERROR.BAD_ARG(argIdx, functionName, "nil", type(incoming)) end
+
 		return
 	end
-	
+
 	local isOpt = bit32.band(enum, 1) == 1
 	local typeVal = LUAU_NATIVE_TYPE[bit32.band(enum, 0b1111110)]
-	
+
 	if not typeVal then return end
 	if isOpt and incoming == nil then return end
-	
+
 	local t = type(incoming)
 	if t == typeVal then return end
 	ERROR.BAD_ARG(argIdx, functionName, typeVal, t)
 end
 
-function Reflection.CUSTOM(argIdx: number, functionName: string, incoming: any, assertion: (any, string, number) -> (boolean, ...any)) 
+function Reflection.CUSTOM(
+	argIdx: number,
+	functionName: string,
+	incoming: any,
+	assertion: (any, string, number) -> (boolean, ...any)
+)
 	reflectionCallbackHandler(assertion(incoming, functionName, argIdx))
 end
 

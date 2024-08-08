@@ -1,18 +1,20 @@
-local Types = require("./Types")
 local ERROR = require("./Error")
 local Metakeys = require("../meta")
+local Types = require("./Types")
 
-local HttpService = if game then game:GetService("HttpService") else {
-	GenerateGUID = function(self, withBrackets)
-		local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-		if withBrackets then template = `\{{template}\}` end
+local HttpService = if game
+	then game:GetService("HttpService")
+	else {
+		GenerateGUID = function(self, withBrackets)
+			local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+			if withBrackets then template = `\{{template}\}` end
 
-		return string.gsub(template, "[xy]", function(c)
-			local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
-			return string.format("%x", v)
-		end)
-	end
-}
+			return string.gsub(template, "[xy]", function(c)
+				local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
+				return string.format("%x", v)
+			end)
+		end,
+	}
 
 local VERSION = "0.5.0"
 local GUID_PATTERN = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
@@ -43,19 +45,16 @@ local function getMetakeysAsStrings(tab)
 	return metakeys
 end
 
-
-function Common.validateTable(tab, oName, rules: {[string]: string})
+function Common.validateTable(tab, oName, rules: { [string]: string })
 	for key, typof in rules do
 		local optional = string.match(typof, OPT_PAT)
-		typof = if optional then optional else typof 
+		typof = if optional then optional else typof
 
 		local value = tab[key]
 		if not value and optional then continue end
 
 		local typeis = typeof(value)
-		if typeis ~= typof then
-			ERROR.BAD_TABLE_SHAPE(tab, oName, key, typof, typeis)
-		end
+		if typeis ~= typof then ERROR.BAD_TABLE_SHAPE(tab, oName, key, typof, typeis) end
 	end
 
 	return tab, getMetakeysAsStrings(tab)
