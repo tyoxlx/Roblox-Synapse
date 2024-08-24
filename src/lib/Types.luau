@@ -2,6 +2,8 @@
 -- for the time being, we should let most stuff pass
 -- if you experience problems, please file a Pull request
 
+export type MetakeyWellKnown = "AwaitFor" | "EnableClasses" | "EnableUpdating" | "PluginMetadata" | "TimeoutDisabled"
+
 export type Metakey<A> = typeof(setmetatable(
 	{} :: {
 		Key: A,

@@ -11,12 +11,10 @@ local function metakey<A>(key): Types.Metakey<A>
 	})
 end
 
-type METAKEY_WELL_KNOWN = "AwaitFor" | "EnableClasses" | "EnableUpdating" | "PluginMetadata" | "TimeoutDisabled"
-
 local MetakeyMemoization = {}
 
 return {
-	export = function(rhs: METAKEY_WELL_KNOWN | string): Types.Metakey<any>
+	export = function(rhs: Types.MetakeyWellKnown | string): Types.Metakey<any>
 		local key = MetakeyMemoization[rhs]
 		if not key then
 			key = metakey(rhs)
